@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya – Ikatan Kovalen</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4f8;--surf:#ffffff;--surf2:#f8fafc;
+  --border:#dde3ec;--border2:#c5cfe0;
+  --acc:#2563eb;--acc2:#3b82f6;--acc3:#1d4ed8;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --yellow:#d97706;--red:#dc2626;--green:#059669;
+  --purple:#7c3aed;--teal:#0d9488;
+  --h:52px;
+  --fbase:13px;
+}
+@media(max-width:768px){:root{--fbase:12px;--h:46px;}}
+@media(min-width:1400px){:root{--fbase:14px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;font-size:var(--fbase);}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(37,99,235,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 50% at 90% 100%,rgba(124,58,237,0.05) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(148,163,184,0.06) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(148,163,184,0.06) 40px);
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#0f172a,#1e1b4b,#1e3a8a);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;padding:0 12px;gap:10px;
+  box-shadow:0 2px 10px rgba(15,23,42,0.45);
+}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(99,102,241,.5);}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,1.6vw,20px);font-weight:700;color:#ffffff;line-height:1.1;}
+.logo-sub{font-size:clamp(8px,0.9vw,10px);color:rgba(165,180,252,0.85);}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.1vw,13px);font-weight:500;padding:0 10px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:2px;background:#a78bfa;transform:scaleX(0);transition:transform .2s;border-radius:2px 2px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.95);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:5px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  header{flex-wrap:nowrap;padding:0 10px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;
+    background:linear-gradient(180deg,#0f172a,#1e1b4b);
+    border-bottom:1px solid rgba(255,255,255,.15);
+    box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:50px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.08);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .2s ease;}
+.scroll{flex:1;overflow-y:auto;padding:8px 12px 12px;display:flex;flex-direction:column;gap:5px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a,#1e1b4b,#2563eb);border:none;border-radius:9px;padding:9px 14px;margin-bottom:0;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 3px 16px rgba(99,102,241,.22);}
+.hero::after{content:'⚛️';position:absolute;right:12px;top:-8px;font-size:52px;opacity:.09;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:clamp(8px,0.85vw,9px);letter-spacing:.15em;color:#a5b4fc;text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.7vw,17px);font-weight:700;color:#fff;line-height:1.2;}
+.h-title span{color:#c4b5fd;}
+.h-desc{font-size:clamp(10px,1vw,11.5px);color:#bfdbfe;line-height:1.5;max-width:480px;}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:10px 12px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 10px rgba(30,41,59,0.09);}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
+.ci{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ci.b{background:rgba(37,99,235,.1);}
+.ci.y{background:rgba(217,119,6,.1);}
+.ci.g{background:rgba(5,150,105,.1);}
+.ci.r{background:rgba(220,38,38,.1);}
+.ci.p{background:rgba(124,58,237,.1);}
+.ci.t{background:rgba(13,148,136,.1);}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(11.5px,1.3vw,14px);font-weight:700;color:var(--acc3);}
+.card p{font-size:clamp(10.5px,1.1vw,12.5px);line-height:1.65;color:var(--text2);margin-bottom:5px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(9.5px,1vw,11px);font-weight:600;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin:8px 0 4px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:6px;font-size:clamp(10.5px,1.1vw,12.5px);color:var(--text2);line-height:1.55;padding:3px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:700;font-size:14px;margin-top:-1px;}
+
+/* bond type tags */
+.bond-tag{display:inline-block;border-radius:5px;padding:2px 8px;font-size:clamp(9px,0.95vw,10.5px);font-weight:700;margin-bottom:4px;}
+.bond-single{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af;}
+.bond-double{background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;}
+.bond-triple{background:#ccfbf1;border:1px solid #5eead4;color:#0f766e;}
+.bond-polar{background:#fef3c7;border:1px solid #fcd34d;color:#92400e;}
+.bond-coord{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;}
+.bond-nonpolar{background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;}
+
+/* TUJUAN page - fit screen, no scroll */
+#page-tujuan .scroll{
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:5px;
+  padding:7px 12px 8px;
+  height:100%;
+}
+
+/* TUJUAN PEMBELAJARAN BOX */
+.tujuan-pembelajaran-box{
+  background:linear-gradient(135deg,#eff6ff,#e0e7ff);
+  border:1.5px solid #93c5fd;border-radius:11px;
+  padding:8px 14px;
+  box-shadow:0 2px 10px rgba(37,99,235,.1);
+  flex-shrink:0;
+}
+.tp-header{font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.2vw,13px);font-weight:700;color:#1d4ed8;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.tp-goal-box{background:#fff;border:1.5px solid #bfdbfe;border-radius:8px;padding:7px 13px;font-size:clamp(10.5px,1.05vw,12.5px);color:#1e3a8a;line-height:1.5;font-weight:600;}
+
+/* Tujuan Percobaan cards */
+.tp-card{background:#fff;border:1.5px solid #c7d7fa;border-radius:9px;padding:6px 10px;display:flex;gap:8px;align-items:center;transition:border-color .2s,background .2s;box-shadow:0 1px 5px rgba(99,102,241,.08);}
+.tp-card:hover{border-color:#818cf8;background:#f5f3ff;}
+.tp-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.tp-icon.b{background:#dbeafe;}.tp-icon.p{background:#ede9fe;}.tp-icon.g{background:#d1fae5;}.tp-icon.o{background:#fef3c7;}
+.tp-label{font-size:clamp(7.5px,0.8vw,9px);font-weight:700;color:#4f46e5;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1px;}
+.tp-text{font-size:clamp(10px,1.05vw,12px);color:#0f172a;font-weight:700;line-height:1.3;}
+.tp-desc{font-size:clamp(9.5px,0.95vw,11px);color:#475569;margin-top:1px;line-height:1.35;}
+
+/* TEORI page - fit screen, no scroll */
+#page-teori .scroll{
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:auto 1fr 1fr auto;
+  gap:5px;
+  padding:7px 12px 8px;
+  height:100%;
+}
+#page-teori .card p{font-size:clamp(9.5px,0.98vw,11.5px);line-height:1.45;margin-bottom:2px;}
+#page-teori .card h4{margin:4px 0 2px;}
+#page-teori .two-col{gap:5px;}
+#page-teori .card{padding:7px 10px;}
+
+/* concept/note box */
+.notebox{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:1px solid #a78bfa;border-radius:7px;padding:7px 11px;margin-top:5px;}
+.notebox .nt{font-size:clamp(8.5px,0.9vw,9.5px);font-weight:700;color:#5b21b6;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.notebox p{font-size:clamp(10px,1.05vw,12px);color:#3730a3;line-height:1.5;margin:0;}
+
+/* partikel grid */
+.partikel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:5px 0;}
+.p-box{border-radius:8px;padding:6px 8px;text-align:center;}
+.p-box.proton{background:#fee2e2;border:1px solid #fca5a5;}
+.p-box.neutron{background:#fef3c7;border:1px solid #fcd34d;}
+.p-box.elektron{background:#d1fae5;border:1px solid #6ee7b7;}
+.p-box .p-sym{font-family:'JetBrains Mono',monospace;font-size:clamp(16px,1.8vw,22px);font-weight:800;margin-bottom:1px;}
+.p-box.proton .p-sym{color:#dc2626;}
+.p-box.neutron .p-sym{color:#d97706;}
+.p-box.elektron .p-sym{color:#059669;}
+.p-box .p-name{font-size:clamp(9px,0.95vw,11px);font-weight:700;color:#0f172a;margin-bottom:1px;}
+.p-box .p-desc{font-size:clamp(8.5px,0.88vw,10px);color:#475569;line-height:1.3;}
+
+/* ALAT BAHAN */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:5px;}
+.fi{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:all .18s;box-shadow:0 1px 3px rgba(99,102,241,.06);}
+.fi:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 4px 14px rgba(99,102,241,.16);}
+.fi-icon{width:44px;height:44px;border-radius:8px;margin-bottom:5px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.fi strong{display:block;font-size:clamp(10px,1vw,11px);color:#2563eb;margin-bottom:2px;font-weight:700;}
+.fi span{font-size:clamp(9px,0.9vw,10px);color:#64748b;line-height:1.4;}
+
+/* PROSEDUR page */
+#page-prosedur .scroll{
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:7px 12px 8px;
+  height:100%;
+}
+/* Prosedur tab navigation */
+.pr-tabs{display:flex;gap:4px;flex-shrink:0;background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:9px;padding:5px 8px;border:1px solid rgba(99,102,241,.3);}
+.pr-tab{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(10px,1.05vw,12px);font-weight:500;padding:5px 12px;border-radius:6px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.pr-tab:hover{color:#fff;background:rgba(255,255,255,.08);}
+.pr-tab.active{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.4);}
+/* Prosedur panel */
+.pr-panel{display:none;flex:1;min-height:0;overflow:hidden;}
+.pr-panel.active{display:grid;grid-template-columns:0.85fr 1.15fr;gap:7px;}
+/* Prosedur step list */
+.pr-steps{display:flex;flex-direction:column;gap:0;overflow:hidden;}
+.pr-step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;transition:background .18s;cursor:default;position:relative;}
+.pr-step:hover{background:#f0f4ff;}
+.pr-step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:clamp(9px,0.95vw,10.5px);font-weight:800;flex-shrink:0;margin-top:1px;}
+.pr-step-num.blue{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;}
+.pr-step-num.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;}
+.pr-step-num.green{background:linear-gradient(135deg,#059669,#10b981);color:#fff;}
+.pr-step-num.orange{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff;}
+.pr-step-text{flex:1;}
+.pr-step-text strong{display:block;font-size:clamp(10px,1.05vw,11.5px);color:#0f172a;line-height:1.3;font-weight:700;margin-bottom:1px;}
+.pr-step-text span{font-size:clamp(9.5px,0.98vw,11px);color:#475569;line-height:1.35;}
+/* connector line between steps */
+.pr-steps-wrap{position:relative;display:flex;flex-direction:column;}
+.pr-steps-wrap::before{content:'';position:absolute;left:21px;top:20px;bottom:20px;width:2px;background:linear-gradient(180deg,#c7d2fe,#e0e7ff);border-radius:1px;z-index:0;}
+/* Prosedur visual/info panel */
+.pr-info{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;box-shadow:0 1px 3px rgba(30,41,59,.06);}
+.pr-info-hero{border-radius:8px;padding:10px 13px;position:relative;overflow:hidden;flex-shrink:0;}
+.pr-info-hero .h-label{font-family:'JetBrains Mono',monospace;font-size:clamp(7.5px,0.8vw,9px);letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px;}
+.pr-info-hero .h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.5vw,16px);font-weight:700;line-height:1.2;}
+.pr-info-hero .h-desc{font-size:clamp(9.5px,0.98vw,11px);line-height:1.45;margin-top:3px;}
+/* Perhatian / tip box */
+.pr-tip{border-radius:7px;padding:7px 11px;flex-shrink:0;}
+.pr-tip .pt-label{font-size:clamp(8px,0.85vw,9.5px);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.pr-tip ul{list-style:none;display:flex;flex-direction:column;gap:3px;}
+.pr-tip ul li{font-size:clamp(9.5px,0.98vw,11px);line-height:1.4;padding-left:14px;position:relative;color:#1e293b;}
+.pr-tip ul li::before{content:'▸';position:absolute;left:0;font-size:10px;}
+/* hasil yang diharapkan box */
+.pr-hasil{background:#f0fdf4;border:1px solid #86efac;border-radius:7px;padding:7px 11px;}
+.pr-hasil .ph-label{font-size:clamp(8px,0.85vw,9.5px);font-weight:700;color:#166534;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:5px;}
+.pr-hasil ul{list-style:none;}
+.pr-hasil ul li{font-size:clamp(9.5px,0.98vw,11px);color:#14532d;line-height:1.4;padding:2px 0 2px 14px;position:relative;}
+.pr-hasil ul li::before{content:'✓';position:absolute;left:0;color:#16a34a;font-weight:700;font-size:10px;}
+
+/* SIMULASI */
+.sim-wrap{display:grid;grid-template-columns:180px 1fr;gap:7px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;box-shadow:0 1px 3px rgba(30,41,59,.06);}
+.ctrl-panel h3{font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:var(--acc);}
+.cg label{display:block;font-size:clamp(8.5px,0.9vw,9.5px);font-weight:600;color:#4f46e5;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+select{width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 22px 6px 8px;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.05vw,12px);outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%232563eb' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 7px center;transition:border-color .17s;}
+select:focus{border-color:var(--acc);}
+.btn{width:100%;border:none;border-radius:6px;padding:7px;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.05vw,12px);font-weight:600;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#1d4ed8,#4f46e5);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.45);}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-stop{background:#fff1f2;border:1px solid #fca5a5;color:#991b1b;}
+.btn-reset{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);}
+.sim-right{display:flex;flex-direction:column;gap:6px;overflow:hidden;flex:1;min-width:0;}
+.aquarium{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:9px;flex:1;min-height:0;box-shadow:0 1px 3px rgba(30,41,59,.06);display:flex;flex-direction:column;}
+.aquarium h3{font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:var(--acc);margin-bottom:6px;}
+#simCanvas{width:100%;border-radius:7px;display:block;background:linear-gradient(135deg,#020617,#0f0f2e,#0c1445);border:1px solid rgba(99,102,241,.3);flex:1;}
+.statsrow{display:flex;gap:5px;}
+.sbox{flex:1;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:1px solid #c4b5fd;border-radius:6px;padding:5px;text-align:center;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.2vw,14px);font-weight:700;color:#5b21b6;display:block;}
+.sl{font-size:clamp(8px,0.85vw,9.5px);color:#6d28d9;text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+.tipinfo{background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:6px 9px;font-size:clamp(9.5px,1vw,11px);color:#1e40af;display:none;line-height:1.55;}
+.tipinfo.on{display:block;}
+
+/* KUIS */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:6px 11px;background:var(--surf);border:1px solid var(--border);border-radius:9px;margin-bottom:6px;flex-shrink:0;box-shadow:0 1px 3px rgba(30,41,59,0.05);}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:var(--surf2);font-size:clamp(8.5px,0.9vw,9.5px);font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#eff6ff;}
+.qprog-dot.current{background:linear-gradient(135deg,var(--acc),#4f46e5);color:#fff;border-color:var(--acc);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:clamp(8.5px,0.9vw,9.5px);color:var(--acc);letter-spacing:.1em;margin-bottom:4px;}
+.qtype-badge{display:inline-block;font-size:clamp(8px,0.85vw,9px);font-weight:600;padding:2px 6px;border-radius:4px;margin-bottom:6px;letter-spacing:.04em;}
+.badge-mc{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
+.badge-tf{background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;}
+.qtext{font-size:clamp(11.5px,1.2vw,13.5px);color:var(--text);line-height:1.55;font-weight:500;margin-bottom:8px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.opt{display:flex;align-items:flex-start;gap:7px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;cursor:pointer;transition:all .16s;font-size:clamp(10.5px,1.1vw,12.5px);color:var(--text2);}
+.opt:hover{border-color:var(--acc2);background:#eff6ff;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#eff6ff;color:var(--acc3);}
+.opt.correct{background:#d1fae5;border-color:#34d399;color:#065f46;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:7px;padding:6px 9px;border-radius:6px;font-size:clamp(10px,1.05vw,11.5px);display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#d1fae5;color:#065f46;border:1px solid #34d399;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:6px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:5px 12px;border-radius:6px;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.05vw,12px);font-weight:600;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);background:#eff6ff;}
+.btn-next{background:linear-gradient(135deg,#1d4ed8,#4f46e5);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25);}
+.btn-next:hover{box-shadow:0 4px 14px rgba(37,99,235,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;}
+.btn-submit-q:hover{box-shadow:0 3px 12px rgba(13,148,136,.4);}
+.btn-reset-q{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset-q:hover{border-color:var(--acc);color:var(--acc);background:#eff6ff;}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:clamp(9.5px,1vw,11px);color:var(--text3);}
+
+/* SCORE OVERLAY */
+.score-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 38px;text-align:center;box-shadow:0 20px 60px rgba(30,41,59,.18);animation:fu .28s ease;min-width:260px;}
+.score-big{font-family:'Space Grotesk',sans-serif;font-size:clamp(48px,6vw,68px);font-weight:700;background:linear-gradient(135deg,#2563eb,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.score-pct{font-size:clamp(16px,2vw,20px);color:var(--text3);margin-top:2px;}
+.score-sub{font-size:clamp(11px,1.15vw,12.5px);color:var(--text2);margin:7px 0 3px;}
+.score-grade{font-size:clamp(13px,1.4vw,15px);font-weight:600;margin-top:7px;}
+.score-actions{display:flex;gap:7px;justify-content:center;margin-top:16px;}
+.btn-score{padding:7px 18px;border-radius:7px;font-family:'Inter',sans-serif;font-size:clamp(11px,1.15vw,12.5px);font-weight:600;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-review:hover{border-color:var(--acc);color:var(--acc);background:#eff6ff;}
+.btn-ulangi{background:linear-gradient(135deg,#1d4ed8,#4f46e5);color:#fff;}
+.btn-ulangi:hover{box-shadow:0 4px 14px rgba(37,99,235,.35);}
+
+/* LEMBAR KERJA */
+.lk-fit{flex:1;display:flex;flex-direction:column;gap:6px;padding:7px 11px 9px;overflow:hidden;min-height:0;}
+.lk-top{display:flex;gap:8px;align-items:stretch;flex-shrink:0;}
+.lk-hero{background:linear-gradient(135deg,#ede9fe,#ddd6fe,#bfdbfe);border:1px solid rgba(99,102,241,.2);border-radius:9px;padding:7px 13px;display:flex;flex-direction:column;justify-content:center;min-width:170px;box-shadow:0 1px 8px rgba(99,102,241,.1);position:relative;overflow:hidden;}
+.lk-hero::after{content:'📝';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.2;}
+.lk-hero .h-label{font-family:'JetBrains Mono',monospace;font-size:clamp(7.5px,0.8vw,8.5px);letter-spacing:.14em;color:#4f46e5;text-transform:uppercase;font-weight:700;}
+.lk-hero .h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.3vw,15px);font-weight:700;color:#1e1b4b;line-height:1.15;}
+.lk-hero .h-title span{color:#4f46e5;}
+.lk-identitas{flex:1;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:5px;background:#fff;border:1px solid var(--border);border-radius:9px;padding:6px 10px;box-shadow:0 1px 5px rgba(99,102,241,.06);}
+.lk-identitas > div{display:flex;flex-direction:column;justify-content:center;}
+.lk-identitas label{font-size:clamp(7.5px,0.8vw,8.5px);color:#4f46e5;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:2px;display:block;}
+.lk-input{width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 8px;font-family:'Inter',sans-serif;font-size:clamp(11px,1.1vw,12px);outline:none;transition:border-color .17s;}
+.lk-input:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(37,99,235,.12);}
+.lk-main{flex:1;display:grid;grid-template-columns:1.3fr 1fr;gap:7px;min-height:0;overflow:hidden;}
+.lk-col-tables{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+.lk-col-questions{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+.lk-card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:7px 9px;display:flex;flex-direction:column;min-height:0;flex:1;box-shadow:0 1px 5px rgba(99,102,241,.06);}
+.lk-card-head{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-shrink:0;}
+.lk-card-head .ci{width:21px;height:21px;font-size:10px;border-radius:5px;}
+.lk-card-head .ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.05vw,11.5px);font-weight:700;color:#2563eb;flex:1;}
+.lk-table-scroll{flex:1;overflow:auto;border:1px solid var(--border);border-radius:6px;min-height:0;}
+.lk-table-scroll::-webkit-scrollbar{width:4px;height:4px;}
+.lk-table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.lk-table{width:100%;border-collapse:collapse;font-size:clamp(10px,1.05vw,11.5px);}
+.lk-table th{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:4px 6px;text-align:left;border:1px solid #1d4ed8;font-size:clamp(8.5px,0.9vw,9.5px);text-transform:uppercase;letter-spacing:.04em;font-weight:700;position:sticky;top:0;z-index:2;}
+.lk-table td{padding:3px 4px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;background:#fff;}
+.lk-table tr:nth-child(even) td{background:#f8f9ff;}
+.lk-table input,.lk-table select,.lk-table textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:clamp(10px,1.05vw,11.5px);padding:1px 3px;}
+.lk-table input:focus,.lk-table select:focus,.lk-table textarea:focus{background:#eef2ff;border-radius:3px;}
+.lk-table select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10'%3E%3Cpath fill='%232563eb' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;padding-right:14px;background-color:transparent;}
+.disc-area{width:100%;border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-family:'Inter',sans-serif;font-size:clamp(10px,1.05vw,11.5px);color:var(--text);background:#fff;resize:none;outline:none;transition:border-color .17s;line-height:1.55;}
+.disc-area:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(37,99,235,.12);}
+.lk-qlist{flex:1;display:flex;flex-direction:column;gap:4px;min-height:0;overflow:hidden;}
+.lk-qitem{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;}
+.lk-qtext{font-size:clamp(9.5px,1vw,10.5px);font-weight:700;color:#2563eb;line-height:1.3;flex-shrink:0;}
+.lk-qarea{flex:1;min-height:0;resize:none;padding:4px 7px;font-size:clamp(10px,1.05vw,11px);line-height:1.4;margin-top:0;}
+.lk-actions{display:flex;gap:7px;justify-content:flex-end;flex-shrink:0;}
+.dl-btn{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.1vw,12px);font-weight:600;cursor:pointer;transition:all .17s;box-shadow:0 2px 8px rgba(13,148,136,.3);display:inline-flex;align-items:center;gap:5px;}
+.dl-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(13,148,136,.45);}
+
+/* LOADING */
+#loadScreen{
+  position:fixed;inset:0;z-index:99999;
+  background:#020617;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s ease;overflow:hidden;
+}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+#atomCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.load-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.load-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(18px,2.5vw,28px);font-weight:800;color:#fff;text-align:center;margin-bottom:3px;}
+.load-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(9px,1vw,11px);color:#a5b4fc;letter-spacing:.18em;text-transform:uppercase;text-align:center;margin-bottom:20px;}
+.load-bar-wrap{width:clamp(200px,28vw,320px);height:5px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;margin-bottom:7px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#4f46e5,#818cf8,#a78bfa);border-radius:5px;transition:width .1s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.4vw,15px);color:#fff;font-weight:700;margin-bottom:10px;text-align:center;}
+.load-status{font-size:clamp(10px,1.1vw,12px);color:#bfdbfe;margin-bottom:24px;min-height:15px;text-align:center;}
+#btnMulaiPraktikum{
+  display:none;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:#fff;border:none;border-radius:9px;
+  padding:9px 26px;
+  font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:700;
+  cursor:pointer;letter-spacing:.03em;
+  box-shadow:0 0 28px rgba(99,102,241,.65),0 4px 16px rgba(124,58,237,.4);
+  animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;
+  transition:transform .18s,box-shadow .18s;
+}
+#btnMulaiPraktikum:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 45px rgba(99,102,241,.9),0 8px 24px rgba(124,58,237,.6);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* SIM TABS */
+.sim-tab{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.65);border-radius:6px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:clamp(9.5px,1vw,11px);font-weight:600;cursor:pointer;white-space:nowrap;transition:all .18s;}
+.sim-tab:hover{background:rgba(255,255,255,.13);color:#fff;}
+.sim-tab.active{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border-color:#4f46e5;box-shadow:0 2px 8px rgba(37,99,235,.4);}
+
+/* mobile layout */
+@media(max-width:768px){
+  .sim-wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
+  .ctrl-panel{overflow:visible;gap:5px;}
+  .two-col{grid-template-columns:1fr;}
+  .lk-main{grid-template-columns:1fr;}
+  .lk-top{flex-direction:column;}
+  .lk-hero{min-width:0;}
+  .lk-identitas{grid-template-columns:1fr 1fr;}
+  .fgrid{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:480px){
+  .fgrid{grid-template-columns:repeat(2,1fr);}
+  .lk-identitas{grid-template-columns:1fr 1fr;}
+  .partikel-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <canvas id="atomCanvas"></canvas>
+  <div class="load-content">
+    <div style="margin-bottom:12px;filter:drop-shadow(0 0 25px rgba(99,102,241,.6));animation:spin 4s linear infinite;width:clamp(80px,12vw,120px);height:clamp(80px,12vw,120px);border-radius:16px;overflow:hidden;">
+      <img src="https://85meydiaafrina.github.io/ikatankovalen/cover.png" alt="Cover Lab Maya Ikatan Kovalen" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
+    </div>
+    <div class="load-title">Lab Maya Kimia</div>
+    <div class="load-sub">Ikatan Kovalen</div>
+    <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+    <div class="load-percent" id="loadPercent">0%</div>
+    <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+    <button id="btnMulaiPraktikum" onclick="startLab()">⚛️ Mulai Praktikum</button>
+  </div>
+</div>
+<style>@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}</style>
+
+<script>
+(function(){
+  const canvas=document.getElementById('atomCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,t=0;
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const atoms=[
+    {x:.1,y:.15,r:70,o:3,s:.007},{x:.82,y:.25,r:55,o:2,s:-.009},
+    {x:.5,y:.75,r:65,o:3,s:.008},{x:.2,y:.8,r:40,o:2,s:-.006},
+    {x:.75,y:.12,r:50,o:2,s:.01},{x:.9,y:.78,r:38,o:2,s:-.008},
+  ];
+  atoms.forEach(a=>{a.angle=Math.random()*Math.PI*2;});
+  function drawAtomBg(cx,cy,r,angle,numOrbits){
+    const ng=ctx.createRadialGradient(cx,cy,0,cx,cy,r*.45);
+    ng.addColorStop(0,'rgba(99,102,241,0.7)');ng.addColorStop(.5,'rgba(139,92,246,0.4)');ng.addColorStop(1,'rgba(99,102,241,0)');
+    ctx.beginPath();ctx.arc(cx,cy,r*.45,0,Math.PI*2);ctx.fillStyle=ng;ctx.fill();
+    for(let o=0;o<numOrbits;o++){
+      const or=(o+1)*r/(numOrbits+.5);const tilt=o*(Math.PI/numOrbits);
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(tilt);
+      ctx.beginPath();ctx.ellipse(0,0,or,or*.38,0,0,Math.PI*2);
+      ctx.strokeStyle='rgba(99,102,241,0.12)';ctx.lineWidth=1;ctx.stroke();
+      const ea=angle*(o%2===0?1:-1);
+      const ex=Math.cos(ea)*or,ey=Math.sin(ea)*or*.38;
+      const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,r*.08);
+      eg.addColorStop(0,'rgba(167,139,250,1)');eg.addColorStop(1,'rgba(167,139,250,0)');
+      ctx.beginPath();ctx.arc(ex,ey,r*.08,0,Math.PI*2);ctx.fillStyle=eg;ctx.fill();
+      ctx.restore();
+    }
+  }
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    if(!window._stars){window._stars=[];for(let i=0;i<100;i++)window._stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.2,a:Math.random()});}
+    window._stars.forEach(s=>{
+      s.a=0.2+0.8*Math.abs(Math.sin(t*.02+s.x*10));
+      ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(180,180,255,${s.a})`;ctx.fill();
+    });
+    atoms.forEach(a=>{a.angle+=a.s;drawAtomBg(a.x*W,a.y*H,a.r,a.angle,a.o);});
+    t++;requestAnimationFrame(render);
+  }
+  render();
+  const bar=document.getElementById('loadBar'),pct=document.getElementById('loadPercent'),status=document.getElementById('loadStatus');
+  const msgs=['Memuat model atom…','Menyiapkan elektron valensi…','Membangun jembatan ikatan…','Mengaktifkan simulasi kovalen…','Laboratorium siap! ✅'];
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=Math.random()*12+4;if(p>100)p=100;
+    bar.style.width=p+'%';pct.textContent=Math.floor(p)+'%';
+    status.textContent=msgs[Math.min(Math.floor(p/25),4)];
+    if(p>=100){clearInterval(iv);setTimeout(()=>{document.getElementById('btnMulaiPraktikum').style.display='block';},300);}
+  },150);
+})();
+function startLab(){
+  const ls=document.getElementById('loadScreen');
+  ls.classList.add('hide');
+  setTimeout(()=>{ls.style.display='none';},650);
+}
+</script>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚛️</div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Ikatan Kovalen</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="toggleNav()" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <nav id="mainNav" style="margin-left:0;justify-content:flex-end;">
+    <button class="nb active" onclick="show('tujuan',this);closeNav()">🎯 Tujuan</button>
+    <button class="nb" onclick="show('teori',this);closeNav()">📖 Teori</button>
+    <button class="nb" onclick="show('alat',this);closeNav()">🧪 Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('prosedur',this);closeNav()">📋 Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this);closeNav()">⚡ Simulasi</button>
+    <button class="nb" onclick="show('lkm',this);closeNav()">📝 Lembar Kerja</button>
+    <button class="nb" onclick="show('kuis',this);closeNav()">📋 Kuis</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ===== TUJUAN ===== -->
+<div id="page-tujuan" class="page active">
+  <div class="scroll">
+
+    <!-- Tujuan Pembelajaran -->
+    <div class="tujuan-pembelajaran-box">
+      <div class="tp-header">🎯 Tujuan Pembelajaran</div>
+      <div class="tp-goal-box">
+        Membandingkan jenis ikatan kimia serta kaitannya dengan bentuk molekul dan interaksi antar partikel dalam memprediksi sifat fisik materi.
+      </div>
+    </div>
+
+    <!-- Tujuan Percobaan + Hasil Belajar side by side -->
+    <div style="display:grid;grid-template-columns:1.15fr 0.85fr;gap:7px;flex:1;min-height:0;overflow:hidden;">
+
+      <!-- Tujuan Percobaan -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci b">🔬</div><div class="ct">Tujuan Percobaan</div></div>
+        <div style="display:grid;grid-template-rows:1fr 1fr 1fr 1fr;gap:4px;flex:1;min-height:0;">
+          <div class="tp-card">
+            <div class="tp-icon b">1️⃣</div>
+            <div>
+              <div class="tp-label">Percobaan 1</div>
+              <div class="tp-text">Menjelaskan Proses Pembentukan Ikatan</div>
+              <div class="tp-desc">Pembentukan ikatan kovalen tunggal, rangkap dua, dan rangkap tiga antara atom nonlogam.</div>
+            </div>
+          </div>
+          <div class="tp-card">
+            <div class="tp-icon p">2️⃣</div>
+            <div>
+              <div class="tp-label">Percobaan 2</div>
+              <div class="tp-text">Menggambarkan Struktur Lewis &amp; Molekul</div>
+              <div class="tp-desc">Struktur Lewis dan Struktur Molekul (garis) dari berbagai senyawa kovalen.</div>
+            </div>
+          </div>
+          <div class="tp-card">
+            <div class="tp-icon g">3️⃣</div>
+            <div>
+              <div class="tp-label">Percobaan 3</div>
+              <div class="tp-text">Membedakan Polar &amp; Nonpolar</div>
+              <div class="tp-desc">Ikatan kovalen polar dan nonpolar berdasarkan elektronegativitas dan bentuk molekul.</div>
+            </div>
+          </div>
+          <div class="tp-card">
+            <div class="tp-icon o">4️⃣</div>
+            <div>
+              <div class="tp-label">Percobaan 4</div>
+              <div class="tp-text">Memprediksi Rumus Kimia Senyawa</div>
+              <div class="tp-desc">Memprediksi rumus kimia senyawa dari dua unsur nonlogam.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hasil Belajar -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci g">🏆</div><div class="ct">Hasil Belajar</div></div>
+        <ul class="olist" style="flex:1;display:flex;flex-direction:column;justify-content:space-around;">
+          <li>Memahami konsep pemakaian bersama elektron dalam ikatan kovalen</li>
+          <li>Mampu membedakan jenis-jenis ikatan kovalen berdasarkan jumlah pasangan elektron yang digunakan bersama</li>
+          <li>Mampu menentukan polaritas ikatan dan molekul berdasarkan elektronegativitas dan geometri molekul</li>
+          <li>Mampu mengaitkan bentuk molekul dan interaksi antar partikel dalam memprediksi sifat fisik materi</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page">
+  <div class="scroll">
+
+    <!-- Hero -->
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">📖 Teori Inti</div>
+        <div class="h-title">Ikatan <span>Kovalen</span></div>
+        <div class="h-desc">Pemakaian bersama pasangan elektron antara atom-atom nonlogam untuk mencapai kestabilan</div>
+      </div>
+    </div>
+
+    <!-- Row 1: Pengertian full width -->
+    <div class="card" style="flex-shrink:0;">
+      <div class="ch"><div class="ci b">⚛️</div><div class="ct">Pengertian Ikatan Kovalen</div></div>
+      <p><strong style="color:var(--acc3)">Ikatan kovalen</strong> terbentuk karena <em>sharing</em> (pemakaian bersama) pasangan elektron oleh dua atom nonlogam agar mencapai konfigurasi stabil oktet (8e⁻) atau duplet (2e⁻ untuk H). Berbeda dengan ikatan ion yang terjadi melalui serah-terima elektron, pada ikatan kovalen kedua atom <strong>saling berbagi</strong> elektron valensi.</p>
+      <div class="notebox"><div class="nt">💡 Kunci</div><p>Ikatan ion → serah-terima elektron (logam ↔ nonlogam). Ikatan kovalen → pemakaian bersama elektron (nonlogam ↔ nonlogam).</p></div>
+    </div>
+
+    <!-- Row 2: 4 jenis ikatan -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;flex-shrink:0;">
+      <div class="card">
+        <div class="ch"><div class="ci b">1️⃣</div><div class="ct">Kovalen Tunggal</div></div>
+        <div class="bond-tag bond-single">1 Pasang Elektron</div>
+        <p>Dua atom berbagi <strong>1 pasang (2e⁻)</strong>, ditulis dengan satu garis (–).</p>
+        <p><strong>Contoh:</strong> H–H, H–Cl, H₂O</p>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci p">2️⃣</div><div class="ct">Kovalen Rangkap 2</div></div>
+        <div class="bond-tag bond-double">2 Pasang Elektron</div>
+        <p>Dua atom berbagi <strong>2 pasang (4e⁻)</strong>, ditulis dengan dua garis (=).</p>
+        <p><strong>Contoh:</strong> O=O, CO₂</p>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci t">3️⃣</div><div class="ct">Kovalen Rangkap 3</div></div>
+        <div class="bond-tag bond-triple">3 Pasang Elektron</div>
+        <p>Dua atom berbagi <strong>3 pasang (6e⁻)</strong>, ditulis dengan tiga garis (≡).</p>
+        <p><strong>Contoh:</strong> N≡N, HC≡CH</p>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci r">🎯</div><div class="ct">Kovalen Koordinasi</div></div>
+        <div class="bond-tag bond-coord">PEB dari 1 Atom</div>
+        <p>Kedua elektron berasal dari <strong>satu atom donor</strong> (ikatan datif).</p>
+        <p><strong>Contoh:</strong> NH₄⁺, H₂SO₄</p>
+      </div>
+    </div>
+
+    <!-- Row 3: Polar/Nonpolar + Oktet + Tabel -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;flex:1;min-height:0;overflow:hidden;">
+      <!-- Polar & Nonpolar stacked -->
+      <div style="display:flex;flex-direction:column;gap:5px;overflow:hidden;">
+        <div class="card" style="flex:1;">
+          <div class="ch"><div class="ci y">⚡</div><div class="ct">Kovalen Polar</div></div>
+          <div class="bond-tag bond-polar">ΔEn &gt; 0 · Ada Dipol</div>
+          <p>Elektronegativitas berbeda → elektron tertarik ke atom lebih elektronegatif. Momen dipol neto ≠ 0.</p>
+          <p><strong>Contoh:</strong> HCl, HF, H₂O, NH₃</p>
+        </div>
+        <div class="card" style="flex:1;">
+          <div class="ch"><div class="ci g">⚖️</div><div class="ct">Kovalen Nonpolar</div></div>
+          <div class="bond-tag bond-nonpolar">ΔEn = 0 · Dipol Nol</div>
+          <p>Atom identik atau momen dipol saling meniadakan karena geometri simetris.</p>
+          <p><strong>Contoh:</strong> H₂, N₂, O₂, CH₄</p>
+        </div>
+      </div>
+
+      <!-- Oktet & Lewis -->
+      <div class="card" style="overflow:hidden;">
+        <div class="ch"><div class="ci b">📐</div><div class="ct">Aturan Oktet &amp; Struktur Lewis</div></div>
+        <div class="partikel-grid">
+          <div class="p-box proton"><div class="p-sym">2</div><div class="p-name">Duplet</div><div class="p-desc">H &amp; He stabil dengan 2e⁻</div></div>
+          <div class="p-box neutron"><div class="p-sym">8</div><div class="p-name">Oktet</div><div class="p-desc">Atom periode 2+ stabil dengan 8e⁻</div></div>
+          <div class="p-box elektron"><div class="p-sym">•—•</div><div class="p-name">PEI &amp; PEB</div><div class="p-desc">Pasangan elektron ikatan &amp; bebas</div></div>
+        </div>
+      </div>
+
+      <!-- Tabel EV -->
+      <div class="card" style="overflow:hidden;">
+        <div class="ch"><div class="ci g">📋</div><div class="ct">Data Elektron Valensi Atom</div></div>
+        <table style="width:100%;border-collapse:collapse;font-size:clamp(9.5px,0.98vw,11px);">
+          <thead><tr style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;">
+            <th style="padding:3px 6px;text-align:left;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">Atom</th>
+            <th style="padding:3px 6px;text-align:left;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">Z</th>
+            <th style="padding:3px 6px;text-align:left;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">EV</th>
+            <th style="padding:3px 6px;text-align:left;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">Butuh</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;">H</td><td style="padding:2px 6px;border:1px solid var(--border);">1</td><td style="padding:2px 6px;border:1px solid var(--border);">1</td><td style="padding:2px 6px;border:1px solid var(--border);">1 (duplet)</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;color:#ef4444;">O</td><td style="padding:2px 6px;border:1px solid var(--border);">8</td><td style="padding:2px 6px;border:1px solid var(--border);">6</td><td style="padding:2px 6px;border:1px solid var(--border);">2 (oktet)</td></tr>
+            <tr><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;color:#6b7280;">C</td><td style="padding:2px 6px;border:1px solid var(--border);">6</td><td style="padding:2px 6px;border:1px solid var(--border);">4</td><td style="padding:2px 6px;border:1px solid var(--border);">4 (oktet)</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;color:#3b82f6;">N</td><td style="padding:2px 6px;border:1px solid var(--border);">7</td><td style="padding:2px 6px;border:1px solid var(--border);">5</td><td style="padding:2px 6px;border:1px solid var(--border);">3 (oktet)</td></tr>
+            <tr><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;color:#f59e0b;">Cl</td><td style="padding:2px 6px;border:1px solid var(--border);">17</td><td style="padding:2px 6px;border:1px solid var(--border);">7</td><td style="padding:2px 6px;border:1px solid var(--border);">1 (oktet)</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:2px 6px;border:1px solid var(--border);font-weight:700;color:#8b5cf6;">F</td><td style="padding:2px 6px;border:1px solid var(--border);">9</td><td style="padding:2px 6px;border:1px solid var(--border);">7</td><td style="padding:2px 6px;border:1px solid var(--border);">1 (oktet)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== ALAT & BAHAN ===== -->
+<div id="page-alat" class="page">
+  <div class="scroll">
+
+    <div class="hero">
+      <div>
+        <div class="h-label">🧪 Alat &amp; Bahan</div>
+        <div class="h-title">Atom-Atom <span>Penyusun</span> Molekul</div>
+        <div class="h-desc">Model atom yang digunakan dalam laboratorium maya ikatan kovalen</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div class="ci b">⚛️</div><div class="ct">Model Atom Tersedia</div></div>
+      <div class="fgrid">
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatankovalen/hidrogen.png" alt="Atom Hidrogen" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Hidrogen (H)</strong>
+          <span>Z=1 · 1 elektron valensi · Aturan duplet</span>
+        </div>
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatanion/oksigen.png" alt="Atom Oksigen" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Oksigen (O)</strong>
+          <span>Z=8 · 6 elektron valensi · Butuh 2 elektron</span>
+        </div>
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatankovalen/nitrogen.png" alt="Atom Nitrogen" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Nitrogen (N)</strong>
+          <span>Z=7 · 5 elektron valensi · Butuh 3 elektron</span>
+        </div>
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatankovalen/karbon.png" alt="Atom Karbon" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Karbon (C)</strong>
+          <span>Z=6 · 4 elektron valensi · Butuh 4 elektron</span>
+        </div>
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatanion/klorin.png" alt="Atom Klorin" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Klorin (Cl)</strong>
+          <span>Z=17 · 7 elektron valensi · Butuh 1 elektron</span>
+        </div>
+        <div class="fi">
+          <div class="fi-icon" style="background:transparent;overflow:hidden;padding:0;"><img src="https://85meydiaafrina.github.io/ikatanion/fluor.png" alt="Atom Fluor" style="width:100%;height:100%;object-fit:contain;"></div>
+          <strong>Atom Fluor (F)</strong>
+          <span>Z=9 · 7 elektron valensi · Paling elektronegatif</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ci p">🧰</div><div class="ct">Alat Laboratorium</div></div>
+        <ul class="olist">
+          <li>Model Molekul 3D (maket bola &amp; batang)</li>
+          <li>Papan Struktur Lewis (untuk menggambar)</li>
+          <li>Set Kartu Elektron Valensi</li>
+          <li>Komputer/tablet untuk simulasi digital</li>
+          <li>Lembar Kerja Murid (LKM)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci g">📋</div><div class="ct">Data Elektronegatifan</div></div>
+        <table style="width:100%;border-collapse:collapse;font-size:clamp(9.5px,1vw,11px);">
+          <thead><tr style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;">
+            <th style="padding:3px 6px;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">Atom</th>
+            <th style="padding:3px 6px;font-size:clamp(8px,0.85vw,9px);text-transform:uppercase;">Nilai EN</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:#8b5cf6;">F</td><td style="padding:3px 6px;border:1px solid var(--border);">3,98</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:#ef4444;">O</td><td style="padding:3px 6px;border:1px solid var(--border);">3,44</td></tr>
+            <tr><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:#3b82f6;">N</td><td style="padding:3px 6px;border:1px solid var(--border);">3,04</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:#f59e0b;">Cl</td><td style="padding:3px 6px;border:1px solid var(--border);">3,16</td></tr>
+            <tr><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;color:#6b7280;">C</td><td style="padding:3px 6px;border:1px solid var(--border);">2,55</td></tr>
+            <tr style="background:#f8f9ff;"><td style="padding:3px 6px;border:1px solid var(--border);font-weight:700;">H</td><td style="padding:3px 6px;border:1px solid var(--border);">2,20</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+  <div class="scroll">
+
+    <!-- Hero -->
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">📋 Prosedur Percobaan</div>
+        <div class="h-title">Langkah <span>Kerja</span> Lab Maya</div>
+        <div class="h-desc">Ikuti langkah-langkah percobaan dengan cermat untuk setiap simulasi ikatan kovalen</div>
+      </div>
+    </div>
+
+    <!-- Tab Percobaan -->
+    <div class="pr-tabs" style="flex-shrink:0;">
+      <button class="pr-tab active" id="prtab-1" onclick="showPrTab(1)">⚡ Percobaan 1</button>
+      <button class="pr-tab" id="prtab-2" onclick="showPrTab(2)">🔷 Percobaan 2</button>
+      <button class="pr-tab" id="prtab-3" onclick="showPrTab(3)">🌀 Percobaan 3</button>
+      <button class="pr-tab" id="prtab-4" onclick="showPrTab(4)">🔬 Percobaan 4</button>
+    </div>
+
+    <!-- ── PANEL 1: Pembentukan Ikatan ── -->
+    <div id="prpanel-1" class="pr-panel active">
+      <!-- Kiri: Langkah kerja -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci b">⚡</div><div class="ct">Proses Pembentukan Ikatan Kovalen</div></div>
+        <div class="pr-steps-wrap" style="flex:1;overflow-y:auto;padding-right:4px;">
+          <div class="pr-step">
+            <div class="pr-step-num blue">1</div>
+            <div class="pr-step-text">
+              <strong>Buka Tab Simulasi → Percobaan 1</strong>
+              <span>Klik menu <em>Simulasi</em> pada navigasi atas, kemudian pilih tab <em>⚡ Percobaan 1</em>.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num blue">2</div>
+            <div class="pr-step-text">
+              <strong>Pilih Molekul yang Akan Dipelajari</strong>
+              <span>Pada panel kontrol kiri, gunakan dropdown <em>Pilih Molekul</em>. Mulai dari H₂ (tunggal) → O₂ (rangkap 2) → N₂ (rangkap 3).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num blue">3</div>
+            <div class="pr-step-text">
+              <strong>Atur Mode Tampilan & Kecepatan</strong>
+              <span>Pilih <em>Proses Pembentukan</em> untuk melihat animasi tarik-menarik elektron. Atur kecepatan sesuai kebutuhan (Lambat/Normal/Cepat).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num blue">4</div>
+            <div class="pr-step-text">
+              <strong>Klik ▶ Mulai &amp; Amati Animasi</strong>
+              <span>Perhatikan bagaimana dua atom saling mendekat, elektron valensi bertumpang-tindih, dan ikatan terbentuk.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num blue">5</div>
+            <div class="pr-step-text">
+              <strong>Baca Panel Statistik</strong>
+              <span>Catat Jenis Ikatan, jumlah Pasangan e⁻, Polaritas, dan Notasi Lewis yang tampil di bagian bawah kanvas.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num blue">6</div>
+            <div class="pr-step-text">
+              <strong>Ulangi untuk Semua Molekul</strong>
+              <span>Ganti molekul (HCl, HF, H₂O, NH₃, CH₄, CO₂, F₂) dan ulangi langkah 3–5. Catat perbedaan tiap jenis ikatan di LKM.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Kanan: Info & Hasil -->
+      <div class="pr-info">
+        <div class="pr-info-hero" style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8,#3b82f6);">
+          <div class="h-label" style="color:#bfdbfe;">⚡ Percobaan 1</div>
+          <div class="h-title" style="color:#fff;">Pembentukan <span style="color:#c4b5fd;">Ikatan Kovalen</span></div>
+          <div class="h-desc" style="color:#bfdbfe;">Mengamati proses tumpang-tindih orbital elektron valensi antara dua atom nonlogam hingga terbentuk ikatan tunggal, rangkap, dan koordinasi.</div>
+        </div>
+        <div class="pr-tip" style="background:#eff6ff;border:1px solid #93c5fd;">
+          <div class="pt-label" style="color:#1d4ed8;">💡 Yang Perlu Diamati</div>
+          <ul>
+            <li style="color:#1e3a8a;">Jumlah pasangan elektron yang digunakan bersama (PEI)</li>
+            <li style="color:#1e3a8a;">Sisa elektron yang tidak berikatan (PEB)</li>
+            <li style="color:#1e3a8a;">Jenis ikatan: tunggal (–), rangkap dua (=), rangkap tiga (≡)</li>
+            <li style="color:#1e3a8a;">Simbol Lewis sebelum dan sesudah berikatan</li>
+          </ul>
+        </div>
+        <div class="pr-hasil">
+          <div class="ph-label">✅ Hasil yang Diharapkan</div>
+          <ul>
+            <li>Dapat menjelaskan mekanisme terbentuknya ikatan kovalen</li>
+            <li>Dapat membedakan kovalen tunggal, rangkap 2, dan rangkap 3</li>
+            <li>Mampu menuliskan notasi Lewis sebelum &amp; sesudah berikatan</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 2: Struktur Lewis ── -->
+    <div id="prpanel-2" class="pr-panel">
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci p">🔷</div><div class="ct">Struktur Lewis &amp; Notasi Molekul</div></div>
+        <div class="pr-steps-wrap" style="flex:1;overflow-y:auto;padding-right:4px;">
+          <div class="pr-step">
+            <div class="pr-step-num purple">1</div>
+            <div class="pr-step-text">
+              <strong>Buka Tab Simulasi → Percobaan 2</strong>
+              <span>Klik menu <em>Simulasi</em>, kemudian pilih tab <em>🔷 Percobaan 2</em>.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num purple">2</div>
+            <div class="pr-step-text">
+              <strong>Pilih Senyawa dari Dropdown</strong>
+              <span>Gunakan panel kiri untuk memilih senyawa. Mulai dari H₂ → HCl → H₂O → NH₃ → CH₄ → CO₂.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num purple">3</div>
+            <div class="pr-step-text">
+              <strong>Amati Struktur Lewis di Kanvas</strong>
+              <span>Perhatikan visualisasi titik elektron (•) untuk PEB dan garis (–) untuk PEI pada setiap atom.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num purple">4</div>
+            <div class="pr-step-text">
+              <strong>Baca Panel Info Senyawa</strong>
+              <span>Panel kiri menampilkan total elektron valensi, jenis ikatan, jumlah PEB, dan bentuk molekul. Salin ke LKM.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num purple">5</div>
+            <div class="pr-step-text">
+              <strong>Perhatikan Notasi Garis (Struktur Kimia)</strong>
+              <span>Kanvas menampilkan dua representasi: Struktur Lewis (titik elektron) dan Struktur Garis (rumus bangun).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num purple">6</div>
+            <div class="pr-step-text">
+              <strong>Catat Data Statistik Bawah</strong>
+              <span>Baca nilai di panel bawah: e⁻ Valensi, Jenis Ikatan, PEB, dan Bentuk. Isi tabel pengamatan di Lembar Kerja.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-info">
+        <div class="pr-info-hero" style="background:linear-gradient(135deg,#3b0764,#6d28d9,#8b5cf6);">
+          <div class="h-label" style="color:#ddd6fe;">🔷 Percobaan 2</div>
+          <div class="h-title" style="color:#fff;">Struktur <span style="color:#f0abfc;">Lewis</span> &amp; Notasi Garis</div>
+          <div class="h-desc" style="color:#ddd6fe;">Menggambarkan distribusi elektron valensi dalam senyawa kovalen menggunakan simbol titik Lewis dan notasi garis ikatan.</div>
+        </div>
+        <div class="pr-tip" style="background:#f5f3ff;border:1px solid #c4b5fd;">
+          <div class="pt-label" style="color:#5b21b6;">💡 Yang Perlu Diamati</div>
+          <ul>
+            <li style="color:#3b0764;">Total elektron valensi semua atom dalam molekul</li>
+            <li style="color:#3b0764;">Letak PEI (antara atom) dan PEB (pada atom)</li>
+            <li style="color:#3b0764;">Perbedaan tampilan Lewis vs. notasi garis</li>
+            <li style="color:#3b0764;">Bentuk geometri molekul (linear, sudut, tetrahedral)</li>
+          </ul>
+        </div>
+        <div class="pr-hasil">
+          <div class="ph-label">✅ Hasil yang Diharapkan</div>
+          <ul>
+            <li>Mampu menggambar Struktur Lewis minimal 6 senyawa</li>
+            <li>Dapat membedakan PEI dan PEB dalam setiap molekul</li>
+            <li>Memahami hubungan struktur Lewis dengan bentuk molekul</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 3: Polar & Nonpolar ── -->
+    <div id="prpanel-3" class="pr-panel">
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci y">🌀</div><div class="ct">Polaritas Ikatan Kovalen</div></div>
+        <div class="pr-steps-wrap" style="flex:1;overflow-y:auto;padding-right:4px;">
+          <div class="pr-step">
+            <div class="pr-step-num orange">1</div>
+            <div class="pr-step-text">
+              <strong>Buka Tab Simulasi → Percobaan 3</strong>
+              <span>Klik menu <em>Simulasi</em>, kemudian pilih tab <em>🌀 Percobaan 3</em>.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num orange">2</div>
+            <div class="pr-step-text">
+              <strong>Pilih Pasangan Atom A &amp; B</strong>
+              <span>Gunakan dua dropdown untuk memilih atom pertama dan atom kedua (H, C, N, O, F, Cl, S, Br).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num orange">3</div>
+            <div class="pr-step-text">
+              <strong>Klik "Analisis Polaritas"</strong>
+              <span>Sistem menghitung selisih elektronegativitas (ΔEN). Perhatikan panah dipol yang muncul menunjuk ke atom lebih elektronegatif.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num orange">4</div>
+            <div class="pr-step-text">
+              <strong>Amati Visualisasi Dipol (δ+ / δ−)</strong>
+              <span>Jika ΔEN &gt; 0: ikatan polar (panah kuning muncul). Jika ΔEN = 0: ikatan nonpolar (simetris).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num orange">5</div>
+            <div class="pr-step-text">
+              <strong>Baca Tabel ΔEN &amp; Klasifikasi</strong>
+              <span>Panel kanan menampilkan nilai EN masing-masing atom, nilai ΔEN, dan klasifikasi polar/nonpolar beserta alasannya.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num orange">6</div>
+            <div class="pr-step-text">
+              <strong>Coba Semua Kombinasi &amp; Catat</strong>
+              <span>Uji minimal 5 pasangan atom berbeda. Isi kolom ΔEN dan jenis ikatan pada tabel pengamatan di LKM.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-info">
+        <div class="pr-info-hero" style="background:linear-gradient(135deg,#78350f,#d97706,#fbbf24);">
+          <div class="h-label" style="color:#fef3c7;">🌀 Percobaan 3</div>
+          <div class="h-title" style="color:#fff;">Ikatan <span style="color:#fde68a;">Polar</span> &amp; Nonpolar</div>
+          <div class="h-desc" style="color:#fef3c7;">Menganalisis perbedaan ikatan kovalen polar dan nonpolar berdasarkan selisih elektronegativitas (ΔEN) antar atom pembentuk ikatan.</div>
+        </div>
+        <div class="pr-tip" style="background:#fffbeb;border:1px solid #fcd34d;">
+          <div class="pt-label" style="color:#92400e;">💡 Yang Perlu Diamati</div>
+          <ul>
+            <li style="color:#78350f;">Nilai elektronegativitas (EN) tiap atom pada skala Pauling</li>
+            <li style="color:#78350f;">Selisih ΔEN = EN(atom lebih elektronegatif) − EN(atom lain)</li>
+            <li style="color:#78350f;">Arah panah dipol selalu menuju atom lebih elektronegatif</li>
+            <li style="color:#78350f;">Batas polar/nonpolar: ΔEN &lt; 0,5 → nonpolar; ΔEN ≥ 0,5 → polar</li>
+          </ul>
+        </div>
+        <div class="pr-hasil">
+          <div class="ph-label">✅ Hasil yang Diharapkan</div>
+          <ul>
+            <li>Dapat membedakan ikatan polar dan nonpolar dari nilai ΔEN</li>
+            <li>Mampu menentukan arah momen dipol suatu ikatan</li>
+            <li>Dapat mengurutkan atom berdasarkan elektronegativitas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 4: Rumus Kimia ── -->
+    <div id="prpanel-4" class="pr-panel">
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci g">🔬</div><div class="ct">Prediksi Rumus Kimia Senyawa</div></div>
+        <div class="pr-steps-wrap" style="flex:1;overflow-y:auto;padding-right:4px;">
+          <div class="pr-step">
+            <div class="pr-step-num green">1</div>
+            <div class="pr-step-text">
+              <strong>Buka Tab Simulasi → Percobaan 4</strong>
+              <span>Klik menu <em>Simulasi</em>, kemudian pilih tab <em>🔬 Percobaan 4</em>.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num green">2</div>
+            <div class="pr-step-text">
+              <strong>Pilih Atom A dan Atom B</strong>
+              <span>Pada panel kiri, pilih dua atom nonlogam berbeda dari dropdown Atom A dan Atom B (H, C, N, O, F, Cl).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num green">3</div>
+            <div class="pr-step-text">
+              <strong>Klik "Prediksi Rumus"</strong>
+              <span>Sistem menghitung kebutuhan elektron tiap atom dan menentukan rasio paling sederhana (disederhanakan dengan GCD).</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num green">4</div>
+            <div class="pr-step-text">
+              <strong>Amati Visualisasi Molekul di Kanvas</strong>
+              <span>Perhatikan susunan atom (bola berwarna) dan garis ikatan. Rumus kimia ditampilkan di bawah kanvas.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num green">5</div>
+            <div class="pr-step-text">
+              <strong>Baca Panel Hasil Perhitungan</strong>
+              <span>Panel menampilkan: jumlah atom tiap unsur, total PEI, dan rumus kimia akhir disertai penjelasan rasio.</span>
+            </div>
+          </div>
+          <div class="pr-step">
+            <div class="pr-step-num green">6</div>
+            <div class="pr-step-text">
+              <strong>Uji Berbagai Pasangan &amp; Verifikasi</strong>
+              <span>Coba kombinasi C–H, N–H, O–H, C–O, N–O, C–Cl. Cocokkan rumus hasil prediksi dengan rumus kimia yang sudah dikenal.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pr-info">
+        <div class="pr-info-hero" style="background:linear-gradient(135deg,#064e3b,#059669,#34d399);">
+          <div class="h-label" style="color:#d1fae5;">🔬 Percobaan 4</div>
+          <div class="h-title" style="color:#fff;">Prediksi <span style="color:#6ee7b7;">Rumus Kimia</span> Senyawa</div>
+          <div class="h-desc" style="color:#d1fae5;">Memprediksi rumus kimia senyawa kovalen berdasarkan elektron valensi dan kebutuhan elektron tiap atom nonlogam untuk mencapai oktet.</div>
+        </div>
+        <div class="pr-tip" style="background:#f0fdf4;border:1px solid #86efac;">
+          <div class="pt-label" style="color:#166534;">💡 Yang Perlu Diamati</div>
+          <ul>
+            <li style="color:#14532d;">Elektron valensi atom A dan atom B</li>
+            <li style="color:#14532d;">Jumlah elektron yang dibutuhkan masing-masing atom (8 − EV)</li>
+            <li style="color:#14532d;">Cara menentukan rasio atom: kebutuhan A : kebutuhan B disederhanakan</li>
+            <li style="color:#14532d;">Penulisan rumus: unsur lebih sedikit dituliskan terlebih dahulu</li>
+          </ul>
+        </div>
+        <div class="pr-hasil">
+          <div class="ph-label">✅ Hasil yang Diharapkan</div>
+          <ul>
+            <li>Mampu memprediksi rumus kimia senyawa dari dua unsur nonlogam</li>
+            <li>Dapat menentukan rasio atom berdasarkan prinsip oktet</li>
+            <li>Memahami hubungan elektron valensi dengan rumus senyawa</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<div id="page-simulasi" class="page">
+  <div style="flex:1;display:flex;flex-direction:column;padding:7px 11px;gap:5px;overflow:hidden;min-height:0;">
+
+    <!-- Tab header -->
+    <div style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:8px;padding:5px 10px;flex-shrink:0;border:1px solid rgba(99,102,241,.3);display:flex;align-items:center;gap:4px;overflow-x:auto;">
+      <button class="sim-tab active" id="simtab-1" onclick="showSimTab(1)">⚡ Percobaan 1</button>
+      <button class="sim-tab" id="simtab-2" onclick="showSimTab(2)">🔷 Percobaan 2</button>
+      <button class="sim-tab" id="simtab-3" onclick="showSimTab(3)">🌀 Percobaan 3</button>
+      <button class="sim-tab" id="simtab-4" onclick="showSimTab(4)">🔬 Percobaan 4</button>
+    </div>
+
+    <!-- PERCOBAAN 1: Proses Pembentukan Ikatan Kovalen -->
+    <div id="simpanel-1" style="flex:1;display:flex;flex-direction:column;gap:5px;overflow:hidden;min-height:0;">
+      <div style="font-size:clamp(9px,0.95vw,10.5px);color:#94a3b8;flex-shrink:0;padding:0 2px;">Menjelaskan proses pembentukan ikatan kovalen tunggal, rangkap dua, dan rangkap tiga antara atom-atom nonlogam.</div>
+      <div class="sim-wrap" style="flex:1;min-height:0;">
+        <div class="ctrl-panel">
+          <h3>🔧 Kontrol</h3>
+          <div class="cg">
+            <label>Pilih Molekul</label>
+            <select id="simMolecule" onchange="updateSimUI()">
+              <option value="H2">H₂ — Hidrogen</option>
+              <option value="HCl">HCl — Asam Klorida</option>
+              <option value="HF">HF — Asam Fluorida</option>
+              <option value="H2O">H₂O — Air</option>
+              <option value="NH3">NH₃ — Amonia</option>
+              <option value="CH4">CH₄ — Metana</option>
+              <option value="CO2">CO₂ — Karbon Dioksida</option>
+              <option value="N2">N₂ — Nitrogen</option>
+              <option value="O2">O₂ — Oksigen</option>
+              <option value="F2">F₂ — Fluorin</option>
+            </select>
+          </div>
+          <div class="cg">
+            <label>Mode Tampilan</label>
+            <select id="simMode">
+              <option value="formation">Proses Pembentukan</option>
+              <option value="molecule">Molekul Stabil</option>
+            </select>
+          </div>
+          <div class="cg">
+            <label>Kecepatan</label>
+            <select id="simSpeed">
+              <option value="0.5">Lambat</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Cepat</option>
+            </select>
+          </div>
+          <button class="btn btn-start" id="btnStart" onclick="startSim()">▶ Mulai</button>
+          <button class="btn btn-stop" id="btnStop" onclick="stopSim()" disabled>⏸ Hentikan</button>
+          <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+          <div id="simTip" class="tipinfo"></div>
+        </div>
+        <div class="sim-right">
+          <div class="aquarium" style="flex:2;">
+            <h3>🔬 Proses Pembentukan Ikatan — <span id="simTitle">H₂</span></h3>
+            <canvas id="simCanvas" style="flex:1;min-height:0;"></canvas>
+          </div>
+          <div class="statsrow" style="flex-shrink:0;">
+            <div class="sbox"><span class="sv" id="svJenis">—</span><span class="sl">Jenis</span></div>
+            <div class="sbox"><span class="sv" id="svIkatan">0</span><span class="sl">Pasang e⁻</span></div>
+            <div class="sbox"><span class="sv" id="svPolar">—</span><span class="sl">Polaritas</span></div>
+            <div class="sbox"><span class="sv" id="svLewis">—</span><span class="sl">Notasi Lewis</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERCOBAAN 2: Struktur Lewis & Molekul -->
+    <div id="simpanel-2" style="flex:1;display:none;flex-direction:column;gap:5px;overflow:hidden;min-height:0;">
+      <div style="font-size:clamp(9px,0.95vw,10.5px);color:#94a3b8;flex-shrink:0;padding:0 2px;">Menggambarkan Struktur Lewis dan Struktur Molekul (garis) dari berbagai senyawa kovalen.</div>
+      <div style="flex:1;display:flex;gap:7px;min-height:0;overflow:hidden;">
+        <!-- Kontrol kiri -->
+        <div class="ctrl-panel" style="width:180px;flex-shrink:0;">
+          <h3>🔷 Pilih Senyawa</h3>
+          <div class="cg">
+            <label>Senyawa</label>
+            <select id="lewisSelect" onchange="renderLewis()">
+              <option value="H2">H₂</option>
+              <option value="Cl2">Cl₂</option>
+              <option value="HCl">HCl</option>
+              <option value="H2O">H₂O</option>
+              <option value="NH3">NH₃</option>
+              <option value="CH4">CH₄</option>
+              <option value="CO2">CO₂</option>
+              <option value="N2">N₂</option>
+              <option value="O2">O₂</option>
+              <option value="F2">F₂</option>
+              <option value="HF">HF</option>
+              <option value="CCl4">CCl₄</option>
+            </select>
+          </div>
+          <div id="lewisInfo" style="margin-top:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:7px 9px;font-size:clamp(9px,0.95vw,10.5px);color:#1e40af;line-height:1.6;"></div>
+        </div>
+        <!-- Area gambar -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div class="aquarium" style="flex:1;">
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:var(--acc);margin-bottom:5px;">🔷 Struktur Lewis &amp; Notasi Garis — <span id="lewisTitle">H₂</span></h3>
+            <canvas id="lewisCanvas" style="width:100%;flex:1;min-height:0;display:block;border-radius:7px;background:linear-gradient(135deg,#0a0f2e,#0f172a);border:1px solid rgba(99,102,241,.25);"></canvas>
+          </div>
+          <div class="statsrow" style="flex-shrink:0;">
+            <div class="sbox"><span class="sv" id="lsEV" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">e⁻ Valensi</span></div>
+            <div class="sbox"><span class="sv" id="lsIkatan" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Jenis Ikatan</span></div>
+            <div class="sbox"><span class="sv" id="lsPEB" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">PEB</span></div>
+            <div class="sbox"><span class="sv" id="lsBentuk" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Bentuk</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERCOBAAN 3: Polar & Nonpolar -->
+    <div id="simpanel-3" style="flex:1;display:none;flex-direction:column;gap:5px;overflow:hidden;min-height:0;">
+      <div style="font-size:clamp(9px,0.95vw,10.5px);color:#94a3b8;flex-shrink:0;padding:0 2px;">Membedakan ikatan kovalen polar dan nonpolar berdasarkan elektronegativitas dan bentuk molekul.</div>
+      <div style="flex:1;display:flex;gap:7px;min-height:0;overflow:hidden;">
+        <div class="ctrl-panel" style="width:185px;flex-shrink:0;">
+          <h3>🌀 Pilih Pasangan</h3>
+          <div class="cg">
+            <label>Molekul</label>
+            <select id="polarSelect" onchange="renderPolar()">
+              <option value="H2">H₂ — H–H</option>
+              <option value="HF">HF — H–F</option>
+              <option value="HCl">HCl — H–Cl</option>
+              <option value="H2O">H₂O</option>
+              <option value="CO2">CO₂</option>
+              <option value="NH3">NH₃</option>
+              <option value="CH4">CH₄</option>
+              <option value="F2">F₂</option>
+              <option value="N2">N₂</option>
+            </select>
+          </div>
+          <div id="polarSummary" style="margin-top:6px;background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:7px 9px;font-size:clamp(9px,0.95vw,10.5px);color:#92400e;line-height:1.6;"></div>
+          <div style="margin-top:6px;background:#f0fdf4;border:1px solid #86efac;border-radius:7px;padding:6px 9px;font-size:clamp(8.5px,0.9vw,9.5px);color:#166534;line-height:1.55;">
+            <strong>Aturan:</strong><br>
+            ΔEN &lt; 0,4 → Nonpolar<br>
+            0,4 ≤ ΔEN &lt; 1,7 → Polar<br>
+            ΔEN ≥ 1,7 → Ion
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div class="aquarium" style="flex:1;">
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:var(--acc);margin-bottom:5px;">🌀 Visualisasi Polaritas — <span id="polarTitle">H₂</span></h3>
+            <canvas id="polarCanvas" style="width:100%;flex:1;min-height:0;display:block;border-radius:7px;background:linear-gradient(135deg,#0a0f2e,#0f172a);border:1px solid rgba(99,102,241,.25);"></canvas>
+          </div>
+          <div class="statsrow" style="flex-shrink:0;">
+            <div class="sbox"><span class="sv" id="psEN1" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">EN Atom 1</span></div>
+            <div class="sbox"><span class="sv" id="psEN2" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">EN Atom 2</span></div>
+            <div class="sbox"><span class="sv" id="psDelta" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">ΔEN</span></div>
+            <div class="sbox"><span class="sv" id="psTipe" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Tipe</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERCOBAAN 4: Prediksi Rumus Kimia -->
+    <div id="simpanel-4" style="flex:1;display:none;flex-direction:column;gap:5px;overflow:hidden;min-height:0;">
+      <div style="font-size:clamp(9px,0.95vw,10.5px);color:#94a3b8;flex-shrink:0;padding:0 2px;">Memprediksi rumus kimia senyawa yang terbentuk dari dua unsur nonlogam berdasarkan elektron valensi.</div>
+      <div style="flex:1;display:flex;gap:7px;min-height:0;overflow:hidden;">
+        <div class="ctrl-panel" style="width:185px;flex-shrink:0;">
+          <h3>🔬 Pilih Atom</h3>
+          <div class="cg">
+            <label>Atom A</label>
+            <select id="rumusA" onchange="renderRumus()">
+              <option value="H">H (EV=1)</option>
+              <option value="C">C (EV=4)</option>
+              <option value="N">N (EV=5)</option>
+              <option value="O">O (EV=6)</option>
+              <option value="F">F (EV=7)</option>
+              <option value="Cl">Cl (EV=7)</option>
+            </select>
+          </div>
+          <div class="cg">
+            <label>Atom B</label>
+            <select id="rumusB" onchange="renderRumus()">
+              <option value="H">H (EV=1)</option>
+              <option value="C">C (EV=4)</option>
+              <option value="N" selected>N (EV=5)</option>
+              <option value="O">O (EV=6)</option>
+              <option value="F">F (EV=7)</option>
+              <option value="Cl">Cl (EV=7)</option>
+            </select>
+          </div>
+          <div id="rumusResult" style="margin-top:6px;background:#ede9fe;border:1px solid #c4b5fd;border-radius:7px;padding:7px 9px;font-size:clamp(9px,0.95vw,10.5px);color:#3730a3;line-height:1.7;font-weight:500;"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;">
+          <div class="aquarium" style="flex:1;">
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:700;color:var(--acc);margin-bottom:5px;">🔬 Prediksi Rumus Kimia Senyawa</h3>
+            <canvas id="rumusCanvas" style="width:100%;flex:1;min-height:0;display:block;border-radius:7px;background:linear-gradient(135deg,#0a0f2e,#0f172a);border:1px solid rgba(99,102,241,.25);"></canvas>
+          </div>
+          <div class="statsrow" style="flex-shrink:0;">
+            <div class="sbox"><span class="sv" id="rrAtomA" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Atom A</span></div>
+            <div class="sbox"><span class="sv" id="rrAtomB" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Atom B</span></div>
+            <div class="sbox"><span class="sv" id="rrRumus" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Rumus</span></div>
+            <div class="sbox"><span class="sv" id="rrIkatan" style="font-size:clamp(10px,1.1vw,13px);">—</span><span class="sl">Jml Ikatan</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== LEMBAR KERJA ===== -->
+<div id="page-lkm" class="page">
+  <div class="lk-fit">
+    <div class="lk-top">
+      <div class="lk-hero">
+        <div class="h-label">📝 LKM</div>
+        <div class="h-title">Lembar Kerja <span>Murid</span></div>
+      </div>
+      <div class="lk-identitas">
+        <div><label>Nama Murid</label><input class="lk-input" id="lkNama" placeholder="Nama lengkap…"></div>
+        <div><label>Kelas</label><input class="lk-input" id="lkKelas" placeholder="X IPA 1…"></div>
+        <div><label>Kelompok</label><input class="lk-input" id="lkKelompok" placeholder="Kel. 1…"></div>
+        <div><label>Tanggal</label><input class="lk-input" id="lkTanggal" type="date"></div>
+      </div>
+    </div>
+    <div class="lk-main">
+      <div class="lk-col-tables">
+        <div class="lk-card">
+          <div class="lk-card-head">
+            <div class="ci b" style="font-size:10px;">📊</div>
+            <div class="ct">Aktivitas 1 — Identifikasi Jenis Ikatan Kovalen</div>
+          </div>
+          <div class="lk-table-scroll">
+            <table class="lk-table">
+              <thead><tr><th>No</th><th>Molekul</th><th>Atom Penyusun</th><th>Jml Pasang EV</th><th>Jenis Ikatan</th><th>Polar/Non</th></tr></thead>
+              <tbody id="lkTable1">
+                <tr><td>1</td><td>H₂</td><td>H–H</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+                <tr><td>2</td><td>H₂O</td><td>H–O–H</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+                <tr><td>3</td><td>CO₂</td><td>O=C=O</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+                <tr><td>4</td><td>NH₃</td><td>N–3H</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+                <tr><td>5</td><td>N₂</td><td>N≡N</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+                <tr><td>6</td><td>CH₄</td><td>C–4H</td><td><input placeholder="…"></td><td><select><option>—</option><option>Tunggal</option><option>Rangkap 2</option><option>Rangkap 3</option><option>Koordinasi</option></select></td><td><select><option>—</option><option>Polar</option><option>Nonpolar</option></select></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="lk-col-questions">
+        <div class="lk-card" style="flex:2;">
+          <div class="lk-card-head">
+            <div class="ci p" style="font-size:10px;">❓</div>
+            <div class="ct">Pertanyaan Analisis</div>
+          </div>
+          <div class="lk-qlist">
+            <div class="lk-qitem">
+              <div class="lk-qtext">1. Jelaskan mengapa ikatan kovalen terjadi antara sesama atom nonlogam!</div>
+              <textarea class="disc-area lk-qarea" id="lkA1" placeholder="Jawaban…"></textarea>
+            </div>
+            <div class="lk-qitem">
+              <div class="lk-qtext">2. Apa perbedaan ikatan kovalen polar dan nonpolar? Berikan contoh masing-masing!</div>
+              <textarea class="disc-area lk-qarea" id="lkA2" placeholder="Jawaban…"></textarea>
+            </div>
+            <div class="lk-qitem">
+              <div class="lk-qtext">3. Tuliskan struktur Lewis molekul H₂O dan jelaskan bagaimana oktet terpenuhi!</div>
+              <textarea class="disc-area lk-qarea" id="lkA3" placeholder="Jawaban…"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="lk-card" style="flex:none;max-height:85px;">
+          <div class="lk-card-head" style="margin-bottom:3px;">
+            <div class="ci g" style="font-size:10px;">✍️</div>
+            <div class="ct">Kesimpulan</div>
+          </div>
+          <textarea class="disc-area" id="lkKesimpulan" style="flex:1;resize:none;font-size:clamp(10px,1.05vw,11px);padding:4px 7px;" placeholder="Kesimpulan praktikum…"></textarea>
+        </div>
+        <div class="lk-actions">
+          <button class="dl-btn" onclick="downloadLKM()">⬇️ Unduh LKM</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KUIS ===== -->
+<div id="page-kuis" class="page">
+  <div style="flex:1;display:flex;flex-direction:column;padding:7px 11px;gap:6px;overflow:hidden;min-height:0;">
+    <div class="quiz-nav-header">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.1vw,12px);font-weight:700;color:var(--acc);">📝 KUIS IKATAN KOVALEN</div>
+      <div class="qprog" id="qprog"></div>
+    </div>
+    <div class="q-card">
+      <div class="qnum" id="qnum">SOAL 01</div>
+      <span class="qtype-badge badge-mc" id="qbadge">Pilihan Ganda</span>
+      <div class="qtext" id="qtext"></div>
+      <ul class="opts" id="qopts"></ul>
+      <div class="qfb" id="qfb"></div>
+      <div class="quiz-foot">
+        <button class="btn-qnav btn-prev" id="btnPrev" onclick="qNav(-1)">‹ Sebelumnya</button>
+        <button class="btn-qnav btn-next" id="btnNext" onclick="qNav(1)">Selanjutnya ›</button>
+        <button class="btn-qnav btn-submit-q" id="btnSubmit" onclick="submitQ()" style="display:none;">✓ Kumpulkan</button>
+        <button class="btn-qnav btn-reset-q" onclick="resetQ()">↺ Ulang</button>
+        <span class="qcounter" id="qcounter">1/10</span>
+      </div>
+    </div>
+  </div>
+  <div class="score-overlay" id="scoreOverlay">
+    <div class="score-box">
+      <div style="font-size:clamp(10.5px,1.1vw,12px);color:#4f46e5;font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:7px;">📝 HASIL KUIS</div>
+      <div class="score-big" id="scoreBig">0</div>
+      <div class="score-pct">/ 100</div>
+      <div class="score-sub" id="scoreSub"></div>
+      <div class="score-grade" id="scoreGrade"></div>
+      <div class="score-actions">
+        <button class="btn-score btn-review" onclick="document.getElementById('scoreOverlay').classList.remove('on')">📋 Review</button>
+        <button class="btn-score btn-ulangi" onclick="resetQ();document.getElementById('scoreOverlay').classList.remove('on');">↺ Ulangi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<script>
+// ─── NAV ───
+function show(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='simulasi'){setTimeout(()=>{resizeSim();updateSimUI();showSimTab(1);},60);}
+  if(id==='lkm'){document.getElementById('lkTanggal').value=new Date().toISOString().split('T')[0];}
+}
+function toggleNav(){document.getElementById('mainNav').classList.toggle('open');}
+function closeNav(){document.getElementById('mainNav').classList.remove('open');}
+
+// ─── MOLECULE DATA ───
+const MOL_DATA={
+  H2:{title:'H₂',fullTitle:'H₂ — Hidrogen',type:'Kovalen Tunggal',polar:'Nonpolar',bonds:1,lewis:'H–H',
+    atomsDef:[{l:'H',c:'#9ca3af',r:18},{l:'H',c:'#9ca3af',r:18}],layout:'linear',
+    tip:'H₂: 2 atom H berbagi 1 pasang elektron. Keelektronegatifan sama → nonpolar.'},
+  HCl:{title:'HCl',fullTitle:'HCl — Asam Klorida',type:'Kovalen Tunggal Polar',polar:'Polar',bonds:1,lewis:'H–Cl',
+    atomsDef:[{l:'H',c:'#9ca3af',r:18},{l:'Cl',c:'#fbbf24',r:26}],layout:'linear',
+    tip:'HCl: Cl jauh lebih elektronegatif → elektron tertarik ke Cl → polar (δ+H–Clδ-).'},
+  HF:{title:'HF',fullTitle:'HF — Asam Fluorida',type:'Kovalen Tunggal Polar',polar:'Polar',bonds:1,lewis:'H–F',
+    atomsDef:[{l:'H',c:'#9ca3af',r:18},{l:'F',c:'#a78bfa',r:22}],layout:'linear',
+    tip:'HF: F paling elektronegatif (3,98) → momen dipol sangat besar → polar kuat.'},
+  H2O:{title:'H₂O',fullTitle:'H₂O — Air',type:'Kovalen Tunggal ×2',polar:'Polar',bonds:1,lewis:'H–O–H',
+    atomsDef:[{l:'H',c:'#9ca3af',r:16},{l:'O',c:'#ef4444',r:22},{l:'H',c:'#9ca3af',r:16}],layout:'bent',
+    tip:'H₂O: Bentuk tekukan (bent) 104,5° karena 2 PEB pada O. Polar: momen dipol H–O tidak saling meniadakan.'},
+  NH3:{title:'NH₃',fullTitle:'NH₃ — Amonia',type:'Kovalen Tunggal ×3',polar:'Polar',bonds:1,lewis:'N(–H)₃',
+    atomsDef:[{l:'H',c:'#9ca3af',r:16},{l:'N',c:'#60a5fa',r:22},{l:'H',c:'#9ca3af',r:16},{l:'H',c:'#9ca3af',r:16}],layout:'trigonal_pyramidal',
+    tip:'NH₃: N berikatan dengan 3 atom H. 1 PEB pada N → bentuk piramida trigonal → polar.'},
+  CH4:{title:'CH₄',fullTitle:'CH₄ — Metana',type:'Kovalen Tunggal ×4',polar:'Nonpolar',bonds:1,lewis:'H–C(–H)₃',
+    atomsDef:[{l:'C',c:'#9ca3af',r:22},{l:'H',c:'#9ca3af',r:16},{l:'H',c:'#9ca3af',r:16},{l:'H',c:'#9ca3af',r:16},{l:'H',c:'#9ca3af',r:16}],layout:'tetrahedral',
+    tip:'CH₄: Geometri tetrahedral simetris → momen dipol 4 ikatan C–H saling meniadakan → nonpolar.'},
+  CO2:{title:'CO₂',fullTitle:'CO₂ — Karbon Dioksida',type:'Kovalen Rangkap Dua ×2',polar:'Nonpolar',bonds:2,lewis:'O=C=O',
+    atomsDef:[{l:'O',c:'#ef4444',r:22},{l:'C',c:'#9ca3af',r:20},{l:'O',c:'#ef4444',r:22}],layout:'linear',
+    tip:'CO₂: Molekul linear simetris → 2 momen dipol C=O berlawanan arah saling meniadakan → nonpolar.'},
+  N2:{title:'N₂',fullTitle:'N₂ — Nitrogen',type:'Kovalen Rangkap Tiga',polar:'Nonpolar',bonds:3,lewis:'N≡N',
+    atomsDef:[{l:'N',c:'#60a5fa',r:22},{l:'N',c:'#60a5fa',r:22}],layout:'linear',
+    tip:'N₂: ikatan rangkap tiga (N≡N). Sangat kuat (945 kJ/mol). Nonpolar karena atom identik.'},
+  O2:{title:'O₂',fullTitle:'O₂ — Oksigen',type:'Kovalen Rangkap Dua',polar:'Nonpolar',bonds:2,lewis:'O=O',
+    atomsDef:[{l:'O',c:'#ef4444',r:22},{l:'O',c:'#ef4444',r:22}],layout:'linear',
+    tip:'O₂: 2 atom O berbagi 2 pasang elektron → rangkap dua. Atom identik → nonpolar. Energi ikatan 498 kJ/mol.'},
+  F2:{title:'F₂',fullTitle:'F₂ — Fluorin',type:'Kovalen Tunggal',polar:'Nonpolar',bonds:1,lewis:'F–F',
+    atomsDef:[{l:'F',c:'#a78bfa',r:22},{l:'F',c:'#a78bfa',r:22}],layout:'linear',
+    tip:'F₂: 2 atom F berbagi 1 pasang elektron. Nonpolar karena atom identik.'},
+};
+
+// ─── LAYOUT POSITIONS ───
+function getPositions(layout,n,W,H,scale){
+  const cx=W/2,cy=H/2,sp=Math.min(W*0.24,85)*scale;
+  if(layout==='linear'){
+    const pos=[];
+    for(let i=0;i<n;i++) pos.push({x:cx+(i-(n-1)/2)*sp,y:cy});
+    return pos;
+  }
+  if(layout==='bent'){
+    const angle=104.5*Math.PI/180;
+    return[
+      {x:cx-sp*Math.sin(angle/2),y:cy+sp*Math.cos(angle/2)*0.6},
+      {x:cx,y:cy-sp*0.25},
+      {x:cx+sp*Math.sin(angle/2),y:cy+sp*Math.cos(angle/2)*0.6}
+    ];
+  }
+  if(layout==='trigonal_pyramidal'){
+    const r=sp*0.88;
+    return[
+      {x:cx-r*0.85,y:cy+r*0.6},
+      {x:cx,y:cy-r*0.7},
+      {x:cx+r*0.85,y:cy+r*0.6},
+      {x:cx,y:cy+r*0.9}
+    ];
+  }
+  if(layout==='tetrahedral'){
+    const r=sp*0.92;
+    return[
+      {x:cx,y:cy},
+      {x:cx,y:cy-r},
+      {x:cx+r*0.95,y:cy+r*0.4},
+      {x:cx-r*0.95,y:cy+r*0.4},
+      {x:cx,y:cy+r*0.88}
+    ];
+  }
+  const pos=[];
+  for(let i=0;i<n;i++) pos.push({x:cx+(i-(n-1)/2)*sp,y:cy});
+  return pos;
+}
+
+function getBonds(mol){
+  if(mol==='H2'||mol==='HCl'||mol==='HF'||mol==='N2'||mol==='O2'||mol==='F2') return[[0,1]];
+  if(mol==='H2O') return[[0,1],[1,2]];
+  if(mol==='NH3') return[[1,0],[1,2],[1,3]];
+  if(mol==='CH4') return[[0,1],[0,2],[0,3],[0,4]];
+  if(mol==='CO2') return[[0,1],[1,2]];
+  return[[0,1]];
+}
+
+// ─── CANVAS ───
+let simAnim=null,simT=0,simRunning=false;
+const simCanvas=document.getElementById('simCanvas');
+const simCtx=simCanvas.getContext('2d');
+
+function resizeSim(){
+  const p=simCanvas.parentElement;
+  simCanvas.width=p.clientWidth-4;
+  simCanvas.height=Math.max(120,p.clientHeight-40);
+}
+
+function drawGlowAtomSim(ctx,x,y,r,color,label,t){
+  const pulse=0.85+0.15*Math.sin(t*0.07);
+  const glow=ctx.createRadialGradient(x,y,0,x,y,r*2.3*pulse);
+  glow.addColorStop(0,color+'66');glow.addColorStop(0.5,color+'22');glow.addColorStop(1,color+'00');
+  ctx.beginPath();ctx.arc(x,y,r*2.3*pulse,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+  const gr=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);
+  gr.addColorStop(0,'#ffffff55');gr.addColorStop(.4,color+'ee');gr.addColorStop(1,color+'99');
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+  ctx.strokeStyle=color+'cc';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`bold ${r>18?11:9}px 'Space Grotesk',sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y);
+}
+
+function drawGlowBondSim(ctx,x1,y1,x2,y2,count,t){
+  const offsets=count===1?[0]:count===2?[-5,5]:[-8,0,8];
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  const px=-dy/len,py=dx/len;
+  offsets.forEach(off=>{
+    const ox=px*off,oy=py*off;
+    ctx.beginPath();ctx.moveTo(x1+ox,y1+oy);ctx.lineTo(x2+ox,y2+oy);
+    ctx.strokeStyle='rgba(99,102,241,0.28)';ctx.lineWidth=3;ctx.stroke();
+    for(let p=0;p<5;p++){
+      const phase=(t*0.03+p/5)%1;
+      const ex=x1+ox+(x2+ox-(x1+ox))*phase;
+      const ey=y1+oy+(y2+oy-(y1+oy))*phase;
+      const bright=0.6+0.4*Math.sin(phase*Math.PI);
+      const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,6);
+      eg.addColorStop(0,`rgba(250,230,0,${bright})`);eg.addColorStop(.5,`rgba(250,200,50,${bright*.6})`);eg.addColorStop(1,'rgba(250,200,50,0)');
+      ctx.beginPath();ctx.arc(ex,ey,6,0,Math.PI*2);ctx.fillStyle=eg;ctx.fill();
+      ctx.beginPath();ctx.arc(ex,ey,2.5,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,200,${bright})`;ctx.fill();
+    }
+  });
+}
+
+function drawSceneFull(mol,t,W,H){
+  const d=MOL_DATA[mol];if(!d)return;
+  const bg=simCtx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#020617');bg.addColorStop(1,'#0f0f2e');
+  simCtx.fillStyle=bg;simCtx.fillRect(0,0,W,H);
+  for(let gx=0;gx<W;gx+=30){for(let gy=0;gy<H;gy+=30){
+    simCtx.beginPath();simCtx.arc(gx,gy,0.7,0,Math.PI*2);
+    simCtx.fillStyle='rgba(99,102,241,0.07)';simCtx.fill();
+  }}
+  const atoms=d.atomsDef;const bonds=getBonds(mol);
+  const pos=getPositions(d.layout,atoms.length,W,H,1);
+  bonds.forEach(b=>{drawGlowBondSim(simCtx,pos[b[0]].x,pos[b[0]].y,pos[b[1]].x,pos[b[1]].y,d.bonds,t);});
+  atoms.forEach((a,i)=>{drawGlowAtomSim(simCtx,pos[i].x,pos[i].y,a.r,a.c,a.l,t);});
+  simCtx.fillStyle='rgba(165,180,252,0.85)';
+  simCtx.font="bold 12px 'Space Grotesk',sans-serif";
+  simCtx.textAlign='center';simCtx.textBaseline='top';
+  simCtx.fillText(d.fullTitle,W/2,10);
+}
+
+function drawFormationApproach(mol,prog,t,W,H){
+  const d=MOL_DATA[mol];if(!d)return;
+  const atoms=d.atomsDef;
+  const finalPos=getPositions(d.layout,atoms.length,W,H,1);
+  const ease=1-Math.pow(1-prog,2);
+  atoms.forEach((a,i)=>{
+    const fp=finalPos[i];
+    const startX=(i<atoms.length/2)?-60:W+60;
+    const startY=H/2;
+    const cx=startX+(fp.x-startX)*ease;
+    const cy=startY+(fp.y-startY)*ease;
+    const ev={H:1,O:6,N:5,C:4,F:7,Cl:7}[a.l]||1;
+    for(let e=0;e<Math.min(ev,4);e++){
+      const ang=t*0.05*(e%2===0?1:-1)+e*(Math.PI*2/4);
+      const or=a.r*2;
+      const ex2=cx+Math.cos(ang)*or,ey2=cy+Math.sin(ang)*or*.5;
+      const eg=simCtx.createRadialGradient(ex2,ey2,0,ex2,ey2,5);
+      eg.addColorStop(0,'rgba(250,230,0,0.9)');eg.addColorStop(1,'rgba(250,180,0,0)');
+      simCtx.beginPath();simCtx.arc(ex2,ey2,5,0,Math.PI*2);simCtx.fillStyle=eg;simCtx.fill();
+      simCtx.beginPath();simCtx.arc(ex2,ey2,2,0,Math.PI*2);simCtx.fillStyle='#fef08a';simCtx.fill();
+    }
+    drawGlowAtomSim(simCtx,cx,cy,a.r,a.c,a.l,t);
+  });
+}
+
+function drawFormationBonding(mol,prog,t,W,H){
+  const d=MOL_DATA[mol];
+  const atoms=d.atomsDef;
+  const pos=getPositions(d.layout,atoms.length,W,H,1);
+  const bonds=getBonds(mol);
+  simCtx.save();simCtx.globalAlpha=prog;
+  bonds.forEach(b=>{drawGlowBondSim(simCtx,pos[b[0]].x,pos[b[0]].y,pos[b[1]].x,pos[b[1]].y,d.bonds,t);});
+  simCtx.restore();
+  if(prog<0.7){
+    bonds.forEach(b=>{
+      const ph=(t*0.06)%1;
+      const jx=pos[b[0]].x+(pos[b[1]].x-pos[b[0]].x)*ph;
+      const jy=pos[b[0]].y-30*Math.sin(ph*Math.PI);
+      const eg=simCtx.createRadialGradient(jx,jy,0,jx,jy,8);
+      eg.addColorStop(0,'rgba(255,230,0,0.9)');eg.addColorStop(1,'rgba(255,180,0,0)');
+      simCtx.beginPath();simCtx.arc(jx,jy,8,0,Math.PI*2);simCtx.fillStyle=eg;simCtx.fill();
+    });
+  }
+  atoms.forEach((a,i)=>drawGlowAtomSim(simCtx,pos[i].x,pos[i].y,a.r,a.c,a.l,t));
+}
+
+function drawPhaseLabel(W,H,text,color){
+  simCtx.save();
+  simCtx.fillStyle='rgba(0,0,0,0.6)';
+  simCtx.beginPath();
+  if(simCtx.roundRect){simCtx.roundRect(W/2-200,H-38,400,26,8);}
+  else{simCtx.rect(W/2-200,H-38,400,26);}
+  simCtx.fill();
+  simCtx.fillStyle=color;
+  simCtx.font="bold 11px 'Inter',sans-serif";
+  simCtx.textAlign='center';simCtx.textBaseline='middle';
+  simCtx.fillText(text,W/2,H-25);
+  simCtx.restore();
+}
+
+function updateSimUI(){
+  const mol=document.getElementById('simMolecule').value;
+  const d=MOL_DATA[mol];if(!d)return;
+  document.getElementById('simTitle').textContent=d.title;
+  document.getElementById('svJenis').textContent=d.type;
+  document.getElementById('svIkatan').textContent=d.bonds;
+  document.getElementById('svPolar').textContent=d.polar;
+  document.getElementById('svLewis').textContent=d.lewis;
+  document.getElementById('simTip').className='tipinfo on';
+  document.getElementById('simTip').textContent=d.tip;
+  if(!simRunning)drawStaticScene(mol);
+}
+
+function drawStaticScene(mol){
+  resizeSim();
+  const W=simCanvas.width,H=simCanvas.height;
+  simCtx.clearRect(0,0,W,H);
+  drawSceneFull(mol,0,W,H);
+}
+
+function startSim(){
+  if(simRunning)return;
+  simRunning=true;
+  document.getElementById('btnStart').disabled=true;
+  document.getElementById('btnStop').disabled=false;
+  const speed=parseFloat(document.getElementById('simSpeed').value);
+  const mol=document.getElementById('simMolecule').value;
+  const mode=document.getElementById('simMode').value;
+  let formT=0;
+  const APPROACH=120,BOND_IN=80;
+  function loop(){
+    resizeSim();
+    const W=simCanvas.width,H=simCanvas.height;
+    simCtx.clearRect(0,0,W,H);
+    const bg=simCtx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#020617');bg.addColorStop(1,'#0f0f2e');
+    simCtx.fillStyle=bg;simCtx.fillRect(0,0,W,H);
+    for(let gx=0;gx<W;gx+=30){for(let gy=0;gy<H;gy+=30){
+      simCtx.beginPath();simCtx.arc(gx,gy,0.7,0,Math.PI*2);simCtx.fillStyle='rgba(99,102,241,0.07)';simCtx.fill();
+    }}
+    if(mode==='formation'){
+      formT+=speed;
+      if(formT<APPROACH){
+        drawFormationApproach(mol,formT/APPROACH,simT,W,H);
+        drawPhaseLabel(W,H,'① Atom-atom nonlogam saling mendekat…','#60a5fa');
+      } else if(formT<APPROACH+BOND_IN){
+        drawFormationBonding(mol,(formT-APPROACH)/BOND_IN,simT,W,H);
+        drawPhaseLabel(W,H,'② Elektron valensi mulai digunakan bersama…','#fbbf24');
+      } else {
+        drawSceneFull(mol,simT,W,H);
+        drawPhaseLabel(W,H,'③ Ikatan kovalen terbentuk! Molekul stabil ✓','#34d399');
+        if(formT>APPROACH+BOND_IN+180){formT=0;}
+      }
+    } else {
+      drawSceneFull(mol,simT,W,H);
+    }
+    simT+=speed;
+    simAnim=requestAnimationFrame(loop);
+  }
+  loop();
+}
+function stopSim(){
+  simRunning=false;
+  if(simAnim)cancelAnimationFrame(simAnim);
+  document.getElementById('btnStart').disabled=false;
+  document.getElementById('btnStop').disabled=true;
+}
+function resetSim(){stopSim();simT=0;updateSimUI();}
+window.addEventListener('resize',()=>{if(!simRunning&&document.getElementById('page-simulasi').classList.contains('active'))updateSimUI();});
+
+// ─── DOWNLOAD LKM ───
+function downloadLKM(){
+  const d={
+    nama:document.getElementById('lkNama').value||'',
+    kelas:document.getElementById('lkKelas').value||'',
+    kelompok:document.getElementById('lkKelompok').value||'',
+    tanggal:document.getElementById('lkTanggal').value||'',
+    a1:document.getElementById('lkA1').value||'',
+    a2:document.getElementById('lkA2').value||'',
+    a3:document.getElementById('lkA3').value||'',
+    kesimpulan:document.getElementById('lkKesimpulan').value||'',
+  };
+  const rows=[];
+  document.querySelectorAll('#lkTable1 tr').forEach((tr,i)=>{
+    if(i===0)return;
+    const cells=tr.querySelectorAll('td');
+    const inp=tr.querySelectorAll('input,select');
+    rows.push(`<tr><td>${i}</td><td>${cells[1]?cells[1].textContent:''}</td><td>${cells[2]?cells[2].textContent:''}</td><td>${inp[0]?inp[0].value:''}</td><td>${inp[1]?inp[1].value:''}</td><td>${inp[2]?inp[2].value:''}</td></tr>`);
+  });
+  const html=`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>LKM Ikatan Kovalen</title>
+<style>body{font-family:'Segoe UI',sans-serif;padding:28px;color:#1e293b;max-width:860px;margin:0 auto;}
+h1{font-size:19px;color:#1e1b4b;margin-bottom:4px;}h2{font-size:13px;color:#2563eb;margin:16px 0 7px;border-bottom:2px solid #dbeafe;padding-bottom:4px;}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px;background:#f0f4ff;padding:11px;border-radius:7px;}
+.info-item{font-size:12px;}.info-item strong{color:#2563eb;}
+table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11.5px;}
+th{background:#2563eb;color:#fff;padding:7px;text-align:left;}td{border:1px solid #dde3ec;padding:6px 7px;}tr:nth-child(even) td{background:#f8f9ff;}
+.qa{background:#eff6ff;border-left:3px solid #2563eb;padding:9px 13px;margin:7px 0;border-radius:0 7px 7px 0;}
+.qa-q{font-size:11.5px;font-weight:700;color:#2563eb;margin-bottom:4px;}.qa-a{font-size:12px;color:#1e293b;min-height:36px;border-bottom:1px solid #dde3ec;padding-bottom:5px;}
+.footer{margin-top:26px;font-size:10px;color:#94a3b8;text-align:center;border-top:1px solid #dde3ec;padding-top:10px;}</style></head><body>
+<h1>⚛️ Lembar Kerja Murid (LKM)</h1><h2>Sub Unit: Ikatan Kovalen — Lab Maya Kimia</h2>
+<div class="info-grid">
+  <div class="info-item"><strong>Nama:</strong> ${d.nama}</div>
+  <div class="info-item"><strong>Kelas:</strong> ${d.kelas}</div>
+  <div class="info-item"><strong>Kelompok:</strong> ${d.kelompok}</div>
+  <div class="info-item"><strong>Tanggal:</strong> ${d.tanggal}</div>
+</div>
+<h2>Tabel 1 — Identifikasi Jenis Ikatan Kovalen</h2>
+<table><thead><tr><th>No</th><th>Molekul</th><th>Atom Penyusun</th><th>Jml Pasang EV</th><th>Jenis Ikatan</th><th>Polar/Non</th></tr></thead><tbody>${rows.join('')}</tbody></table>
+<h2>Pertanyaan Analisis</h2>
+<div class="qa"><div class="qa-q">1. Jelaskan mengapa ikatan kovalen terjadi antara sesama atom nonlogam!</div><div class="qa-a">${d.a1}</div></div>
+<div class="qa"><div class="qa-q">2. Apa perbedaan ikatan kovalen polar dan nonpolar? Berikan contoh masing-masing!</div><div class="qa-a">${d.a2}</div></div>
+<div class="qa"><div class="qa-q">3. Tuliskan struktur Lewis molekul H₂O dan jelaskan bagaimana oktet terpenuhi!</div><div class="qa-a">${d.a3}</div></div>
+<div class="qa"><div class="qa-q">Kesimpulan:</div><div class="qa-a">${d.kesimpulan}</div></div>
+<div class="footer">Lab Maya Kimia — Ikatan Kovalen · Dicetak: ${new Date().toLocaleDateString('id-ID',{dateStyle:'full'})}</div>
+</body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`LKM_IkatanKovalen_${d.nama||'Murid'}_${d.kelas||''}.html`;a.click();
+}
+
+// ─── KUIS DATA ───
+const QS=[
+  {type:'mc',text:'Ikatan kovalen terbentuk karena adanya…',
+   opts:['A. Serah terima elektron antara logam dan nonlogam','B. Pemakaian bersama pasangan elektron antara atom nonlogam','C. Gaya elektrostatik antara ion positif dan negatif','D. Pelepasan proton dari inti atom'],
+   ans:1,fb:'Ikatan kovalen terjadi karena dua atom nonlogam BERBAGI (sharing) pasangan elektron. Berbeda dengan ikatan ion yang merupakan serah-terima elektron.'},
+  {type:'mc',text:'Atom nitrogen (N, Z=7) membentuk berapa ikatan kovalen dalam NH₃?',
+   opts:['A. 1 ikatan','B. 2 ikatan','C. 3 ikatan','D. 4 ikatan'],
+   ans:2,fb:'N (Z=7): konfigurasi 2,5 → elektron valensi = 5. Untuk oktet butuh 3 elektron lagi → N membentuk 3 ikatan kovalen dengan 3 atom H dalam NH₃.'},
+  {type:'mc',text:'Ikatan kovalen rangkap tiga (≡) terdapat pada molekul…',
+   opts:['A. H₂O','B. CO₂','C. N₂','D. CH₄'],
+   ans:2,fb:'N₂ memiliki ikatan rangkap tiga (N≡N): 3 pasang elektron (6e⁻) digunakan bersama. Sangat stabil dengan energi ikatan 945 kJ/mol.'},
+  {type:'mc',text:'CO₂ bersifat nonpolar meskipun ikatan C=O bersifat polar, karena…',
+   opts:['A. C dan O memiliki keelektronegatifan sama','B. CO₂ berbentuk linear simetris sehingga momen dipol saling meniadakan','C. CO₂ tidak memiliki pasangan elektron bebas','D. Ikatan rangkap tidak membentuk dipol'],
+   ans:1,fb:'CO₂ memiliki 2 ikatan C=O yang polar, namun bentuk molekulnya LINEAR dan SIMETRIS (O=C=O). Dua momen dipol C=O berlawanan arah dan saling meniadakan → nonpolar.'},
+  {type:'mc',text:'NH₃ memiliki bentuk molekul…',
+   opts:['A. Linear','B. Segitiga datar','C. Piramida trigonal','D. Tetrahedral'],
+   ans:2,fb:'NH₃: N berikatan dengan 3 H dengan 1 PEB tersisa pada N. PEB menolak pasangan ikatan lebih kuat → bentuk piramida trigonal. NH₃ bersifat polar.'},
+  {type:'mc',text:'H₂O bersifat polar karena…',
+   opts:['A. Mengandung atom oksigen yang besar','B. Bentuk tekukan (bent) dengan 2 PEB pada O yang menciptakan dipol bersih','C. H dan O memiliki jumlah elektron yang sama','D. H₂O adalah molekul diatomik'],
+   ans:1,fb:'H₂O polar karena: (1) Bentuk TEKUKAN ≈104,5° akibat 2 PEB pada O, dan (2) O jauh lebih elektronegatif dari H → distribusi elektron tidak simetris → dipol bersih.'},
+  {type:'tf',text:'Pernyataan: "F₂ adalah molekul kovalen nonpolar karena kedua atom F memiliki keelektronegatifan yang sama." Apakah pernyataan ini BENAR?',
+   opts:['A. BENAR','B. SALAH'],
+   ans:0,fb:'BENAR. F₂ terdiri dari 2 atom F yang identik → perbedaan elektronegativitas = 0 → elektron terdistribusi simetris → NONPOLAR. Walaupun F paling elektronegatif, karena atom identik tidak ada dipol.'},
+  {type:'mc',text:'Pada molekul CH₄, atom karbon membentuk 4 ikatan kovalen karena…',
+   opts:['A. C memiliki 4 elektron valensi dan membutuhkan 4 elektron untuk oktet','B. C memiliki 4 proton dalam intinya','C. CH₄ memiliki 4 atom hidrogen yang besar','D. Karbon selalu membentuk 4 ikatan'],
+   ans:0,fb:'C (Z=6): konfigurasi 2,4 → elektron valensi = 4. Untuk oktet (8e⁻) butuh 4 elektron lagi → membentuk 4 ikatan dengan 4 atom H. Geometri tetrahedral simetris → nonpolar.'},
+  {type:'mc',text:'Ikatan kovalen koordinasi (datif) berbeda dari kovalen biasa karena…',
+   opts:['A. Melibatkan atom logam dan nonlogam','B. Kedua elektron ikatan berasal dari satu atom saja (donor)','C. Terbentuk melalui serah terima 2 elektron','D. Hanya terjadi pada molekul diatomik'],
+   ans:1,fb:'Ikatan kovalen koordinasi (datif): kedua elektron yang membentuk ikatan berasal dari SATU atom donor. Contoh: N dalam NH₃ mendonorkan PEB-nya ke H⁺ membentuk NH₄⁺.'},
+  {type:'mc',text:'Urutan kekuatan ikatan kovalen dari paling lemah ke paling kuat adalah…',
+   opts:['A. Tunggal > Rangkap 2 > Rangkap 3','B. Rangkap 3 > Rangkap 2 > Tunggal','C. Tunggal = Rangkap 2 = Rangkap 3','D. Rangkap 2 > Tunggal > Rangkap 3'],
+   ans:1,fb:'Semakin banyak pasangan elektron yang digunakan bersama, semakin kuat ikatan. Rangkap 3 (N≡N: 945 kJ/mol) > Rangkap 2 (O=O: 498 kJ/mol) > Tunggal (H–H: 436 kJ/mol).'},
+];
+
+let qCur=0,qAns=new Array(QS.length).fill(-1),qSub=false;
+
+function renderQ(){
+  const q=QS[qCur];
+  document.getElementById('qnum').textContent='SOAL '+(qCur+1).toString().padStart(2,'0');
+  document.getElementById('qbadge').textContent=q.type==='mc'?'Pilihan Ganda':'Benar/Salah';
+  document.getElementById('qbadge').className='qtype-badge '+(q.type==='mc'?'badge-mc':'badge-tf');
+  document.getElementById('qtext').textContent=q.text;
+  document.getElementById('qcounter').textContent=(qCur+1)+' / '+QS.length;
+  const opts=document.getElementById('qopts');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const li=document.createElement('li');
+    li.className='opt'+(qAns[qCur]===i?' sel':'');
+    if(qSub){if(i===q.ans)li.classList.add('correct');else if(qAns[qCur]===i)li.classList.add('wrong');}
+    li.innerHTML=`<input type="radio" name="q${qCur}" ${qAns[qCur]===i?'checked':''} ${qSub?'disabled':''}><span>${o}</span>`;
+    li.addEventListener('click',()=>{if(qSub)return;qAns[qCur]=i;renderQ();});
+    opts.appendChild(li);
+  });
+  const fb=document.getElementById('qfb');
+  if(qSub){const ok=qAns[qCur]===q.ans;fb.textContent=(ok?'✅ ':'❌ ')+q.fb;fb.className='qfb on '+(ok?'ok':'bad');}
+  else{fb.className='qfb';fb.textContent='';}
+  const prog=document.getElementById('qprog');prog.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='qprog-dot'+(i===qCur?' current':qAns[i]>=0?' answered':'');
+    d.textContent=i+1;d.addEventListener('click',()=>{qCur=i;renderQ();});
+    prog.appendChild(d);
+  });
+  document.getElementById('btnPrev').style.display=qCur===0?'none':'';
+  const last=qCur===QS.length-1;
+  document.getElementById('btnNext').style.display=last?'none':'';
+  document.getElementById('btnSubmit').style.display=last&&!qSub?'':'none';
+}
+function qNav(d){qCur=Math.max(0,Math.min(QS.length-1,qCur+d));renderQ();}
+function submitQ(){
+  qSub=true;
+  const correct=qAns.filter((a,i)=>a===QS[i].ans).length;
+  const score=Math.round(correct/QS.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scoreSub').textContent=`Jawaban benar: ${correct} dari ${QS.length}`;
+  let grade='';
+  if(score>=90)grade='🏆 Sangat Baik! Luar biasa!';
+  else if(score>=75)grade='⭐ Baik! Pertahankan!';
+  else if(score>=60)grade='📚 Cukup, pelajari kembali!';
+  else grade='💪 Perlu belajar lebih keras!';
+  document.getElementById('scoreGrade').textContent=grade;
+  document.getElementById('scoreOverlay').classList.add('on');
+  renderQ();
+}
+function resetQ(){qCur=0;qAns=new Array(QS.length).fill(-1);qSub=false;renderQ();}
+
+// ─── SIM TABS ───
+function showSimTab(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('simtab-'+i).classList.toggle('active',i===n);
+    const p=document.getElementById('simpanel-'+i);
+    p.style.display=i===n?'flex':'none';
+  }
+  if(n===1){setTimeout(()=>{resizeSim();updateSimUI();},60);}
+  if(n===2){setTimeout(()=>{resizeLewis();renderLewis();},60);}
+  if(n===3){setTimeout(()=>{resizePolar();renderPolar();},60);}
+  if(n===4){setTimeout(()=>{resizeRumus();renderRumus();},60);}
+}
+
+// ─── PERCOBAAN 2: LEWIS ───
+const LEWIS_DATA={
+  H2:{title:'H₂',ev:2,pei:1,peb:0,bentuk:'Linear',jenis:'Tunggal',notasi:'H–H',
+    atoms:[{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'}],bonds:[[0,1,1]],
+    info:'H₂: 2×EV=2e⁻. 1 PEI. Tidak ada PEB. Notasi: H–H. Bentuk: linear.'},
+  Cl2:{title:'Cl₂',ev:14,pei:1,peb:6,bentuk:'Linear',jenis:'Tunggal',notasi:'Cl–Cl',
+    atoms:[{l:'Cl',c:'#fbbf24'},{l:'Cl',c:'#fbbf24'}],bonds:[[0,1,1]],
+    info:'Cl₂: 2×7=14e⁻. 1 PEI + 6 PEB (3 di tiap Cl). Notasi: :Cl–Cl:'},
+  HCl:{title:'HCl',ev:8,pei:1,peb:3,bentuk:'Linear',jenis:'Tunggal Polar',notasi:'H–Cl',
+    atoms:[{l:'H',c:'#9ca3af'},{l:'Cl',c:'#fbbf24'}],bonds:[[0,1,1]],
+    info:'HCl: 1+7=8e⁻. 1 PEI + 3 PEB pada Cl. Bentuk: linear. Polar (ΔEN=0,96).'},
+  H2O:{title:'H₂O',ev:8,pei:2,peb:2,bentuk:'Tekukan (bent)',jenis:'Tunggal ×2',notasi:'H–O–H',
+    atoms:[{l:'H',c:'#9ca3af'},{l:'O',c:'#ef4444'},{l:'H',c:'#9ca3af'}],bonds:[[0,1,1],[1,2,1]],
+    info:'H₂O: 2+6=8e⁻. 2 PEI + 2 PEB pada O. Bentuk tekukan 104,5°. Polar.'},
+  NH3:{title:'NH₃',ev:8,pei:3,peb:1,bentuk:'Piramida Trigonal',jenis:'Tunggal ×3',notasi:'N(–H)₃',
+    atoms:[{l:'N',c:'#60a5fa'},{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'}],bonds:[[0,1,1],[0,2,1],[0,3,1]],
+    info:'NH₃: 5+3=8e⁻. 3 PEI + 1 PEB pada N. Bentuk piramida trigonal. Polar.'},
+  CH4:{title:'CH₄',ev:8,pei:4,peb:0,bentuk:'Tetrahedral',jenis:'Tunggal ×4',notasi:'H–C(–H)₃',
+    atoms:[{l:'C',c:'#6b7280'},{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'},{l:'H',c:'#9ca3af'}],bonds:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]],
+    info:'CH₄: 4+4=8e⁻. 4 PEI + 0 PEB. Tetrahedral simetris. Nonpolar.'},
+  CO2:{title:'CO₂',ev:16,pei:4,peb:4,bentuk:'Linear',jenis:'Rangkap Dua ×2',notasi:'O=C=O',
+    atoms:[{l:'O',c:'#ef4444'},{l:'C',c:'#6b7280'},{l:'O',c:'#ef4444'}],bonds:[[0,1,2],[1,2,2]],
+    info:'CO₂: 6+4+6=16e⁻. 4 PEI (2 ikatan rangkap 2) + 4 PEB. Linear simetris. Nonpolar.'},
+  N2:{title:'N₂',ev:10,pei:3,peb:2,bentuk:'Linear',jenis:'Rangkap Tiga',notasi:'N≡N',
+    atoms:[{l:'N',c:'#60a5fa'},{l:'N',c:'#60a5fa'}],bonds:[[0,1,3]],
+    info:'N₂: 2×5=10e⁻. 3 PEI (ikatan rangkap 3) + 2 PEB (1 di tiap N). Linear. Nonpolar.'},
+  O2:{title:'O₂',ev:12,pei:2,peb:4,bentuk:'Linear',jenis:'Rangkap Dua',notasi:'O=O',
+    atoms:[{l:'O',c:'#ef4444'},{l:'O',c:'#ef4444'}],bonds:[[0,1,2]],
+    info:'O₂: 2×6=12e⁻. 2 PEI (rangkap 2) + 4 PEB. Linear. Nonpolar.'},
+  F2:{title:'F₂',ev:14,pei:1,peb:6,bentuk:'Linear',jenis:'Tunggal',notasi:'F–F',
+    atoms:[{l:'F',c:'#a78bfa'},{l:'F',c:'#a78bfa'}],bonds:[[0,1,1]],
+    info:'F₂: 2×7=14e⁻. 1 PEI + 6 PEB (3 di tiap F). Linear. Nonpolar.'},
+  HF:{title:'HF',ev:8,pei:1,peb:3,bentuk:'Linear',jenis:'Tunggal Polar',notasi:'H–F',
+    atoms:[{l:'H',c:'#9ca3af'},{l:'F',c:'#a78bfa'}],bonds:[[0,1,1]],
+    info:'HF: 1+7=8e⁻. 1 PEI + 3 PEB pada F. Linear. Sangat polar (ΔEN=1,78).'},
+  CCl4:{title:'CCl₄',ev:32,pei:4,peb:12,bentuk:'Tetrahedral',jenis:'Tunggal ×4',notasi:'C(–Cl)₄',
+    atoms:[{l:'C',c:'#6b7280'},{l:'Cl',c:'#fbbf24'},{l:'Cl',c:'#fbbf24'},{l:'Cl',c:'#fbbf24'},{l:'Cl',c:'#fbbf24'}],bonds:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]],
+    info:'CCl₄: 4+4×7=32e⁻. 4 PEI + 12 PEB. Tetrahedral simetris. Nonpolar.'},
+};
+
+const lewisCanvas=document.getElementById('lewisCanvas');
+const lewisCtx=lewisCanvas.getContext('2d');
+function resizeLewis(){const p=lewisCanvas.parentElement;lewisCanvas.width=p.clientWidth-4;lewisCanvas.height=Math.max(100,p.clientHeight-40);}
+function renderLewis(){
+  const key=document.getElementById('lewisSelect').value;
+  const d=LEWIS_DATA[key];if(!d)return;
+  document.getElementById('lewisTitle').textContent=d.title;
+  document.getElementById('lewisInfo').textContent=d.info;
+  document.getElementById('lsEV').textContent=d.ev+'e⁻';
+  document.getElementById('lsIkatan').textContent=d.jenis;
+  document.getElementById('lsPEB').textContent=d.peb+' ps';
+  document.getElementById('lsBentuk').textContent=d.bentuk;
+  const W=lewisCanvas.width,H=lewisCanvas.height;
+  const ctx=lewisCtx;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#020617');bg.addColorStop(1,'#0f0f2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // positions
+  const n=d.atoms.length;
+  const cx=W/2,cy=H/2;
+  const sp=Math.min(W*0.22,80);
+  let pos=[];
+  if(n===2) pos=[{x:cx-sp,y:cy},{x:cx+sp,y:cy}];
+  else if(n===3&&d.atoms[1].l==='O') pos=[{x:cx-sp*0.9,y:cy+sp*0.5},{x:cx,y:cy-sp*0.2},{x:cx+sp*0.9,y:cy+sp*0.5}];
+  else if(n===3) pos=[{x:cx-sp,y:cy},{x:cx,y:cy},{x:cx+sp,y:cy}];
+  else if(n===4){const r=sp*0.9;pos=[{x:cx,y:cy},{x:cx,y:cy-r},{x:cx+r*0.9,y:cy+r*0.45},{x:cx-r*0.9,y:cy+r*0.45}];}
+  else if(n===5){const r=sp*0.9;pos=[{x:cx,y:cy},{x:cx,y:cy-r},{x:cx+r,y:cy},{x:cx-r,y:cy},{x:cx,y:cy+r}];}
+  else pos=[{x:cx,y:cy}];
+  // draw bonds
+  d.bonds.forEach(([a,b,order])=>{
+    const x1=pos[a].x,y1=pos[a].y,x2=pos[b].x,y2=pos[b].y;
+    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+    const px=-dy/len,py=dx/len;
+    const offs=order===1?[0]:order===2?[-5,5]:[-8,0,8];
+    offs.forEach(o=>{
+      ctx.beginPath();ctx.moveTo(x1+px*o,y1+py*o);ctx.lineTo(x2+px*o,y2+py*o);
+      ctx.strokeStyle='rgba(99,102,241,0.6)';ctx.lineWidth=2.5;ctx.stroke();
+    });
+    // bond order label
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    const oLabel=order===1?'—':order===2?'=':'≡';
+    ctx.fillStyle='rgba(165,180,252,0.7)';ctx.font=`bold 10px 'Space Grotesk',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(oLabel,mx+py*14,my-px*14);
+  });
+  // draw atoms
+  d.atoms.forEach((a,i)=>{
+    const {x,y}=pos[i];
+    const r=a.l.length>1?19:16;
+    const gr=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);
+    gr.addColorStop(0,'#ffffff44');gr.addColorStop(.4,a.c+'dd');gr.addColorStop(1,a.c+'88');
+    const glow=ctx.createRadialGradient(x,y,0,x,y,r*2.5);
+    glow.addColorStop(0,a.c+'44');glow.addColorStop(1,a.c+'00');
+    ctx.beginPath();ctx.arc(x,y,r*2.5,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+    ctx.strokeStyle=a.c+'cc';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${r>16?10:9}px 'Space Grotesk',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(a.l,x,y);
+  });
+  // Lewis notation text
+  ctx.fillStyle='rgba(165,180,252,0.85)';ctx.font=`bold clamp(11px,1.2vw,14px) 'Space Grotesk',sans-serif`;ctx.font=`bold 13px 'Space Grotesk',sans-serif`;
+  ctx.textAlign='center';ctx.fillText('Notasi Lewis: '+d.notasi,W/2,H-16);
+}
+window.addEventListener('resize',()=>{if(document.getElementById('simtab-2').classList.contains('active')){resizeLewis();renderLewis();}});
+
+// ─── PERCOBAAN 3: POLAR ───
+const POLAR_DATA={
+  H2:{title:'H₂',a1:{l:'H',en:2.20,c:'#9ca3af'},a2:{l:'H',en:2.20,c:'#9ca3af'},bonds:1,shape:'Linear'},
+  HF:{title:'HF',a1:{l:'H',en:2.20,c:'#9ca3af'},a2:{l:'F',en:3.98,c:'#a78bfa'},bonds:1,shape:'Linear'},
+  HCl:{title:'HCl',a1:{l:'H',en:2.20,c:'#9ca3af'},a2:{l:'Cl',en:3.16,c:'#fbbf24'},bonds:1,shape:'Linear'},
+  H2O:{title:'H₂O',a1:{l:'H',en:2.20,c:'#9ca3af'},a2:{l:'O',en:3.44,c:'#ef4444'},bonds:2,shape:'Tekukan'},
+  CO2:{title:'CO₂',a1:{l:'C',en:2.55,c:'#6b7280'},a2:{l:'O',en:3.44,c:'#ef4444'},bonds:2,shape:'Linear Simetris'},
+  NH3:{title:'NH₃',a1:{l:'N',en:3.04,c:'#60a5fa'},a2:{l:'H',en:2.20,c:'#9ca3af'},bonds:3,shape:'Piramida'},
+  CH4:{title:'CH₄',a1:{l:'C',en:2.55,c:'#6b7280'},a2:{l:'H',en:2.20,c:'#9ca3af'},bonds:4,shape:'Tetrahedral'},
+  F2:{title:'F₂',a1:{l:'F',en:3.98,c:'#a78bfa'},a2:{l:'F',en:3.98,c:'#a78bfa'},bonds:1,shape:'Linear'},
+  N2:{title:'N₂',a1:{l:'N',en:3.04,c:'#60a5fa'},a2:{l:'N',en:3.04,c:'#60a5fa'},bonds:3,shape:'Linear'},
+};
+const polarCanvas=document.getElementById('polarCanvas');
+const polarCtx=polarCanvas.getContext('2d');
+function resizePolar(){const p=polarCanvas.parentElement;polarCanvas.width=p.clientWidth-4;polarCanvas.height=Math.max(100,p.clientHeight-40);}
+function renderPolar(){
+  const key=document.getElementById('polarSelect').value;
+  const d=POLAR_DATA[key];if(!d)return;
+  const dEN=Math.abs(d.a1.en-d.a2.en);
+  const isPolar=(dEN>=0.4)&&!(d.title==='CO₂'||d.title==='CH₄'||d.title==='F₂'||d.title==='N₂');
+  const tipe=dEN<0.4?'Nonpolar':(dEN<1.7?'Polar':'Ion');
+  document.getElementById('polarTitle').textContent=d.title;
+  document.getElementById('psEN1').textContent=d.a1.en.toFixed(2);
+  document.getElementById('psEN2').textContent=d.a2.en.toFixed(2);
+  document.getElementById('psDelta').textContent=dEN.toFixed(2);
+  document.getElementById('psTipe').textContent=tipe;
+  const sumEl=document.getElementById('polarSummary');
+  const finalPolar=isPolar?'POLAR 🔴':'NONPOLAR ⚪';
+  sumEl.innerHTML=`<strong>${d.title}</strong><br>ΔEN = ${dEN.toFixed(2)}<br>Bentuk: ${d.shape}<br><strong style="font-size:1.1em;">${finalPolar}</strong>`;
+  sumEl.style.background=isPolar?'#fef3c7':'#f1f5f9';
+  sumEl.style.borderColor=isPolar?'#fcd34d':'#cbd5e1';
+  sumEl.style.color=isPolar?'#92400e':'#334155';
+
+  const W=polarCanvas.width,H=polarCanvas.height;
+  const ctx=polarCtx;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#020617');bg.addColorStop(1,'#0f0f2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2;
+  const r1=dEN===0?22:18+dEN*3,r2=dEN===0?22:22-dEN*2;
+  const sp=Math.min(W*0.22,85);
+  // glow
+  [[-sp,d.a1,r1],[sp,d.a2,r2]].forEach(([ox,a,r])=>{
+    const glow=ctx.createRadialGradient(cx+ox,cy,0,cx+ox,cy,r*3);
+    glow.addColorStop(0,a.c+'55');glow.addColorStop(1,a.c+'00');
+    ctx.beginPath();ctx.arc(cx+ox,cy,r*3,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+  });
+  // bond
+  ctx.beginPath();ctx.moveTo(cx-sp+r1,cy);ctx.lineTo(cx+sp-r2,cy);
+  ctx.strokeStyle='rgba(99,102,241,0.5)';ctx.lineWidth=3;ctx.stroke();
+  // dipole arrow if polar
+  if(isPolar&&dEN>0){
+    const arrowLen=Math.min(60,dEN*20);
+    const toHigh=d.a2.en>d.a1.en?1:-1;
+    const ax=cx+(toHigh*arrowLen*0.5);
+    ctx.beginPath();ctx.moveTo(cx-(toHigh*arrowLen*0.4),cy-28);ctx.lineTo(cx+(toHigh*arrowLen*0.6),cy-28);
+    ctx.strokeStyle='rgba(251,191,36,0.9)';ctx.lineWidth=2;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+(toHigh*arrowLen*0.6),cy-28);
+    ctx.lineTo(cx+(toHigh*arrowLen*0.6)-toHigh*8,cy-28-5);ctx.lineTo(cx+(toHigh*arrowLen*0.6)-toHigh*8,cy-28+5);ctx.closePath();
+    ctx.fillStyle='rgba(251,191,36,0.9)';ctx.fill();
+    ctx.fillStyle='rgba(251,191,36,0.8)';ctx.font='bold 9px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('δ-',cx+toHigh*(sp-5),cy-38);ctx.fillText('δ+',cx-toHigh*(sp-5),cy-38);
+  }
+  // atoms
+  [[cx-sp,d.a1,r1],[cx+sp,d.a2,r2]].forEach(([x,a,r])=>{
+    const gr=ctx.createRadialGradient(x-r*.3,cy-r*.3,r*.1,x,cy,r);
+    gr.addColorStop(0,'#ffffff44');gr.addColorStop(.4,a.c+'dd');gr.addColorStop(1,a.c+'88');
+    ctx.beginPath();ctx.arc(x,cy,r,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+    ctx.strokeStyle=a.c+'cc';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${r>18?11:9}px 'Space Grotesk',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(a.l,x,cy);
+    ctx.fillStyle='rgba(165,180,252,0.8)';ctx.font='bold 9px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('EN='+a.en,x,cy+r+14);
+  });
+  // label
+  ctx.fillStyle=isPolar?'rgba(251,191,36,0.9)':'rgba(148,163,184,0.8)';ctx.font='bold 13px Space Grotesk,sans-serif';ctx.textAlign='center';
+  ctx.fillText(isPolar?'⬤ POLAR':'○ NONPOLAR',cx,H-16);
+}
+window.addEventListener('resize',()=>{if(document.getElementById('simtab-3').classList.contains('active')){resizePolar();renderPolar();}});
+
+// ─── PERCOBAAN 4: RUMUS KIMIA ───
+const EV_DATA={H:{ev:1,need:1,c:'#9ca3af'},C:{ev:4,need:4,c:'#6b7280'},N:{ev:5,need:3,c:'#60a5fa'},O:{ev:6,need:2,c:'#ef4444'},F:{ev:7,need:1,c:'#a78bfa'},Cl:{ev:7,need:1,c:'#fbbf24'}};
+const rumusCanvas=document.getElementById('rumusCanvas');
+const rumusCtx=rumusCanvas.getContext('2d');
+function resizeRumus(){const p=rumusCanvas.parentElement;rumusCanvas.width=p.clientWidth-4;rumusCanvas.height=Math.max(100,p.clientHeight-40);}
+function renderRumus(){
+  const kA=document.getElementById('rumusA').value;
+  const kB=document.getElementById('rumusB').value;
+  const dA=EV_DATA[kA],dB=EV_DATA[kB];
+  // simplify ratio using GCD
+  function gcd(a,b){return b===0?a:gcd(b,a%b);}
+  const nA=dB.need,nB=dA.need;
+  const g=gcd(nA,nB);
+  const rA=nA/g,rB=nB/g;
+  const rumus=rA===1&&rB===1?kA+kB:(rA===1?kA:kA+rA)+(rB===1?kB:kB+rB);
+  const totalBonds=rA*dA.need;
+  document.getElementById('rrAtomA').textContent=kA;
+  document.getElementById('rrAtomB').textContent=kB;
+  document.getElementById('rrRumus').textContent=rumus;
+  document.getElementById('rrIkatan').textContent=totalBonds+' PEI';
+  document.getElementById('rumusResult').innerHTML=`
+    <strong>Rumus: ${rumus}</strong><br>
+    ${kA} butuh ${dA.need} e⁻ → ${rA} atom ${kA}<br>
+    ${kB} butuh ${dB.need} e⁻ → ${rB} atom ${kB}<br>
+    Total ikatan: ${totalBonds} PEI<br>
+    <span style="color:#6d28d9;font-size:0.9em;">Rasio ${rA}:${rB} (disederhanakan)</span>
+  `;
+  const W=rumusCanvas.width,H=rumusCanvas.height;
+  const ctx=rumusCtx;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#020617');bg.addColorStop(1,'#0f0f2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Draw rA atoms A connected to a central arrangement, then rB atoms B
+  const total=rA+rB;
+  const cx=W/2,cy=H/2;
+  const sp=Math.min(W*0.2,75);
+  // Draw central atom A (first) and B atoms around
+  const posA=[];const posB=[];
+  if(rA===1&&rB===1){posA.push({x:cx-sp,y:cy});posB.push({x:cx+sp,y:cy});}
+  else if(rA===1){
+    posA.push({x:cx,y:cy});
+    for(let i=0;i<rB;i++){const ang=(i/rB)*Math.PI*2-(Math.PI/2);posB.push({x:cx+Math.cos(ang)*sp*0.95,y:cy+Math.sin(ang)*sp*0.95});}
+  } else if(rB===1){
+    posB.push({x:cx,y:cy});
+    for(let i=0;i<rA;i++){const ang=(i/rA)*Math.PI*2-(Math.PI/2);posA.push({x:cx+Math.cos(ang)*sp*0.95,y:cy+Math.sin(ang)*sp*0.95});}
+  } else {
+    for(let i=0;i<rA;i++){const ang=(i/rA)*Math.PI*2-(Math.PI/2);posA.push({x:cx-sp*0.5+Math.cos(ang)*sp*0.5,y:cy+Math.sin(ang)*sp*0.5});}
+    for(let i=0;i<rB;i++){const ang=(i/rB)*Math.PI*2-(Math.PI/2);posB.push({x:cx+sp*0.5+Math.cos(ang)*sp*0.5,y:cy+Math.sin(ang)*sp*0.5});}
+  }
+  // bonds: connect each A to each B (simplified - show representative)
+  const bondCount=Math.min(dA.need,dB.need)===0?1:Math.min(dA.need,dB.need);
+  if(rA===1){
+    posB.forEach(pb=>{
+      const dx=pb.x-posA[0].x,dy=pb.y-posA[0].y,len=Math.sqrt(dx*dx+dy*dy);
+      const px=-dy/len*3,py=dx/len*3;
+      for(let b=0;b<bondCount&&b<3;b++){const o=(b-(bondCount-1)/2)*4;
+        ctx.beginPath();ctx.moveTo(posA[0].x+px*o,posA[0].y+py*o);ctx.lineTo(pb.x+px*o,pb.y+py*o);
+        ctx.strokeStyle='rgba(99,102,241,0.55)';ctx.lineWidth=2.5;ctx.stroke();}
+    });
+  } else if(rB===1){
+    posA.forEach(pa=>{
+      const dx=pb=posB[0],dx2=pa.x-pb.x,dy2=pa.y-pb.y,len=Math.sqrt(dx2*dx2+dy2*dy2);
+      const px=-dy2/len*3,py=dx2/len*3;
+      for(let b=0;b<bondCount&&b<3;b++){const o=(b-(bondCount-1)/2)*4;
+        ctx.beginPath();ctx.moveTo(pa.x+px*o,pa.y+py*o);ctx.lineTo(posB[0].x+px*o,posB[0].y+py*o);
+        ctx.strokeStyle='rgba(99,102,241,0.55)';ctx.lineWidth=2.5;ctx.stroke();}
+    });
+  } else {
+    // just draw lines between closest A-B pairs
+    for(let i=0;i<Math.min(posA.length,posB.length);i++){
+      ctx.beginPath();ctx.moveTo(posA[i].x,posA[i].y);ctx.lineTo(posB[i].x,posB[i].y);
+      ctx.strokeStyle='rgba(99,102,241,0.5)';ctx.lineWidth=2.5;ctx.stroke();
+    }
+  }
+  // draw atoms
+  const drawAtom=(x,y,label,color)=>{
+    const r=label.length>1?19:16;
+    const glow=ctx.createRadialGradient(x,y,0,x,y,r*2.5);glow.addColorStop(0,color+'55');glow.addColorStop(1,color+'00');
+    ctx.beginPath();ctx.arc(x,y,r*2.5,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    const gr=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);gr.addColorStop(0,'#ffffff44');gr.addColorStop(.4,color+'dd');gr.addColorStop(1,color+'88');
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+    ctx.strokeStyle=color+'cc';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${r>16?10:9}px 'Space Grotesk',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y);
+  };
+  posA.forEach(p=>drawAtom(p.x,p.y,kA,dA.c));
+  posB.forEach(p=>drawAtom(p.x,p.y,kB,dB.c));
+  // formula label
+  ctx.fillStyle='rgba(196,181,253,0.9)';ctx.font='bold 16px Space Grotesk,sans-serif';ctx.textAlign='center';
+  ctx.fillText(rumus,cx,H-16);
+}
+window.addEventListener('resize',()=>{if(document.getElementById('simtab-4').classList.contains('active')){resizeRumus();renderRumus();}});
+
+// ─── PROSEDUR TABS ───
+function showPrTab(n){
+  for(let i=1;i<=4;i++){
+    const tab=document.getElementById('prtab-'+i);
+    const panel=document.getElementById('prpanel-'+i);
+    if(tab) tab.classList.toggle('active',i===n);
+    if(panel) panel.classList.toggle('active',i===n);
+  }
+}
+
+// roundRect polyfill
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    this.beginPath();this.moveTo(x+r,y);this.lineTo(x+w-r,y);this.quadraticCurveTo(x+w,y,x+w,y+r);
+    this.lineTo(x+w,y+h-r);this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);this.lineTo(x+r,y+h);
+    this.quadraticCurveTo(x,y+h,x,y+h-r);this.lineTo(x,y+r);this.quadraticCurveTo(x,y,x+r,y);this.closePath();
+  };
+}
+
+// Init
+renderQ();
+// Set today's date on LKM
+document.getElementById('lkTanggal').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
