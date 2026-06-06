@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya Kimia – Identifikasi Protein</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2ff;
+  --surf:#ffffff;--surf2:#f5f7ff;
+  --border:#dde3f5;--border2:#c0c8f0;
+  --acc:#7c3aed;--acc2:#a855f7;--acc3:#4c1d95;
+  --text:#1e1b4b;--text2:#4b5563;--text3:#9ca3af;
+  --biuret:#7c3aed;--xantho:#d97706;--ninhidrin:#1d4ed8;--millon:#dc2626;
+  --green:#059669;--red:#dc2626;--yellow:#d97706;--orange:#ea580c;
+  --h:52px;--fbase:14px;
+  --font:'Outfit',sans-serif;
+  --font-head:'Syne',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+@media(max-width:768px){:root{--fbase:13px;--h:46px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column;font-size:var(--fbase);}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 5% 0%,rgba(124,58,237,0.1) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 55% at 95% 100%,rgba(220,38,38,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 35% 35% at 85% 10%,rgba(29,78,216,0.07) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(148,163,184,0.05) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(148,163,184,0.05) 40px);
+}
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#1a0040,#4c1d95,#6d28d9);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+  box-shadow:0 2px 16px rgba(28,0,80,0.55);
+}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.logo-text{font-family:var(--font-head);font-size:clamp(13px,1.8vw,18px);font-weight:800;color:#fff;line-height:1.1;white-space:nowrap;}
+.logo-sub{font-size:9px;color:rgba(255,255,255,0.6);font-weight:500;font-family:var(--font);}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-family:var(--font);font-size:clamp(11px,1.3vw,14px);font-weight:600;padding:0 12px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:3px;background:linear-gradient(90deg,#fbbf24,#f472b6);transform:scaleX(0);transition:transform .25s;border-radius:2px 2px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.9);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  header{flex-wrap:nowrap;padding:0 8px;}
+  .logo-text{font-size:14px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;background:linear-gradient(180deg,#1a0040,#4c1d95);border-bottom:1px solid rgba(255,255,255,.15);box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:48px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;display:flex;align-items:center;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.09);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .2s ease;}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* COVER PAGE */
+@keyframes coverFloat{0%,100%{transform:scale(1.04) translateY(0);}50%{transform:scale(1.08) translateY(-6px);}}
+@keyframes shimmer{0%{background-position:-200% center;}100%{background-position:200% center;}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 30px rgba(124,58,237,0.5),0 0 60px rgba(190,24,93,0.3);}50%{box-shadow:0 0 50px rgba(124,58,237,0.8),0 0 100px rgba(190,24,93,0.5);}}
+@keyframes floatMol{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-12px) rotate(3deg);}}
+@keyframes spinSlow{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1);}40%{transform:translateY(-8px) scale(1.05);}60%{transform:translateY(-4px) scale(1.02);}}
+@keyframes ripple{0%{transform:scale(1);opacity:0.6;}100%{transform:scale(2.5);opacity:0;}}
+@keyframes particleDrift{0%{transform:translate(0,0) rotate(0deg);opacity:0;}20%{opacity:1;}100%{transform:translate(var(--dx),var(--dy)) rotate(360deg);opacity:0;}}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:7px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 6px rgba(30,27,75,0.07);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 16px rgba(30,27,75,0.1);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ci{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ci.bi{background:rgba(124,58,237,.12);}
+.ci.xa{background:rgba(245,158,11,.12);}
+.ci.ni{background:rgba(29,78,216,.12);}
+.ci.mi{background:rgba(220,38,38,.12);}
+.ci.g{background:rgba(5,150,105,.1);}
+.ci.y{background:rgba(217,119,6,.1);}
+.ci.p{background:rgba(124,58,237,.1);}
+.ct{font-family:var(--font-head);font-size:clamp(13px,1.4vw,15px);font-weight:800;color:var(--acc3);}
+.card p{font-size:clamp(11.5px,1.2vw,13.5px);line-height:1.72;color:var(--text2);margin-bottom:6px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:var(--acc);letter-spacing:.09em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.steps{display:flex;flex-direction:column;gap:5px;}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 11px;transition:border-color .17s;}
+.step:hover{border-color:var(--acc2);background:#f5f0ff;}
+.snum{min-width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;color:var(--acc);flex-shrink:0;}
+.step p{font-size:clamp(11.5px,1.2vw,13px);color:var(--text2);line-height:1.6;margin:0;}
+.notebox{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-top:7px;}
+.notebox .nt{font-size:9px;font-weight:700;color:var(--yellow);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
+.notebox p{font-size:clamp(11.5px,1.2vw,12.5px);color:#92400e;line-height:1.6;margin:0;}
+.sep{display:flex;align-items:center;gap:8px;margin:8px 0 5px;}
+.sep span{font-family:var(--font-mono);font-size:8.5px;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;font-weight:500;}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* QUIZ STYLES */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;flex-shrink:0;}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surf2);font-size:9.5px;font-weight:700;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;font-family:var(--font);}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#f5f0ff;}
+.qprog-dot.current{background:var(--acc);color:#fff;border-color:var(--acc);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:14px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(30,27,75,0.06);}
+.qnum{font-family:var(--font-mono);font-size:9.5px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:7px;letter-spacing:.04em;font-family:var(--font);}
+.badge-mc{background:#f5f0ff;border:1px solid #ddd6fe;color:#6d28d9;}
+.badge-complex{background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:3px 8px;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:.04em;}
+.qtext{font-size:13px;color:var(--text);line-height:1.55;font-weight:700;margin-bottom:10px;font-family:var(--font);}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;cursor:pointer;transition:all .16s;font-size:12.5px;color:var(--text2);font-family:var(--font);}
+.opt:hover{border-color:var(--acc2);background:#f5f0ff;color:var(--text);}
+.opt input{margin-top:2px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#f5f0ff;color:var(--acc3);}
+.opt.correct{background:#f0fdf4;border-color:#22c55e;color:#15803d;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:8px;padding:9px 12px;border-radius:8px;font-size:11.5px;display:none;line-height:1.6;font-family:var(--font);}
+.qfb.on{display:block;}
+.qfb.ok{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:7px 14px;border-radius:7px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);background:#f5f0ff;}
+.btn-next{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(91,33,182,.25);}
+.btn-next:hover{box-shadow:0 4px 14px rgba(91,33,182,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;}
+.qcounter{margin-left:auto;font-family:var(--font-mono);font-size:10.5px;color:var(--text3);}
+
+/* SCORE OVERLAY */
+.score-overlay{position:fixed;inset:0;background:rgba(26,0,64,.6);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(10px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:18px;padding:32px 44px;text-align:center;box-shadow:0 20px 60px rgba(45,0,103,.25);animation:fu .28s ease;min-width:280px;}
+.score-big{font-family:var(--font-head);font-size:68px;font-weight:800;color:var(--acc);line-height:1;}
+.score-pct{font-size:20px;color:var(--text3);margin-top:2px;}
+.score-sub{font-size:12.5px;color:var(--text2);margin:8px 0 4px;}
+.score-grade{font-size:16px;font-weight:800;margin-top:8px;font-family:var(--font-head);}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:18px;}
+.btn-score{padding:9px 22px;border-radius:8px;font-family:var(--font);font-size:12.5px;font-weight:700;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-ulangi{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;}
+
+/* LK TABLE */
+.lk-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.lk-table th{background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:7px 10px;border:1px solid #5b21b6;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;text-align:center;}
+.lk-table td{padding:6px 9px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.lk-table tr:nth-child(even) td{background:#f8f5ff;}
+.lk-table input[type=text],.lk-table textarea,.lk-table select{width:100%;border:1px solid #c4b5fd;border-radius:6px;padding:4px 7px;font-family:var(--font);font-size:11.5px;color:var(--text);outline:none;background:#fff;transition:border-color .17s;resize:vertical;min-height:32px;}
+.lk-table input:focus,.lk-table textarea:focus,.lk-table select:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(124,58,237,.1);}
+
+/* DRAG CARDS */
+.drag-card{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;cursor:grab;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;user-select:none;text-align:center;}
+.drag-card:hover{border-color:var(--acc2);box-shadow:0 4px 16px rgba(124,58,237,.2);transform:translateY(-2px);}
+.drag-card.dragging{opacity:.4;transform:scale(.95);}
+.drag-card.placed{opacity:.35;cursor:not-allowed;filter:grayscale(0.5);}
+.drag-card.touch-grabbing{transform:scale(1.05);box-shadow:0 8px 24px rgba(124,58,237,.3);}
+.drag-icon{font-size:22px;}
+.drag-label{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-family:var(--font);}
+.drag-img{width:82px;height:82px;object-fit:contain;border-radius:8px;}
+.drop-zone{min-height:70px;border:2px dashed #c4b5fd;border-radius:10px;padding:8px;background:rgba(245,240,255,.5);transition:all .2s;display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;}
+.drop-zone.drag-over-ok{border-color:#22c55e;background:#f0fdf4;}
+.drop-zone.drag-over-wrong{border-color:#f87171;background:#fff1f2;}
+.drop-hint{width:100%;text-align:center;font-size:11px;color:var(--text3);align-self:center;padding:10px 0;}
+.drop-card{display:flex;align-items:center;gap:5px;background:#f5f0ff;border:1px solid #c4b5fd;border-radius:7px;padding:4px 8px;font-size:10.5px;font-weight:700;color:var(--acc3);animation:bounceRight .35s cubic-bezier(.34,1.56,.64,1);}
+.drop-card.bahan-card{background:#fdf2f8;border-color:#f0abfc;color:#86198f;}
+.drop-card-icon{font-size:14px;}
+.drop-card-remove{background:none;border:none;cursor:pointer;color:#9ca3af;font-size:13px;padding:0 2px;line-height:1;margin-left:2px;}
+.drop-card-remove:hover{color:#ef4444;}
+@keyframes bounceRight{from{opacity:0;transform:translateX(-10px) scale(.9);}to{opacity:1;transform:translateX(0) scale(1);}}
+@keyframes starFloat{0%{opacity:0;transform:translateY(0);}20%{opacity:1;}100%{opacity:0;transform:translateY(-80px) rotate(20deg);}}
+
+/* TUBE STYLES */
+.tube-container{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.tube-label{font-size:10px;font-weight:700;color:var(--text2);text-align:center;max-width:70px;line-height:1.3;font-family:var(--font);}
+.tube-wrapper{position:relative;width:52px;}
+.tube-body{width:52px;height:130px;border:3px solid #94a3b8;border-top:none;border-radius:0 0 26px 26px;background:rgba(255,255,255,.92);position:relative;overflow:hidden;box-shadow:3px 5px 12px rgba(0,0,0,.14),inset -4px 0 10px rgba(255,255,255,.7);}
+.tube-cap{width:56px;height:12px;background:linear-gradient(135deg,#94a3b8,#64748b);border-radius:4px 4px 0 0;margin-left:-2px;box-shadow:0 2px 4px rgba(0,0,0,.2);}
+.tube-liquid{position:absolute;bottom:0;left:0;right:0;height:55%;background:rgba(230,240,255,.4);transition:background 1.2s ease,height .8s ease;border-radius:0 0 24px 24px;}
+.tube-liquid.anim{height:65%;}
+.tube-bubble{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;display:none;animation:bubUp 1.5s ease-in-out infinite;}
+.tube-bubble.show{display:block;}
+@keyframes bubUp{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5;}50%{transform:translate(-50%,-70%) scale(1.3);opacity:1;}}
+.tube-result-badge{font-size:9px;font-weight:800;padding:3px 7px;border-radius:5px;opacity:0;transition:opacity .5s;text-align:center;max-width:70px;line-height:1.3;font-family:var(--font);}
+.tube-result-badge.show{opacity:1;}
+.badge-pos{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.badge-neg{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.badge-part{background:#fffbeb;color:#92400e;border:1px solid #fde68a;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a0040 0%,#5b21b6 45%,#be185d 100%);border-radius:12px;padding:10px 16px;margin-bottom:8px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 4px 20px rgba(26,0,64,.3);}
+.hero::before{content:'';position:absolute;right:0;top:0;bottom:0;width:200px;background:linear-gradient(90deg,transparent,rgba(190,24,93,0.15));pointer-events:none;}
+.hero::after{content:'🧬';position:absolute;right:12px;top:-5px;font-size:55px;opacity:.1;pointer-events:none;}
+.h-label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;color:#e9d5ff;text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:var(--font-head);font-size:clamp(14px,2vw,20px);font-weight:800;color:#fff;line-height:1.2;}
+.h-title span{color:#fcd34d;}
+.h-desc{font-size:11px;color:#e9d5ff;line-height:1.55;max-width:500px;}
+
+/* SIM CONTROLS */
+.sim-wrap{display:grid;grid-template-columns:190px 1fr;gap:8px;flex:1;min-height:0;}
+@media(max-width:640px){.sim-wrap{grid-template-columns:1fr;}}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;}
+.ctrl-panel h3{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--acc3);}
+.cg label{display:block;font-size:9.5px;font-weight:700;color:var(--text3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;}
+select{width:100%;background:#fff;border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 26px 7px 9px;font-family:var(--font);font-size:12px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%237c3aed' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .17s;}
+select:focus{border-color:var(--acc);}
+.btn{width:100%;border:none;border-radius:8px;padding:9px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(91,33,182,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(91,33,182,.35);}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-reset{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.aquarium{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:10px;flex:1;box-shadow:0 1px 3px rgba(30,27,75,0.06);display:flex;flex-direction:column;}
+.aquarium h3{font-family:var(--font-head);font-size:12px;font-weight:800;color:var(--acc3);margin-bottom:7px;}
+.tipinfo{background:#f5f0ff;border:1px solid #ddd6fe;border-radius:7px;padding:7px 10px;margin-top:6px;font-size:11px;color:#4c1d95;display:none;line-height:1.6;}
+.tipinfo.on{display:block;}
+
+/* MEMORY GAME */
+@keyframes memPop{0%{transform:scale(.9);}60%{transform:scale(1.12);}100%{transform:scale(1);}}
+@keyframes wrongFlash{0%,100%{transform:scale(1);}50%{transform:scale(.95);}}
+
+/* TEORI TAB */
+.teori-tab{background:transparent;border-radius:7px;padding:5px 12px;font-family:var(--font);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .2s;}
+.teori-tab.active{color:#fff !important;opacity:1 !important;}
+.teori-panel{display:none;}
+.teori-panel.active{display:block;}
+
+/* PIPETTE ANIMATION */
+@keyframes pipetteDown{0%{top:-60px;opacity:0;}30%{opacity:1;}60%,80%{top:var(--pipe-end,20px);}100%{top:-60px;opacity:0;}}
+@keyframes dropFall{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(30px) scale(0.3);opacity:0;}}
+.pipette-svg{position:absolute;z-index:20;pointer-events:none;animation:pipetteDown 2.5s ease-in-out;}
+.drop-animate{position:absolute;width:6px;height:8px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:dropFall 0.5s ease-in forwards;pointer-events:none;}
+
+/* FLASH CARD */
+@keyframes floatMolQ{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* COVER FULLSCREEN */
+body.cover-active #mainHeader{display:none;}
+body.cover-active{overflow:hidden;}
+body.cover-active #app{position:fixed;inset:0;z-index:50;}
+.drag-img{width:58px!important;height:58px!important;}
+</style>
+</head>
+<body>
+
+<!-- SOUNDS -->
+<audio id="sndBenar" src="https://denicendrianto41.github.io/benar.wav" preload="auto"></audio>
+<audio id="sndSalah" src="https://denicendrianto41.github.io/salah.wav" preload="auto"></audio>
+<audio id="sndBerhasil" src="https://denicendrianto41.github.io/berhasil.wav" preload="auto"></audio>
+<script>function playSound(id){try{const a=document.getElementById(id);if(a){a.currentTime=0;a.play().catch(()=>{});}}catch(e){}}</script>
+
+<header id="mainHeader">
+  <div class="logo">
+    <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#fff,#e9d5ff);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.2);">🧬</div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Identifikasi Protein · Makromolekul</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="document.getElementById('mainNav').classList.toggle('open')" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect y="3" width="22" height="2.5" rx="1.25" fill="white"/><rect y="10" width="22" height="2.5" rx="1.25" fill="white"/><rect y="17" width="22" height="2.5" rx="1.25" fill="white"/></svg>
+  </button>
+  <nav id="mainNav">
+    <button class="nb" onclick="showPage('page-tujuan',this)">🎯 Tujuan</button>
+    <button class="nb" onclick="showPage('page-teori',this)">📚 Teori</button>
+    <button class="nb" onclick="showPage('page-alatbahan',this)">🔬 Alat &amp; Bahan</button>
+    <button class="nb" onclick="showPage('page-prosedur',this)">📋 Prosedur</button>
+    <button class="nb" onclick="showPage('page-simulasi',this)">⚗️ Simulasi</button>
+    <button class="nb" onclick="showPage('page-lembarkerja',this)">📝 Lembar Kerja</button>
+    <button class="nb" onclick="showPage('page-kuis',this)">🏆 Kuis</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ===== COVER PAGE ===== -->
+<div id="page-cover" class="page active">
+  <div style="flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column;background:#0d0020;">
+    <!-- Animated background image -->
+    <div style="position:absolute;inset:0;overflow:hidden;">
+      <img id="coverImg" src="https://85meydiaafrina.github.io/ujiprotein/coverprotein.png" alt="Cover" 
+        style="width:100%;height:100%;object-fit:cover;animation:coverFloat 6s ease-in-out infinite;transform-origin:center center;filter:brightness(0.75) saturate(1.1);">
+    </div>
+    <!-- Gradient overlays for vibrancy -->
+    <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(26,0,64,0.75) 0%,rgba(76,29,149,0.55) 35%,rgba(190,24,93,0.45) 70%,rgba(245,158,11,0.3) 100%);z-index:1;"></div>
+    <!-- Animated shimmer overlay -->
+    <div style="position:absolute;inset:0;z-index:2;background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,0.04) 50%,transparent 70%);background-size:200% 200%;animation:shimmer 4s linear infinite;"></div>
+    <!-- Floating particles -->
+    <div style="position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;">
+      <div style="position:absolute;width:80px;height:80px;background:rgba(252,211,77,0.15);border-radius:50%;top:8%;left:5%;animation:particleDrift 6s ease-in-out infinite;--dx:40px;--dy:-50px;"></div>
+      <div style="position:absolute;width:50px;height:50px;background:rgba(167,139,250,0.2);border-radius:50%;top:15%;left:85%;animation:particleDrift 5s ease-in-out infinite 1s;--dx:-30px;--dy:40px;"></div>
+      <div style="position:absolute;width:60px;height:60px;background:rgba(190,24,93,0.15);border-radius:50%;top:70%;left:12%;animation:particleDrift 7s ease-in-out infinite 2s;--dx:35px;--dy:-40px;"></div>
+      <div style="position:absolute;width:40px;height:40px;background:rgba(29,78,216,0.2);border-radius:50%;top:75%;left:75%;animation:particleDrift 5.5s ease-in-out infinite 0.5s;--dx:-25px;--dy:30px;"></div>
+      <div style="position:absolute;width:45px;height:45px;background:rgba(5,150,105,0.15);border-radius:50%;top:45%;left:55%;animation:particleDrift 4.5s ease-in-out infinite 1.8s;--dx:20px;--dy:-30px;"></div>
+    </div>
+    <!-- Floating molecule icons -->
+    <div style="position:absolute;inset:0;z-index:4;pointer-events:none;display:flex;align-items:flex-start;justify-content:space-around;padding:40px 30px 0;">
+      <span style="font-size:36px;animation:floatMol 3s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));opacity:0.85;">🧬</span>
+      <span style="font-size:30px;animation:floatMol 3.5s ease-in-out infinite 0.5s;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));opacity:0.85;">⚗️</span>
+      <span style="font-size:28px;animation:floatMol 2.8s ease-in-out infinite 1s;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));opacity:0.85;">🔬</span>
+      <span style="font-size:32px;animation:floatMol 3.2s ease-in-out infinite 1.5s;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));opacity:0.85;">🧪</span>
+      <span style="font-size:26px;animation:floatMol 4s ease-in-out infinite 0.8s;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));opacity:0.85;">💊</span>
+    </div>
+    <!-- Animated chemical element symbols floating -->
+    <div style="position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;">
+      <!-- H -->
+      <div style="position:absolute;top:22%;left:3%;animation:floatMol 4.2s ease-in-out infinite 0.3s;">
+        <div style="width:38px;height:38px;border-radius:50%;background:rgba(124,58,237,0.3);border:1.5px solid rgba(167,139,250,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:14px;font-weight:800;color:rgba(233,213,255,0.9);">H</div>
+      </div>
+      <!-- C -->
+      <div style="position:absolute;top:14%;right:5%;animation:floatMol 3.8s ease-in-out infinite 1.1s;">
+        <div style="width:34px;height:34px;border-radius:50%;background:rgba(29,78,216,0.3);border:1.5px solid rgba(147,197,253,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:800;color:rgba(191,219,254,0.9);">C</div>
+      </div>
+      <!-- N -->
+      <div style="position:absolute;bottom:30%;left:2%;animation:floatMol 5s ease-in-out infinite 2s;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(5,150,105,0.3);border:1.5px solid rgba(110,231,183,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:800;color:rgba(167,243,208,0.9);">N</div>
+      </div>
+      <!-- O -->
+      <div style="position:absolute;bottom:20%;right:3%;animation:floatMol 4.6s ease-in-out infinite 0.7s;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(220,38,38,0.3);border:1.5px solid rgba(252,165,165,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:800;color:rgba(254,202,202,0.9);">O</div>
+      </div>
+      <!-- Cu -->
+      <div style="position:absolute;top:55%;left:5%;animation:floatMol 3.5s ease-in-out infinite 1.8s;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(217,119,6,0.3);border:1.5px solid rgba(253,230,138,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;font-weight:800;color:rgba(254,243,199,0.9);">Cu</div>
+      </div>
+      <!-- S -->
+      <div style="position:absolute;top:40%;right:2%;animation:floatMol 4s ease-in-out infinite 2.5s;">
+        <div style="width:30px;height:30px;border-radius:50%;background:rgba(190,24,93,0.25);border:1.5px solid rgba(244,114,182,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:800;color:rgba(251,207,232,0.9);">S</div>
+      </div>
+      <!-- Hg -->
+      <div style="position:absolute;bottom:42%;right:6%;animation:floatMol 5.2s ease-in-out infinite 0.5s;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(55,65,81,0.4);border:1.5px solid rgba(156,163,175,0.6);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;color:rgba(229,231,235,0.9);">Hg</div>
+      </div>
+    </div>
+    <!-- Main content -->
+    <div style="position:relative;z-index:5;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:18px;text-align:center;">
+      <div>
+        
+        <div style="font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,52px);font-weight:800;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,0.6);line-height:1.1;margin-bottom:8px;">
+          Identifikasi<br><span style="background:linear-gradient(90deg,#fbbf24,#f472b6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:shimmer 3s linear infinite;">Protein</span>
+        </div>
+        
+      </div>
+      <!-- 4 Uji preview badges -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <div style="background:rgba(91,33,182,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(167,139,250,0.5);border-radius:12px;padding:10px 14px;color:#fff;text-align:center;min-width:80px;">
+          <div style="font-size:22px;animation:bounce 2.5s ease-in-out infinite;">🟣</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;margin-top:4px;">Biuret</div>
+        </div>
+        <div style="background:rgba(180,83,9,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(253,230,138,0.5);border-radius:12px;padding:10px 14px;color:#fff;text-align:center;min-width:80px;">
+          <div style="font-size:22px;animation:bounce 2.5s ease-in-out infinite 0.4s;">🟡</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;margin-top:4px;">Xantho</div>
+        </div>
+        <div style="background:rgba(29,78,216,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(147,197,253,0.5);border-radius:12px;padding:10px 14px;color:#fff;text-align:center;min-width:80px;">
+          <div style="font-size:22px;animation:bounce 2.5s ease-in-out infinite 0.8s;">🔵</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;margin-top:4px;">Ninhidrin</div>
+        </div>
+        <div style="background:rgba(153,27,27,0.7);backdrop-filter:blur(8px);border:1.5px solid rgba(252,165,165,0.5);border-radius:12px;padding:10px 14px;color:#fff;text-align:center;min-width:80px;">
+          <div style="font-size:22px;animation:bounce 2.5s ease-in-out infinite 1.2s;">🔴</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;margin-top:4px;">Millon</div>
+        </div>
+      </div>
+      <!-- MULAI button with ripple -->
+      <div style="position:relative;display:inline-block;">
+        <div style="position:absolute;inset:-8px;border-radius:50px;border:2px solid rgba(251,191,36,0.5);animation:ripple 2s ease-out infinite;"></div>
+        <div style="position:absolute;inset:-16px;border-radius:50px;border:2px solid rgba(251,191,36,0.25);animation:ripple 2s ease-out infinite 0.5s;"></div>
+        <button onclick="startLab()" style="
+          position:relative;z-index:1;
+          background:linear-gradient(135deg,#fbbf24,#f59e0b,#d97706);
+          color:#1a0040;border:none;border-radius:50px;
+          padding:14px 44px;
+          font-family:'Syne',sans-serif;font-size:clamp(14px,2vw,18px);font-weight:800;
+          cursor:pointer;letter-spacing:.05em;
+          box-shadow:0 8px 32px rgba(251,191,36,0.5),0 2px 8px rgba(0,0,0,0.3);
+          transition:all .3s cubic-bezier(.34,1.56,.64,1);
+          animation:pulseGlow 2.5s ease-in-out infinite;
+        " onmouseover="this.style.transform='scale(1.08) translateY(-2px)'" onmouseout="this.style.transform='scale(1) translateY(0)'">
+          ▶ MULAI
+        </button>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.45);font-family:'DM Mono',monospace;letter-spacing:.1em;">KLIK UNTUK MEMULAI PRAKTIKUM</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TUJUAN ===== -->
+<style>
+@keyframes floatBubble{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-10px) scale(1.04);}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes countUp{from{opacity:0;transform:scale(0.5);}to{opacity:1;transform:scale(1);}}
+@keyframes rotateSlow{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+@keyframes pulseBorder{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,0.3);}50%{box-shadow:0 0 0 8px rgba(124,58,237,0);}}
+@keyframes drawLine{from{stroke-dashoffset:200;}to{stroke-dashoffset:0;}}
+@keyframes electronOrbit1{0%{transform:rotate(0deg) translateX(32px) rotate(0deg);}100%{transform:rotate(360deg) translateX(32px) rotate(-360deg);}}
+@keyframes electronOrbit2{0%{transform:rotate(120deg) translateX(26px) rotate(-120deg);}100%{transform:rotate(480deg) translateX(26px) rotate(-480deg);}}
+@keyframes electronOrbit3{0%{transform:rotate(240deg) translateX(38px) rotate(-240deg);}100%{transform:rotate(600deg) translateX(38px) rotate(-600deg);}}
+@keyframes nucleusPulseW{0%,100%{box-shadow:0 0 8px rgba(124,58,237,0.5);}50%{box-shadow:0 0 20px rgba(124,58,237,0.9),0 0 40px rgba(168,85,247,0.4);}}
+@keyframes floatAtom{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateX(-15px);}to{opacity:1;transform:translateX(0);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+@keyframes bondSway{0%,100%{transform:scaleX(1) translateX(0);}50%{transform:scaleX(1.08) translateX(2px);}}
+</style>
+<div id="page-tujuan" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;background:var(--surf);padding:0;position:relative;">
+    <!-- Subtle animated background pattern -->
+    <div style="position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+      <!-- Orbiting atom decoration top-right -->
+      <div style="position:absolute;top:-20px;right:-20px;width:160px;height:160px;opacity:0.12;">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid #7c3aed;"></div>
+        <div style="position:absolute;inset:20px;border-radius:50%;border:1.5px solid #a855f7;transform:rotate(45deg);"></div>
+        <div style="position:absolute;inset:40px;border-radius:50%;border:1.5px solid #c084fc;transform:rotate(90deg);"></div>
+        <div style="position:absolute;top:50%;left:50%;width:16px;height:16px;border-radius:50%;background:#7c3aed;transform:translate(-50%,-50%);"></div>
+      </div>
+      <!-- Molecule dots bottom-left -->
+      <div style="position:absolute;bottom:-30px;left:-20px;width:140px;height:140px;opacity:0.08;">
+        <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid #1d4ed8;animation:rotateSlow 12s linear infinite;"></div>
+        <div style="position:absolute;inset:25px;border-radius:50%;border:1.5px solid #3b82f6;animation:rotateSlow 8s linear infinite reverse;"></div>
+      </div>
+      <!-- Floating element badges -->
+      <div style="position:absolute;top:15%;left:1%;animation:floatAtom 4s ease-in-out infinite;">
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:1.5px solid #c4b5fd;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;color:#7c3aed;">H</div>
+      </div>
+      <div style="position:absolute;top:45%;left:0.5%;animation:floatAtom 5.2s ease-in-out infinite 1s;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#eff6ff,#bfdbfe);border:1.5px solid #93c5fd;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;color:#1d4ed8;">N</div>
+      </div>
+      <div style="position:absolute;bottom:25%;right:1%;animation:floatAtom 3.8s ease-in-out infinite 2s;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1.5px solid #fca5a5;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;color:#dc2626;">O</div>
+      </div>
+      <div style="position:absolute;top:70%;left:1%;animation:floatAtom 4.6s ease-in-out infinite 0.5s;">
+        <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f0fdf4,#bbf7d0);border:1.5px solid #86efac;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:800;color:#15803d;">C</div>
+      </div>
+    </div>
+
+    <!-- Header banner -->
+    <div style="background:linear-gradient(135deg,#1a0040,#4c1d95,#7c3aed);padding:12px 16px;flex-shrink:0;position:relative;overflow:hidden;z-index:1;">
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);animation:shimmer 3s linear infinite;"></div>
+      <!-- SVG molecule decoration -->
+      <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:0.25;" width="80" height="50" viewBox="0 0 80 50">
+        <circle cx="15" cy="25" r="8" fill="#a78bfa"/>
+        <circle cx="40" cy="10" r="6" fill="#60a5fa"/>
+        <circle cx="65" cy="25" r="8" fill="#f472b6"/>
+        <circle cx="40" cy="40" r="6" fill="#34d399"/>
+        <line x1="23" y1="25" x2="34" y2="13" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="46" y1="13" x2="57" y2="22" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="57" y1="28" x2="46" y2="38" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
+        <line x1="34" y1="38" x2="23" y2="28" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
+      </svg>
+      <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.2em;color:rgba(253,230,138,0.9);text-transform:uppercase;margin-bottom:3px;">🎯 Tujuan Pembelajaran</div>
+      <div style="font-family:'Syne',sans-serif;font-size:clamp(16px,2.5vw,22px);font-weight:800;color:#fff;line-height:1.2;">Identifikasi <span style="color:#fcd34d;">Protein</span></div>
+      <div style="font-size:10px;color:rgba(233,213,255,0.8);margin-top:2px;">Makromolekul · Kimia Organik · SMA/MA</div>
+    </div>
+
+    <!-- Main content scrollable -->
+    <div style="position:relative;z-index:1;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:10px 12px 10px;">
+      
+      <!-- Kompetensi Dasar card -->
+      <div style="background:linear-gradient(135deg,#fefbff,#f5f0ff);border:1.5px solid #ddd6fe;border-radius:12px;padding:10px 13px;margin-bottom:8px;animation:slideInUp 0.4s ease both;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="width:26px;height:26px;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🎯</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11.5px;font-weight:800;color:#4c1d95;letter-spacing:.05em;text-transform:uppercase;">Tujuan Pembelajaran</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#fff;border-left:3px solid #7c3aed;border-radius:0 8px 8px 0;padding:8px 11px;">
+          <div style="font-size:12.5px;color:#374151;line-height:1.7;">Menjelaskan senyawa karbon dan <strong style="color:#7c3aed;">makromolekul</strong> serta penerapannya dalam kehidupan sehari-hari.</div>
+        </div>
+      </div>
+
+      <!-- Tujuan Percobaan -->
+      <div style="background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1.5px solid #bfdbfe;border-radius:12px;padding:10px 13px;margin-bottom:8px;animation:slideInUp 0.5s ease 0.1s both;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+          <div style="width:26px;height:26px;background:linear-gradient(135deg,#0284c7,#0ea5e9);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🧪</div>
+          <div style="font-family:'Syne',sans-serif;font-size:11.5px;font-weight:800;color:#1e3a8a;letter-spacing:.05em;text-transform:uppercase;">Tujuan Percobaan</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;gap:9px;align-items:flex-start;background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #bfdbfe;animation:fadeSlideIn 0.5s ease 0.2s both;">
+            <div style="width:20px;height:20px;min-width:20px;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800;margin-top:1px;">1</div>
+            <div style="font-size:12px;color:#374151;line-height:1.65;">Mengidentifikasi keberadaan protein dalam sampel makanan (<strong style="color:#7c3aed;">Albumin telur</strong> dan <strong style="color:#7c3aed;">Gelatin</strong>) melalui reaksi kimia spesifik.</div>
+          </div>
+          <div style="display:flex;gap:9px;align-items:flex-start;background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #bfdbfe;animation:fadeSlideIn 0.5s ease 0.35s both;">
+            <div style="width:20px;height:20px;min-width:20px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800;margin-top:1px;">2</div>
+            <div style="font-size:12px;color:#374151;line-height:1.65;">Memahami perubahan karakteristik (<strong style="color:#1d4ed8;">warna dan endapan</strong>) pada setiap jenis uji: <strong style="color:#4c1d95;">Biuret, Xanthoproteat, Ninhidrin, dan Millon.</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Uji cards - white themed with color accents -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;animation:slideInUp 0.6s ease 0.2s both;">
+        <!-- Biuret -->
+        <div style="background:#fff;border:2px solid #ddd6fe;border-radius:12px;padding:10px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(124,58,237,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:10px 10px 0 0;"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px solid #c4b5fd;margin:4px auto 6px;display:flex;align-items:center;justify-content:center;animation:pulseBorder 2.5s ease-in-out infinite;">
+            <span style="font-size:18px;">🟣</span>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#4c1d95;">Biuret</div>
+          <div style="font-size:9px;color:#6d28d9;margin-top:3px;line-height:1.4;">Ikatan peptida</div>
+          <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:#7c3aed;margin-top:4px;background:#f5f3ff;border-radius:4px;padding:2px 4px;">Cu²⁺+NaOH</div>
+        </div>
+        <!-- Xanthoproteat -->
+        <div style="background:#fff;border:2px solid #fde68a;border-radius:12px;padding:10px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(217,119,6,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#d97706,#f59e0b);border-radius:10px 10px 0 0;"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #fde68a;margin:4px auto 6px;display:flex;align-items:center;justify-content:center;animation:floatBubble 3s ease-in-out infinite .5s;">
+            <span style="font-size:18px;">🟡</span>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#92400e;">Xantho</div>
+          <div style="font-size:9px;color:#b45309;margin-top:3px;line-height:1.4;">Cincin benzena</div>
+          <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:#d97706;margin-top:4px;background:#fffbeb;border-radius:4px;padding:2px 4px;">HNO₃ pekat</div>
+        </div>
+        <!-- Ninhidrin -->
+        <div style="background:#fff;border:2px solid #bfdbfe;border-radius:12px;padding:10px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(29,78,216,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1d4ed8,#3b82f6);border-radius:10px 10px 0 0;"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #93c5fd;margin:4px auto 6px;display:flex;align-items:center;justify-content:center;animation:floatBubble 3.4s ease-in-out infinite 1s;">
+            <span style="font-size:18px;">🔵</span>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#1e3a8a;">Ninhidrin</div>
+          <div style="font-size:9px;color:#1d4ed8;margin-top:3px;line-height:1.4;">Gugus amino</div>
+          <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:#1d4ed8;margin-top:4px;background:#eff6ff;border-radius:4px;padding:2px 4px;">Ninhidrin</div>
+        </div>
+        <!-- Millon -->
+        <div style="background:#fff;border:2px solid #fecaca;border-radius:12px;padding:10px 6px;text-align:center;position:relative;overflow:hidden;cursor:default;transition:all .25s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(220,38,38,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#dc2626,#ef4444);border-radius:10px 10px 0 0;"></div>
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#fff1f2,#fee2e2);border:2px solid #fca5a5;margin:4px auto 6px;display:flex;align-items:center;justify-content:center;animation:floatBubble 2.9s ease-in-out infinite 1.5s;">
+            <span style="font-size:18px;">🔴</span>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#991b1b;">Millon</div>
+          <div style="font-size:9px;color:#dc2626;margin-top:3px;line-height:1.4;">Gugus fenol</div>
+          <div style="font-family:'DM Mono',monospace;font-size:7.5px;color:#dc2626;margin-top:4px;background:#fff1f2;border-radius:4px;padding:2px 4px;">Hg(NO₃)₂</div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;gap:7px;">
+    <div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;">
+      <button class="teori-tab active" data-border="#7c3aed" onclick="switchTeori('protein',this)" style="background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;">🧬 Protein</button>
+      <button class="teori-tab" data-border="#7c3aed" onclick="switchTeori('biuret',this)" style="border:1px solid #7c3aed;color:#7c3aed;">🟣 Biuret</button>
+      <button class="teori-tab" data-border="#b45309" onclick="switchTeori('xantho',this)" style="border:1px solid #b45309;color:#b45309;">🟡 Xanthoproteat</button>
+      <button class="teori-tab" data-border="#1d4ed8" onclick="switchTeori('ninhidrin',this)" style="border:1px solid #1d4ed8;color:#1d4ed8;">🔵 Ninhidrin</button>
+      <button class="teori-tab" data-border="#dc2626" onclick="switchTeori('millon',this)" style="border:1px solid #dc2626;color:#dc2626;">🔴 Millon</button>
+      <button class="teori-tab" data-border="#059669" onclick="switchTeori('ringkasan',this)" style="border:1px solid #059669;color:#059669;">📊 Ringkasan</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;min-height:0;">
+      <div id="tp-protein" class="teori-panel active">
+        <div class="two-col">
+          <div class="card">
+            <div class="ch"><div class="ci p">🧬</div><div class="ct">Pengertian Protein</div></div>
+            <p>Protein adalah makromolekul biologis yang tersusun dari rantai <strong>asam amino</strong> yang dihubungkan oleh <strong>ikatan peptida</strong> (–CO–NH–). Merupakan polimer dari ±20 jenis asam amino berbeda.</p>
+            <div style="background:#f5f0ff;border:1px solid #ddd6fe;border-radius:8px;padding:8px 10px;margin-top:6px;">
+              <div style="font-size:10px;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:4px;">Struktur Ikatan Peptida</div>
+              <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4c1d95;text-align:center;padding:4px 0;">H₂N–CH(R₁)–CO–NH–CH(R₂)–COOH</div>
+            </div>
+            <h4>Fungsi Protein</h4>
+            <p>Enzim (katalis), antibodi (imunitas), hormon (regulasi), struktural (keratin, kolagen), transportasi (hemoglobin).</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div class="card">
+              <div class="ch"><div class="ci xa">⚗️</div><div class="ct">Struktur Asam Amino</div></div>
+              <p>Setiap asam amino memiliki: gugus amino (–NH₂), gugus karboksil (–COOH), atom H, dan rantai samping (R) yang spesifik.</p>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;">
+                <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;color:#92400e;">Tirosin (–OH fenol)</div>
+                <div style="background:#fce7f3;border:1px solid #fbcfe8;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;color:#9d174d;">Fenilalanin (benzena)</div>
+                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:4px 8px;font-size:10px;font-weight:700;color:#1e3a8a;">Glisin (R = H)</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="ch"><div class="ci g">🥚</div><div class="ct">Albumin vs Gelatin</div></div>
+              <div style="display:flex;gap:6px;">
+                <div style="flex:1;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:1px solid #ddd6fe;border-radius:8px;padding:8px;">
+                  <div style="font-size:14px;font-weight:900;color:#ffffff;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:.02em;">Albumin Telur</div>
+                  <p style="font-size:10.5px;margin:0;color:#ffffff;">Kaya tirosin dan fenilalanin. Mengandung cincin benzena → positif semua uji.</p>
+                </div>
+                <div style="flex:1;background:linear-gradient(135deg,#be185d,#ec4899);border:1px solid #f0abfc;border-radius:8px;padding:8px;">
+                  <div style="font-size:14px;font-weight:900;color:#ffffff;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,0.5);letter-spacing:.02em;">Gelatin</div>
+                  <p style="font-size:10.5px;margin:0;color:#ffffff;">Kolagen terhidrolisis. Rendah tirosin → Millon negatif. Kaya glisin &amp; prolin.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tp-biuret" class="teori-panel">
+        <div class="two-col">
+          <div class="card" style="border-left:3px solid #7c3aed;">
+            <div class="ch"><div class="ci bi">🟣</div><div class="ct" style="color:#7c3aed;">Uji Biuret – Ikatan Peptida</div></div>
+            <h4>Prinsip</h4>
+            <p>Ion Cu²⁺ dari CuSO₄ dalam suasana basa (NaOH) bereaksi dengan ikatan peptida membentuk kompleks berwarna <strong>ungu kebiruan</strong>.</p>
+            <p style="font-family:'DM Mono',monospace;font-size:10.5px;background:#f5f0ff;padding:6px 9px;border-radius:6px;border:1px solid #ddd6fe;margin-top:5px;">Protein + Cu²⁺ (NaOH) → Kompleks [Cu-peptida] ungu</p>
+            <h4>Prosedur</h4>
+            <p>Sampel + 2 mL NaOH → tambah 4–5 tetes CuSO₄ 1% → panaskan 5 menit.</p>
+            <h4>Hasil Positif</h4>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;">
+              <span style="background:#e0e7ff;color:#3730a3;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;">Tidak berwarna</span>
+              <span>→</span>
+              <span style="background:#7c3aed;color:#fff;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700;">Ungu Kebiruan ✓</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci g">💡</div><div class="ct">Mengapa NaOH Dulu?</div></div>
+            <p>NaOH menciptakan <strong>suasana basa</strong> yang diperlukan agar Cu²⁺ dapat berkoordinasi dengan atom N dari ikatan peptida membentuk kompleks berwarna.</p>
+            <p>Jika urutan dibalik (CuSO₄ dulu), Cu(OH)₂ akan mengendap sebelum bereaksi dengan protein, sehingga tidak terbentuk warna ungu.</p>
+            <div class="notebox">
+              <div class="nt">⚠️ Penting</div>
+              <p>Minimal 2 ikatan peptida diperlukan untuk memberikan hasil positif. Asam amino tunggal tidak bereaksi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tp-xantho" class="teori-panel">
+        <div class="two-col">
+          <div class="card" style="border-left:3px solid #f59e0b;">
+            <div class="ch"><div class="ci xa">🟡</div><div class="ct" style="color:#b45309;">Uji Xanthoproteat – Cincin Benzena</div></div>
+            <h4>Prinsip</h4>
+            <p>HNO₃ pekat bereaksi dengan cincin benzena dari asam amino aromatik (tirosin, fenilalanin, triptofan) melalui <strong>nitrasi</strong>, membentuk senyawa nitro berwarna kuning.</p>
+            <p style="font-family:'DM Mono',monospace;font-size:10.5px;background:#fffbeb;padding:6px 9px;border-radius:6px;border:1px solid #fde68a;margin-top:5px;">Ar-H + HNO₃(pekat) → Ar-NO₂ (kuning) + H₂O</p>
+            <h4>Hasil</h4>
+            <p><strong>Endapan kuning</strong> = Positif (mengandung asam amino aromatik). Warna kuning intensif dengan pemanasan.</p>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci g">⚠️</div><div class="ct">Keselamatan Kerja</div></div>
+            <p>HNO₃ pekat bersifat sangat korosif dan pengoksidasi kuat. Kontak langsung dapat menyebabkan luka bakar kimia parah.</p>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
+              <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:7px;padding:6px 10px;font-size:10.5px;color:#991b1b;">⚠️ Selalu gunakan <strong>penjepit tabung</strong> saat memanaskan HNO₃ pekat</div>
+              <div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:7px;padding:6px 10px;font-size:10.5px;color:#991b1b;">⚠️ Lakukan di lemari asam / ventilasi baik</div>
+              <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:7px;padding:6px 10px;font-size:10.5px;color:#166534;">✅ Kenakan APD: sarung tangan, kacamata, jas lab</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tp-ninhidrin" class="teori-panel">
+        <div class="two-col">
+          <div class="card" style="border-left:3px solid #1d4ed8;">
+            <div class="ch"><div class="ci ni">🔵</div><div class="ct" style="color:#1d4ed8;">Uji Ninhidrin – Gugus Amino Bebas</div></div>
+            <h4>Prinsip</h4>
+            <p>Ninhidrin bereaksi dengan gugus α-amino (–NH₂) bebas dari asam amino atau ujung N protein, menghasilkan warna <strong>biru intens</strong> (ungu Ruhemann).</p>
+            <p style="font-family:'DM Mono',monospace;font-size:10.5px;background:#eff6ff;padding:6px 9px;border-radius:6px;border:1px solid #bfdbfe;margin-top:5px;">R-NH₂ + Ninhidrin → Ungu Ruhemann + CO₂ + H₂O</p>
+            <h4>Prosedur</h4>
+            <p>Sampel 2 mL + 3–4 tetes ninhidrin → didihkan → amati perubahan warna.</p>
+            <h4>Catatan</h4>
+            <p>Prolin menghasilkan warna kuning/coklat, bukan biru, karena gugus iminanya berbeda.</p>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci g">📊</div><div class="ct">Sensitivitas Uji Ninhidrin</div></div>
+            <p>Ninhidrin adalah uji yang <strong>paling sensitif</strong> di antara empat uji protein — dapat mendeteksi asam amino dalam jumlah sangat kecil.</p>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
+              <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;color:#1e3a8a;font-weight:700;">Albumin telur</span>
+                <span style="background:#1d4ed8;color:#fff;font-size:9px;padding:2px 8px;border-radius:5px;font-weight:700;">Biru Intens</span>
+              </div>
+              <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:10.5px;color:#1e3a8a;font-weight:700;">Gelatin</span>
+                <span style="background:#1d4ed8;color:#fff;font-size:9px;padding:2px 8px;border-radius:5px;font-weight:700;">Biru Intens</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tp-millon" class="teori-panel">
+        <div class="two-col">
+          <div class="card" style="border-left:3px solid #dc2626;">
+            <div class="ch"><div class="ci mi">🔴</div><div class="ct" style="color:#dc2626;">Uji Millon – Gugus Fenol (Tirosin)</div></div>
+            <h4>Prinsip</h4>
+            <p>Reagen Millon (merkuri nitrat + HNO₃) bereaksi spesifik dengan gugus <strong>fenol (–OH)</strong> dari asam amino tirosin, menghasilkan endapan merah bata.</p>
+            <p style="font-family:'DM Mono',monospace;font-size:10.5px;background:#fff1f2;padding:6px 9px;border-radius:6px;border:1px solid #fecdd3;margin-top:5px;">Tirosin (–OH) + Hg²⁺ → Senyawa Merkuri-fenol (merah bata)</p>
+            <h4>Prosedur</h4>
+            <p>Sampel 1–2 mL + 2 tetes reagen Millon → amati sebelum dan sesudah dididihkan.</p>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci g">🔍</div><div class="ct">Mengapa Albumin (+) Gelatin (–)?</div></div>
+            <p><strong>Albumin telur</strong> kaya asam amino <strong>tirosin</strong> (mengandung gugus –OH fenol) → reagen Millon bereaksi → merah bata.</p>
+            <p><strong>Gelatin</strong> (kolagen terhidrolisis) sangat rendah atau tidak mengandung tirosin → tidak ada gugus fenol → tidak bereaksi.</p>
+            <div style="display:flex;gap:6px;margin-top:7px;">
+              <div style="flex:1;background:#fff1f2;border:1px solid #fecdd3;border-radius:9px;padding:8px;text-align:center;">
+                <div style="font-size:14px;">🥚</div>
+                <div style="font-size:10px;font-weight:800;color:#991b1b;">Albumin</div>
+                <div style="font-size:26px;margin:4px 0;">🔴</div>
+                <div style="font-size:9px;color:#b91c1c;font-weight:700;">Merah Bata (+)</div>
+              </div>
+              <div style="flex:1;background:#f8f9fa;border:1px solid #e9ecef;border-radius:9px;padding:8px;text-align:center;">
+                <div style="font-size:14px;">🟫</div>
+                <div style="font-size:10px;font-weight:800;color:#374151;">Gelatin</div>
+                <div style="font-size:26px;margin:4px 0;">⬜</div>
+                <div style="font-size:9px;color:#6b7280;font-weight:700;">Tidak Berubah (–)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tp-ringkasan" class="teori-panel">
+        <div class="card">
+          <div class="ch"><div class="ci g">📊</div><div class="ct">Ringkasan 4 Uji Protein</div></div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+              <thead>
+                <tr>
+                  <th style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:8px 10px;border:1px solid #5b21b6;text-align:left;">Jenis Uji</th>
+                  <th style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:8px 10px;border:1px solid #5b21b6;">Reagen</th>
+                  <th style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:8px 10px;border:1px solid #5b21b6;">Deteksi</th>
+                  <th style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:8px 10px;border:1px solid #5b21b6;">Albumin</th>
+                  <th style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;padding:8px 10px;border:1px solid #5b21b6;">Gelatin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:7px 10px;border:1px solid var(--border);font-weight:700;color:#7c3aed;">🟣 Biuret</td><td style="padding:7px 10px;border:1px solid var(--border);text-align:center;">NaOH + CuSO₄</td><td style="padding:7px 10px;border:1px solid var(--border);">Ikatan peptida</td><td style="padding:7px 10px;border:1px solid var(--border);background:#f5f0ff;text-align:center;font-weight:700;color:#5b21b6;">Ungu Kebiruan ✓</td><td style="padding:7px 10px;border:1px solid var(--border);background:#f5f0ff;text-align:center;font-weight:700;color:#5b21b6;">Ungu Kebiruan ✓</td></tr>
+                <tr><td style="padding:7px 10px;border:1px solid var(--border);font-weight:700;color:#b45309;">🟡 Xanthoproteat</td><td style="padding:7px 10px;border:1px solid var(--border);text-align:center;">HNO₃ pekat</td><td style="padding:7px 10px;border:1px solid var(--border);">Cincin benzena</td><td style="padding:7px 10px;border:1px solid var(--border);background:#fffbeb;text-align:center;font-weight:700;color:#b45309;">Endapan Kuning ✓</td><td style="padding:7px 10px;border:1px solid var(--border);background:#fffbeb;text-align:center;font-weight:700;color:#b45309;">Endapan Kuning ✓</td></tr>
+                <tr><td style="padding:7px 10px;border:1px solid var(--border);font-weight:700;color:#1d4ed8;">🔵 Ninhidrin</td><td style="padding:7px 10px;border:1px solid var(--border);text-align:center;">Larutan Ninhidrin</td><td style="padding:7px 10px;border:1px solid var(--border);">Gugus amino bebas</td><td style="padding:7px 10px;border:1px solid var(--border);background:#eff6ff;text-align:center;font-weight:700;color:#1d4ed8;">Biru Intens ✓</td><td style="padding:7px 10px;border:1px solid var(--border);background:#eff6ff;text-align:center;font-weight:700;color:#1d4ed8;">Biru Intens ✓</td></tr>
+                <tr><td style="padding:7px 10px;border:1px solid var(--border);font-weight:700;color:#dc2626;">🔴 Millon</td><td style="padding:7px 10px;border:1px solid var(--border);text-align:center;">Reagen Millon</td><td style="padding:7px 10px;border:1px solid var(--border);">Gugus fenol (tirosin)</td><td style="padding:7px 10px;border:1px solid var(--border);background:#fff1f2;text-align:center;font-weight:700;color:#dc2626;">Merah Bata ✓</td><td style="padding:7px 10px;border:1px solid var(--border);background:#f8f9fa;text-align:center;font-weight:700;color:#6b7280;">Tidak Berubah ✗</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function switchTeori(id,btn){
+  document.querySelectorAll('.teori-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.teori-tab').forEach(b=>{
+    b.classList.remove('active');
+    const bc=b.dataset.border||'#7c3aed';
+    b.style.background='transparent';b.style.color=bc;b.style.border=`1px solid ${bc}`;b.style.opacity='0.8';
+  });
+  const panel=document.getElementById('tp-'+id);
+  if(panel) panel.classList.add('active');
+  btn.classList.add('active');
+  const bc=btn.dataset.border||'#7c3aed';
+  btn.style.background=`linear-gradient(135deg,${bc},${bc}cc)`;
+  btn.style.color='#fff';btn.style.border='none';btn.style.opacity='1';
+}
+document.querySelectorAll('.teori-tab:not(.active)').forEach(b=>{b.style.opacity='0.8';});
+</script>
+
+<!-- ===== ALAT & BAHAN ===== -->
+<div id="page-alatbahan" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:5px 9px 6px;gap:5px;">
+    <div class="hero" style="flex-shrink:0;margin-bottom:0;padding:6px 14px;">
+      <div>
+        <div class="h-label">🔬 Alat &amp; Bahan</div>
+        <div class="h-title">Persiapkan <span>Perlengkapan Lab</span></div>
+        <div class="h-desc">Seret (drag) setiap alat dan bahan ke zona yang sesuai.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0;overflow:hidden;">
+      <!-- Kiri: Daftar alat & bahan -->
+      <div style="background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:6px 7px;display:flex;flex-direction:column;gap:3px;overflow:hidden;">
+        <div class="sep" style="margin:1px 0 2px;flex-shrink:0;"><span>🔧 Alat</span></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;flex-shrink:0;" id="alatGrid">
+          <div class="drag-card" draggable="true" data-id="rak" data-type="alat" data-name="Rak Tabung" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/rak.png" class="drag-img" alt="Rak" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🧪</span>
+            <span class="drag-label" style="font-size:7.5px;">Rak Tabung</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="pipet" data-type="alat" data-name="Pipet Tetes" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/pipet.png" class="drag-img" alt="Pipet" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">💧</span>
+            <span class="drag-label" style="font-size:7.5px;">Pipet Tetes</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="penjepit" data-type="alat" data-name="Penjepit" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/penjepit.png" class="drag-img" alt="Penjepit" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🥢</span>
+            <span class="drag-label" style="font-size:7.5px;">Penjepit</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="bunsen" data-type="alat" data-name="Bunsen" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/bunsen.png" class="drag-img" alt="Bunsen" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🔥</span>
+            <span class="drag-label" style="font-size:7.5px;">Bunsen</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="tabung" data-type="alat" data-name="Tabung Reaksi" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujikarbohidrat/tabungreaksi.png" class="drag-img" alt="Tabung Reaksi" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🧪</span>
+            <span class="drag-label" style="font-size:7.5px;">Tabung Reaksi</span>
+          </div>
+        </div>
+        <div class="sep" style="margin:2px 0;flex-shrink:0;"><span>⚗️ Bahan</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;flex-shrink:0;" id="bahanGrid">
+          <div class="drag-card" draggable="true" data-id="albumin" data-type="bahan" data-name="Albumin Telur" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/albumin.png" class="drag-img" alt="Albumin" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🥚</span>
+            <span class="drag-label" style="font-size:7.5px;">Albumin</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="gelatin" data-type="bahan" data-name="Gelatin" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/gelatin.png" class="drag-img" alt="Gelatin" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🟫</span>
+            <span class="drag-label" style="font-size:7.5px;">Gelatin</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="naoh" data-type="bahan" data-name="NaOH" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/naoh.png" class="drag-img" alt="NaOH" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🧴</span>
+            <span class="drag-label" style="font-size:7.5px;">NaOH</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="cuso4" data-type="bahan" data-name="CuSO₄ 1%" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/cuso4.png" class="drag-img" alt="CuSO4" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">💙</span>
+            <span class="drag-label" style="font-size:7.5px;">CuSO₄</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="hno3" data-type="bahan" data-name="HNO₃ Pekat" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/hno3.png" class="drag-img" alt="HNO3" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">⚠️</span>
+            <span class="drag-label" style="font-size:7.5px;">HNO₃ Pekat</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="ninhidrin" data-type="bahan" data-name="Ninhidrin" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/ninhidrin.png" class="drag-img" alt="Ninhidrin" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🔵</span>
+            <span class="drag-label" style="font-size:7.5px;">Ninhidrin</span>
+          </div>
+          <div class="drag-card" draggable="true" data-id="millon" data-type="bahan" data-name="Reagen Millon" style="padding:4px 3px;">
+            <img src="https://85meydiaafrina.github.io/ujiprotein/reagenmillon.png" class="drag-img" alt="Millon" onerror="this.style.display='none';this.nextSibling.style.display='block'">
+            <span class="drag-icon" style="display:none;">🔴</span>
+            <span class="drag-label" style="font-size:7.5px;">Reagen Millon</span>
+          </div>
+        </div>
+      </div>
+      <!-- Kanan: Drop zones -->
+      <div style="display:flex;flex-direction:column;gap:5px;overflow:hidden;">
+        <div style="background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:7px 9px;flex:1;display:flex;flex-direction:column;min-height:0;">
+          <div style="font-size:10px;font-weight:700;color:var(--acc3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">🔧 Zona Alat</div>
+          <div class="drop-zone" id="dropAlat" data-accept="alat" style="flex:1;min-height:40px;"><div class="drop-hint">← Seret alat ke sini</div></div>
+        </div>
+        <div style="background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:7px 9px;flex:1;display:flex;flex-direction:column;min-height:0;">
+          <div style="font-size:10px;font-weight:700;color:#be185d;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">⚗️ Zona Bahan</div>
+          <div class="drop-zone" id="dropBahan" data-accept="bahan" style="flex:1;min-height:40px;"><div class="drop-hint">← Seret bahan ke sini</div></div>
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0;align-items:stretch;">
+          <div id="catatanMeja" style="background:linear-gradient(135deg,#f5f0ff,#fdf2f8);border:1.5px solid #c4b5fd;border-radius:10px;padding:6px 10px;display:none;flex:1;">
+            <div style="font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">📝 Fungsi</div>
+            <div id="catatanText" style="font-size:10.5px;color:var(--text2);line-height:1.5;"></div>
+          </div>
+          <button onclick="resetMeja()" style="background:linear-gradient(135deg,#1a0040,#5b21b6);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="celebOverlay" style="position:fixed;inset:0;background:rgba(26,0,64,.55);display:none;align-items:center;justify-content:center;z-index:300;backdrop-filter:blur(8px);">
+    <canvas id="confettiCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+    <div id="celebStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+    <div id="celebBox" style="background:#fff;border:1px solid var(--border);border-radius:18px;padding:28px 38px;text-align:center;box-shadow:0 20px 60px rgba(45,0,103,.3);transform:scale(.5) translateY(60px);opacity:0;transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .35s ease;max-width:340px;">
+      <div id="celebBadge" style="font-size:52px;opacity:0;transform:scale(.6);transition:all .4s cubic-bezier(.34,1.56,.64,1);">🎉</div>
+      <div id="celebTitle" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--acc3);margin-top:10px;opacity:0;transform:translateY(10px);transition:all .4s ease;">Meja Lab Siap!</div>
+      <div id="celebSub" style="font-size:12px;color:var(--text2);margin-top:7px;line-height:1.6;opacity:0;transform:translateY(8px);transition:all .4s ease;">Semua alat dan bahan sudah disiapkan.<br>Lanjutkan ke simulasi! 🧬</div>
+      <button onclick="closeCelebration();showPage('page-simulasi',document.querySelectorAll('.nb')[4])" style="margin-top:16px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">⚗️ Mulai Simulasi</button>
+    </div>
+  </div>
+  <div id="dragPopup" style="position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:299;padding-bottom:18px;pointer-events:none;">
+    <div id="dragPopupBox" style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 18px;box-shadow:0 8px 24px rgba(45,0,103,.2);display:flex;align-items:center;gap:10px;min-width:220px;transform:scale(.7);opacity:0;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .22s ease;pointer-events:auto;">
+      <span id="dragPopupIcon" style="font-size:22px;"></span>
+      <div><div id="dragPopupTitle" style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;"></div><div id="dragPopupMsg" style="font-size:11px;color:var(--text2);margin-top:2px;"></div></div>
+      <button onclick="closeDragPopup()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);">×</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NOTES={
+    rak:'Rak tabung: menopang tabung reaksi agar berdiri tegak dan aman selama percobaan.',
+    pipet:'Pipet tetes: mengambil dan meneteskan reagen dalam jumlah kecil dan presisi.',
+    penjepit:'Penjepit tabung: memegang tabung reaksi saat dipanaskan agar tidak membakar tangan.',
+    bunsen:'Pembakar Bunsen: sumber panas untuk memanaskan tabung reaksi dalam percobaan.',
+    tabung:'Tabung reaksi: wadah utama tempat pencampuran sampel dan reagen berlangsung.',
+    albumin:'Albumin telur (putih telur): sampel protein yang kaya tirosin dan asam amino aromatik.',
+    gelatin:'Gelatin: sampel protein kolagen terhidrolisis, rendah tirosin.',
+    naoh:'NaOH: membuat suasana basa yang diperlukan dalam uji Biuret.',
+    cuso4:'CuSO₄ 1%: menyediakan ion Cu²⁺ yang bereaksi dengan ikatan peptida pada uji Biuret.',
+    hno3:'HNO₃ pekat: reagen nitrasi untuk mendeteksi cincin benzena pada uji Xanthoproteat. ⚠️ Sangat korosif!',
+    ninhidrin:'Larutan Ninhidrin: bereaksi dengan gugus α-amino bebas menghasilkan warna biru (Ruhemann).',
+    millon:'Reagen Millon: mengandung merkuri nitrat, spesifik untuk gugus fenol (tirosin) → merah bata.'
+  };
+  let dragId=null,dragType=null,touchCard=null,touchClone=null,popupTimer=null;
+  let touchDragging=false,touchStartX=0,touchStartY=0,touchLongTimer=null;
+  const LONG_PRESS=120;
+  let alatCount=0,bahanCount=0;
+  const ALAT_NEEDED=4,BAHAN_NEEDED=4;
+  function showPopup(icon,title,msg,type){
+    const ov=document.getElementById('dragPopup'),box=document.getElementById('dragPopupBox');
+    const acc=type==='ok'?'#059669':'#c0392b';
+    document.getElementById('dragPopupIcon').textContent=icon;
+    document.getElementById('dragPopupTitle').textContent=title;
+    document.getElementById('dragPopupTitle').style.color=acc;
+    document.getElementById('dragPopupMsg').textContent=msg;
+    ov.style.display='flex';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{box.style.transform='scale(1)';box.style.opacity='1';}));
+    clearTimeout(popupTimer);popupTimer=setTimeout(closeDragPopup,2600);
+  }
+  window.closeDragPopup=function(){
+    clearTimeout(popupTimer);
+    const ov=document.getElementById('dragPopup'),box=document.getElementById('dragPopupBox');
+    box.style.transform='scale(.7)';box.style.opacity='0';
+    setTimeout(()=>{ov.style.display='none';},280);
+  };
+  function highlightZones(type){document.querySelectorAll('.drop-zone').forEach(z=>{z.style.opacity=z.dataset.accept===type?'1':'0.4';});}
+  function clearZoneHighlights(){document.querySelectorAll('.drop-zone').forEach(z=>{z.style.opacity='';z.classList.remove('drag-over-ok','drag-over-wrong');});}
+  function dropCard(zone,card){
+    const hint=zone.querySelector('.drop-hint');if(hint)hint.remove();
+    const div=document.createElement('div');
+    div.className='drop-card'+(card.dataset.type==='bahan'?' bahan-card':'');
+    const imgSrc=card.querySelector('.drag-img')?card.querySelector('.drag-img').src:'';
+    const icon=card.querySelector('.drag-icon')?card.querySelector('.drag-icon').textContent:'';
+    div.innerHTML=`${imgSrc?`<img src="${imgSrc}" style="width:18px;height:18px;object-fit:contain;" onerror="this.style.display='none'">`:'<span class="drop-card-icon">'+icon+'</span>'}<span>${card.dataset.name}</span><button class="drop-card-remove" title="Hapus" onclick="removeDropCard(this,'${card.dataset.id}','${card.dataset.type}')">×</button>`;
+    zone.appendChild(div);
+    card.classList.add('placed');
+    if(card.dataset.type==='alat') alatCount++;else bahanCount++;
+    const note=NOTES[card.dataset.id];
+    if(note){document.getElementById('catatanMeja').style.display='block';document.getElementById('catatanText').textContent=note;}
+    if(alatCount>=ALAT_NEEDED&&bahanCount>=BAHAN_NEEDED) setTimeout(showCelebration,400);
+  }
+  window.removeDropCard=function(btn,id,type){
+    const card=document.querySelector(`.drag-card[data-id="${id}"]`);
+    if(card) card.classList.remove('placed');
+    btn.parentElement.remove();
+    if(type==='alat') alatCount=Math.max(0,alatCount-1);else bahanCount=Math.max(0,bahanCount-1);
+    if(!document.getElementById('dropAlat').querySelector('.drop-card')) document.getElementById('dropAlat').innerHTML='<div class="drop-hint">← Seret alat ke sini</div>';
+    if(!document.getElementById('dropBahan').querySelector('.drop-card')) document.getElementById('dropBahan').innerHTML='<div class="drop-hint">← Seret bahan ke sini</div>';
+  };
+  document.querySelectorAll('.drag-card').forEach(card=>{
+    card.addEventListener('dragstart',e=>{if(card.classList.contains('placed')){e.preventDefault();return;}dragId=card.dataset.id;dragType=card.dataset.type;card.classList.add('dragging');e.dataTransfer.effectAllowed='copy';highlightZones(dragType);});
+    card.addEventListener('dragend',()=>{card.classList.remove('dragging');clearZoneHighlights();});
+    card.addEventListener('touchstart',e=>{
+      if(card.classList.contains('placed')) return;
+      const t=e.touches[0];touchStartX=t.clientX;touchStartY=t.clientY;touchDragging=false;
+      touchLongTimer=setTimeout(()=>{
+        touchDragging=true;touchCard=card;dragId=card.dataset.id;dragType=card.dataset.type;
+        if(navigator.vibrate) navigator.vibrate(25);
+        card.classList.add('touch-grabbing');
+        const rect=card.getBoundingClientRect();
+        touchClone=card.cloneNode(true);
+        touchClone.style.cssText=`position:fixed;z-index:99999;pointer-events:none;width:${rect.width}px;height:${rect.height}px;top:${rect.top}px;left:${rect.left}px;transform:scale(1.08);opacity:.9;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:none;`;
+        document.body.appendChild(touchClone);
+        highlightZones(dragType);
+      },LONG_PRESS);
+    },{passive:true});
+    card.addEventListener('touchmove',e=>{
+      const dx=e.touches[0].clientX-touchStartX,dy=e.touches[0].clientY-touchStartY;
+      if(!touchDragging&&(Math.abs(dx)>8||Math.abs(dy)>8)) clearTimeout(touchLongTimer);
+      if(!touchDragging) return;
+      e.preventDefault();
+      const t=e.touches[0];
+      if(touchClone){touchClone.style.top=(t.clientY-touchClone.offsetHeight/2)+'px';touchClone.style.left=(t.clientX-touchClone.offsetWidth/2)+'px';}
+      document.querySelectorAll('.drop-zone').forEach(z=>{const r=z.getBoundingClientRect();const over=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;if(over) z.classList.add(z.dataset.accept===dragType?'drag-over-ok':'drag-over-wrong');else z.classList.remove('drag-over-ok','drag-over-wrong');});
+    },{passive:false});
+    card.addEventListener('touchend',e=>{
+      clearTimeout(touchLongTimer);
+      if(touchClone){touchClone.remove();touchClone=null;}
+      if(touchCard) touchCard.classList.remove('touch-grabbing');
+      if(!touchDragging){touchDragging=false;touchCard=null;return;}
+      const t=e.changedTouches[0];let dropped=false;
+      document.querySelectorAll('.drop-zone').forEach(z=>{
+        z.classList.remove('drag-over-ok','drag-over-wrong');z.style.opacity='';
+        const r=z.getBoundingClientRect();
+        if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom){
+          if(z.dataset.accept===dragType){dropCard(z,card);playSound('sndBenar');dropped=true;}
+          else{playSound('sndSalah');showPopup('❌','Zona Salah!','Item ini harus di zona yang sesuai.','err');}
+        }
+      });
+      touchDragging=false;touchCard=null;
+    });
+  });
+  document.querySelectorAll('.drop-zone').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';zone.classList.add(zone.dataset.accept===dragType?'drag-over-ok':'drag-over-wrong');});
+    zone.addEventListener('dragleave',()=>{zone.classList.remove('drag-over-ok','drag-over-wrong');});
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('drag-over-ok','drag-over-wrong');clearZoneHighlights();
+      const card=document.querySelector(`.drag-card[data-id="${dragId}"]`);
+      if(!card||card.classList.contains('placed')) return;
+      if(zone.dataset.accept!==dragType){playSound('sndSalah');showPopup('❌','Zona Salah!','Tempatkan alat di zona ALAT dan bahan di zona BAHAN.','err');return;}
+      dropCard(zone,card);playSound('sndBenar');
+    });
+  });
+  let confettiRAF=null;
+  function showCelebration(){
+    try{const a=new Audio('https://denicendrianto41.github.io/berhasil.wav');a.play().catch(()=>{playSound('sndBerhasil');});}catch(e){playSound('sndBerhasil');}
+    const ov=document.getElementById('celebOverlay'),box=document.getElementById('celebBox');
+    ov.style.display='flex';ov.style.pointerEvents='auto';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{box.style.transform='scale(1) translateY(0)';box.style.opacity='1';}));
+    setTimeout(()=>{const b=document.getElementById('celebBadge');if(b){b.style.opacity='1';b.style.transform='scale(1)';}},500);
+    setTimeout(()=>{const t=document.getElementById('celebTitle');if(t){t.style.opacity='1';t.style.transform='translateY(0)';}},650);
+    setTimeout(()=>{const s=document.getElementById('celebSub');if(s){s.style.opacity='1';s.style.transform='translateY(0)';}},800);
+    launchStars();launchConfetti();
+  }
+  function launchStars(){
+    const c=document.getElementById('celebStars');if(!c) return;c.innerHTML='';
+    const emojis=['⭐','🌟','✨','💫','🎊','🎉','🧬','⚗️','🧪'];
+    for(let i=0;i<20;i++){const s=document.createElement('div');s.textContent=emojis[Math.floor(Math.random()*emojis.length)];s.style.cssText=`position:absolute;left:${5+Math.random()*90}%;bottom:${10+Math.random()*60}%;font-size:${14+Math.floor(Math.random()*20)}px;animation:starFloat ${1.8+Math.random()*1.5}s ease-out ${Math.random()*2.5}s both;pointer-events:none;`;c.appendChild(s);}
+    setTimeout(()=>{if(c) c.innerHTML='';},5500);
+  }
+  function launchConfetti(){
+    const canvas=document.getElementById('confettiCanvas');canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
+    const ctx=canvas.getContext('2d');
+    const colors=['#7c3aed','#5b21b6','#be185d','#f59e0b','#1d4ed8','#059669'];
+    const particles=Array.from({length:90},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,vx:(Math.random()-.5)*3,vy:Math.random()*4+2,rot:Math.random()*360,vrot:(Math.random()-.5)*8,w:6+Math.random()*6,h:8+Math.random()*10,color:colors[Math.floor(Math.random()*colors.length)],circle:Math.random()>.5}));
+    const start=Date.now();
+    function draw(){const elapsed=Date.now()-start;ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vrot;p.vy+=0.05;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.globalAlpha=Math.max(0,1-elapsed/5000);if(p.circle){ctx.beginPath();ctx.arc(0,0,p.w/2,0,Math.PI*2);ctx.fill();}else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(elapsed<5000) confettiRAF=requestAnimationFrame(draw);else ctx.clearRect(0,0,canvas.width,canvas.height);}
+    confettiRAF=requestAnimationFrame(draw);
+  }
+  window.closeCelebration=function(){
+    if(confettiRAF){cancelAnimationFrame(confettiRAF);confettiRAF=null;}
+    const ov=document.getElementById('celebOverlay'),box=document.getElementById('celebBox');
+    const canvas=document.getElementById('confettiCanvas');
+    box.style.transform='scale(.5) translateY(60px)';box.style.opacity='0';
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+    const stars=document.getElementById('celebStars');if(stars) stars.innerHTML='';
+    setTimeout(()=>{ov.style.display='none';ov.style.pointerEvents='none';},400);
+  };
+  window.resetMeja=function(){
+    closeCelebration();
+    document.getElementById('dropAlat').innerHTML='<div class="drop-hint">← Seret alat ke sini</div>';
+    document.getElementById('dropBahan').innerHTML='<div class="drop-hint">← Seret bahan ke sini</div>';
+    document.querySelectorAll('.drag-card').forEach(c=>c.classList.remove('placed'));
+    document.getElementById('catatanMeja').style.display='none';
+    alatCount=0;bahanCount=0;
+  };
+})();
+</script>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:6px 10px;">
+    <div style="overflow-y:auto;flex:1;">
+      <div class="two-col" style="gap:6px;">
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div class="card" style="border-left:3px solid #7c3aed;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci bi">🟣</div><div class="ct" style="color:#7c3aed;font-size:13px;">A. Prosedur Uji Biuret</div></div>
+            <div class="steps" style="gap:3px;">
+              <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan <strong>2 tabung reaksi</strong>, beri label A (Albumin) dan B (Gelatin). Masukkan ke rak.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Masukkan <strong>2 mL sampel</strong> ke masing-masing tabung menggunakan pipet tetes.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Tambahkan <strong>2 mL larutan NaOH</strong> ke setiap tabung, kocok perlahan.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Tambahkan <strong>4–5 tetes CuSO₄ 1%</strong> ke setiap tabung. Amati perubahan warna.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">5</div><p style="font-size:11px;">Panaskan selama <strong>5 menit</strong>. Catat: warna ungu = positif protein.</p></div>
+            </div>
+            <div class="notebox" style="margin-top:5px;padding:6px 10px;"><div class="nt">💡 Hasil</div><p style="font-size:10.5px;">Ungu kebiruan = positif. Berlaku untuk ALBUMIN dan GELATIN.</p></div>
+          </div>
+          <div class="card" style="border-left:3px solid #f59e0b;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci xa">🟡</div><div class="ct" style="color:#b45309;font-size:13px;">B. Prosedur Uji Xanthoproteat</div></div>
+            <div class="steps" style="gap:3px;">
+              <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan 2 tabung berlabel A dan B. Masukkan <strong>2 mL sampel</strong>.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Dengan <strong>hati-hati</strong>, tambahkan beberapa tetes <strong>HNO₃ pekat</strong> menggunakan pipet.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Gunakan <strong>penjepit tabung</strong>, panaskan di atas bunsen hingga muncul warna kuning.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Catat perubahan: <strong>endapan kuning = positif</strong>.</p></div>
+            </div>
+            <div class="notebox" style="margin-top:5px;padding:6px 10px;"><div class="nt">⚠️ Keselamatan!</div><p style="font-size:10.5px;">HNO₃ pekat sangat korosif! Wajib menggunakan penjepit tabung dan APD.</p></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div class="card" style="border-left:3px solid #1d4ed8;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci ni">🔵</div><div class="ct" style="color:#1d4ed8;font-size:13px;">C. Prosedur Uji Ninhidrin</div></div>
+            <div class="steps" style="gap:3px;">
+              <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan 2 tabung berlabel A dan B. Masukkan <strong>2 mL sampel</strong>.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Tambahkan <strong>3–4 tetes larutan Ninhidrin</strong> ke setiap tabung.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Panaskan tabung hingga <strong>mendidih selama 2–3 menit</strong>.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Catat perubahan: <strong>biru intens = positif</strong> (ada gugus α-amino bebas).</p></div>
+            </div>
+            <div class="notebox" style="margin-top:5px;padding:6px 10px;"><div class="nt">💡 Catatan</div><p style="font-size:10.5px;">Keduanya akan biru. Prolin menghasilkan warna kuning/coklat.</p></div>
+          </div>
+          <div class="card" style="border-left:3px solid #dc2626;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci mi">🔴</div><div class="ct" style="color:#dc2626;font-size:13px;">D. Prosedur Uji Millon</div></div>
+            <div class="steps" style="gap:3px;">
+              <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan 2 tabung berlabel A (Albumin) dan B (Gelatin). Masukkan <strong>1–2 mL sampel</strong>.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Tambahkan <strong>2 tetes reagen Millon</strong>. Amati perubahan awal.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Panaskan dengan api bunsen hingga mendidih. Amati perubahan warna.</p></div>
+              <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Catat: Albumin → <strong>merah bata</strong>; Gelatin → <strong>tidak berubah</strong>.</p></div>
+            </div>
+            <div class="notebox" style="margin-top:5px;padding:6px 10px;"><div class="nt">🔍 Perbedaan Penting</div><p style="font-size:10.5px;">Hanya albumin yang positif Millon karena gelatin tidak mengandung tirosin.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<style>
+/* ===== OLABS-STYLE SIMULATOR STYLES ===== */
+@keyframes liquidFill{from{height:0%;}to{height:var(--fill-h,55%);}}
+@keyframes bubbleRise{0%{transform:translateX(-50%) translateY(0);opacity:0.8;r:3;}50%{opacity:1;}100%{transform:translateX(-50%) translateY(-60px);opacity:0;r:1;}}
+@keyframes dropFall{0%{transform:translateY(0);opacity:1;}100%{transform:translateY(40px);opacity:0;}}
+@keyframes flameFlicker{0%,100%{transform:scaleX(1) scaleY(1);opacity:0.9;}25%{transform:scaleX(1.1) scaleY(1.05);opacity:1;}75%{transform:scaleX(0.9) scaleY(0.98);opacity:0.85;}}
+@keyframes heatShimmer{0%,100%{opacity:0.15;}50%{opacity:0.35;}}
+@keyframes pipetteAnimate{0%{transform:translateY(-70px);opacity:0;}20%{opacity:1;}60%,75%{transform:translateY(0px);}85%{transform:translateY(0px);}100%{transform:translateY(-70px);opacity:0;}}
+@keyframes dropletFall{0%{cy:90;opacity:1;}100%{cy:130;opacity:0;}}
+@keyframes successPop{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+@keyframes heatWave{0%,100%{opacity:0;transform:scaleY(1);}50%{opacity:0.5;transform:scaleY(1.3);}}
+@keyframes sedimentSettle{from{transform:translateY(-20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+.sim-lab-wrap{display:grid;grid-template-columns:210px 1fr;gap:8px;flex:1;min-height:0;overflow:hidden;}
+@media(max-width:640px){.sim-lab-wrap{grid-template-columns:1fr;}}
+
+.sim-ctrl{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.sim-ctrl h3{font-family:var(--font-head);font-size:13px;font-weight:800;color:var(--acc3);display:flex;align-items:center;gap:6px;}
+.sim-select-wrap label{display:block;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+
+.step-btn-sim{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:9px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;text-align:left;border:1.5px solid var(--border);background:var(--surf2);color:var(--text2);transition:all .2s;position:relative;overflow:hidden;}
+.step-btn-sim:hover:not(:disabled){border-color:var(--acc2);background:#f5f0ff;color:var(--acc3);}
+.step-btn-sim.active{border-color:#7c3aed;background:linear-gradient(135deg,#f5f0ff,#ede9fe);color:#4c1d95;}
+.step-btn-sim.done{border-color:#22c55e;background:#f0fdf4;color:#166534;}
+.step-btn-sim:disabled{opacity:.4;cursor:not-allowed;}
+.step-btn-sim .step-icon{font-size:16px;flex-shrink:0;}
+.step-btn-sim .step-num{width:18px;height:18px;border-radius:50%;background:rgba(124,58,237,.15);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#7c3aed;flex-shrink:0;}
+.step-btn-sim.done .step-num{background:#22c55e;color:#fff;}
+
+.sim-lab-area{background:linear-gradient(180deg,#f0f4ff 0%,#e8eeff 100%);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.bench-surface{background:linear-gradient(180deg,#8B7355,#6B5B45);border-radius:8px;height:14px;margin-top:auto;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+
+.tube-3d{cursor:default;}
+.tube-glass{fill:none;stroke:#94a3b8;stroke-width:2.5;}
+.tube-glass-shine{fill:rgba(255,255,255,0.55);}
+.tube-liquid-fill{transition:all 1.2s cubic-bezier(.4,0,.2,1);}
+.tube-cap-svg{fill:#64748b;}
+.tube-label-svg{font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;text-anchor:middle;}
+.tube-result-label{font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;text-anchor:middle;}
+
+.reagent-shelf{display:flex;gap:6px;align-items:flex-end;padding:6px 8px;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.9);border-radius:8px;margin-bottom:8px;backdrop-filter:blur(4px);}
+.reagent-bottle{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0.4;transition:all .3s;pointer-events:none;}
+.reagent-bottle.available{opacity:1;cursor:pointer;pointer-events:auto;}
+.reagent-bottle.available:hover{transform:translateY(-4px);}
+.reagent-bottle.used{opacity:0.25;filter:grayscale(0.6);}
+.reagent-bottle img{width:40px;height:40px;object-fit:contain;}
+.reagent-bottle-label{font-size:8px;font-weight:700;color:var(--text2);text-align:center;line-height:1.2;max-width:44px;}
+
+.instruction-panel{background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1.5px solid #c4b5fd;border-radius:10px;padding:9px 12px;font-size:12px;color:#4c1d95;line-height:1.6;flex-shrink:0;display:flex;align-items:flex-start;gap:8px;min-height:44px;}
+.instr-icon{font-size:20px;flex-shrink:0;}
+
+.result-panel{display:grid;grid-template-columns:1fr 1fr;gap:7px;flex-shrink:0;}
+.result-box{background:#fff;border:1.5px solid var(--border);border-radius:9px;padding:7px 10px;text-align:center;transition:all .5s;}
+.result-box.positive{border-color:#22c55e;background:#f0fdf4;}
+.result-box.negative{border-color:#d1d5db;background:#f9fafb;}
+.result-box-label{font-size:9px;font-weight:700;color:var(--text3);margin-bottom:3px;}
+.result-box-value{font-size:12px;font-weight:800;color:var(--text);}
+
+.progress-bar-wrap{display:flex;gap:3px;flex-shrink:0;}
+.progress-seg{flex:1;height:5px;border-radius:3px;background:var(--border);transition:background .3s;}
+.progress-seg.done{background:#22c55e;}
+.progress-seg.active{background:#7c3aed;}
+</style>
+
+<div id="page-simulasi" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:6px 10px;gap:6px;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:7px 12px;">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--acc3);">⚗️ Simulasi Lab</div>
+      <div style="flex:1;display:flex;gap:3px;" id="stepDots"></div>
+      <div id="simStepLabel" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;white-space:nowrap;">Pilih uji & mulai</div>
+    </div>
+
+    <div class="sim-lab-wrap">
+      <!-- LEFT: Controls -->
+      <div class="sim-ctrl">
+        <h3>🔬 Kontrol</h3>
+        <div class="sim-select-wrap">
+          <label>Pilih Jenis Uji</label>
+          <select id="selUji" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-family:var(--font);font-size:12px;outline:none;cursor:pointer;transition:border-color .2s;" onchange="simChangeUji()">
+            <option value="biuret">🟣 Uji Biuret</option>
+            <option value="xantho">🟡 Uji Xanthoproteat</option>
+            <option value="ninhidrin">🔵 Uji Ninhidrin</option>
+            <option value="millon">🔴 Uji Millon</option>
+          </select>
+        </div>
+        <!-- Reagen info box -->
+        <div id="reagenInfo" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe;border-radius:8px;padding:8px 10px;font-size:10.5px;color:#4c1d95;line-height:1.7;"></div>
+        <!-- Step buttons -->
+        <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;">Langkah Percobaan:</div>
+        <div id="stepBtns" style="display:flex;flex-direction:column;gap:5px;"></div>
+        <button onclick="resetSim()" style="background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:var(--font);font-size:11.5px;font-weight:700;cursor:pointer;color:var(--text2);width:100%;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;margin-top:auto;" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='var(--border)'">↺ Ulangi Simulasi</button>
+      </div>
+
+      <!-- RIGHT: Lab bench -->
+      <div class="sim-lab-area">
+        <!-- Instruction display -->
+        <div class="instruction-panel" id="instrPanel">
+          <div class="instr-icon">💡</div>
+          <div id="instrText">Pilih jenis uji di kiri, lalu klik setiap langkah secara berurutan untuk melakukan simulasi percobaan.</div>
+        </div>
+
+        <!-- Lab bench visual with SVG tubes -->
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0;margin-top:8px;">
+          <!-- Reagent shelf -->
+          <div class="reagent-shelf" id="reagentShelf">
+            <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;writing-mode:vertical-rl;margin-right:4px;">Reagen</div>
+            <div class="reagent-bottle" id="rbAlbumin">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/albumin.png" alt="Albumin" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🥚</text></svg>'">
+              <div class="reagent-bottle-label">Albumin</div>
+            </div>
+            <div class="reagent-bottle" id="rbGelatin">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/gelatin.png" alt="Gelatin" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🟫</text></svg>'">
+              <div class="reagent-bottle-label">Gelatin</div>
+            </div>
+            <div class="reagent-bottle" id="rbNaOH" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/naoh.png" alt="NaOH" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🧴</text></svg>'">
+              <div class="reagent-bottle-label">NaOH</div>
+            </div>
+            <div class="reagent-bottle" id="rbCuSO4" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/cuso4.png" alt="CuSO4" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>💙</text></svg>'">
+              <div class="reagent-bottle-label">CuSO₄</div>
+            </div>
+            <div class="reagent-bottle" id="rbHNO3" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/hno3.png" alt="HNO3" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>⚗️</text></svg>'">
+              <div class="reagent-bottle-label">HNO₃</div>
+            </div>
+            <div class="reagent-bottle" id="rbNinhidrin" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/ninhidrin.png" alt="Ninhidrin" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🔵</text></svg>'">
+              <div class="reagent-bottle-label">Ninhidrin</div>
+            </div>
+            <div class="reagent-bottle" id="rbMillon" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/reagenmillon.png" alt="Millon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🔴</text></svg>'">
+              <div class="reagent-bottle-label">Millon</div>
+            </div>
+            <div class="reagent-bottle" id="rbPipet">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/pipet.png" alt="Pipet" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>💧</text></svg>'">
+              <div class="reagent-bottle-label">Pipet</div>
+            </div>
+            <div class="reagent-bottle" id="rbBunsen" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/bunsen.png" alt="Bunsen" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🔥</text></svg>'">
+              <div class="reagent-bottle-label">Bunsen</div>
+            </div>
+            <div class="reagent-bottle" id="rbPenjepit" style="display:none;">
+              <img src="https://85meydiaafrina.github.io/ujiprotein/penjepit.png" alt="Penjepit" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2230%22 font-size=%2224%22>🥢</text></svg>'">
+              <div class="reagent-bottle-label">Penjepit</div>
+            </div>
+          </div>
+
+          <!-- SVG Lab Scene -->
+          <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;min-height:0;">
+            <svg id="labSvg" viewBox="0 0 420 240" width="100%" style="max-height:100%;overflow:visible;">
+              <!-- Lab bench -->
+              <defs>
+                <linearGradient id="benchGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#8B7355"/>
+                  <stop offset="100%" stop-color="#5C4A2A"/>
+                </linearGradient>
+                <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.6)"/>
+                  <stop offset="40%" stop-color="rgba(255,255,255,0.2)"/>
+                  <stop offset="100%" stop-color="rgba(255,255,255,0.05)"/>
+                </linearGradient>
+                <linearGradient id="liquidGradA" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.3)" id="liqGradTopA"/>
+                  <stop offset="100%" stop-color="rgba(240,235,255,0.6)" id="liqGradBotA"/>
+                </linearGradient>
+                <linearGradient id="liquidGradB" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(255,255,255,0.3)" id="liqGradTopB"/>
+                  <stop offset="100%" stop-color="rgba(255,240,250,0.6)" id="liqGradBotB"/>
+                </linearGradient>
+                <clipPath id="clipA">
+                  <rect id="clipRectA" x="125" y="40" width="44" height="155" rx="0"/>
+                </clipPath>
+                <clipPath id="clipB">
+                  <rect id="clipRectB" x="245" y="40" width="44" height="155" rx="0"/>
+                </clipPath>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- Bench -->
+              <rect x="0" y="225" width="420" height="18" rx="4" fill="url(#benchGrad)"/>
+              <rect x="0" y="225" width="420" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
+
+              <!-- Rak Tabung -->
+              <g id="rakVis" opacity="0">
+                <rect x="105" y="210" width="210" height="12" rx="3" fill="#6B5B45"/>
+                <rect x="120" y="195" width="8" height="18" rx="2" fill="#8B7355"/>
+                <rect x="158" y="195" width="8" height="18" rx="2" fill="#8B7355"/>
+                <rect x="240" y="195" width="8" height="18" rx="2" fill="#8B7355"/>
+                <rect x="278" y="195" width="8" height="18" rx="2" fill="#8B7355"/>
+                <rect x="102" y="218" width="216" height="8" rx="2" fill="#5C4A2A"/>
+              </g>
+
+              <!-- TUBE A -->
+              <g id="tubeGroupA">
+                <!-- Tube body -->
+                <rect x="128" y="55" width="38" height="150" rx="19" fill="rgba(240,245,255,0.35)" stroke="#94a3b8" stroke-width="2"/>
+                <!-- Liquid fill A -->
+                <g clip-path="url(#clipA)">
+                  <rect id="liqSvgA" x="128" y="205" width="38" height="0" rx="3" fill="url(#liquidGradA)" style="transition:y 1.2s ease,height 1.2s ease;"/>
+                  <!-- Sediment A -->
+                  <g id="sedA" style="display:none;">
+                    <rect x="128" y="196" width="38" height="9" rx="2" fill="rgba(180,140,60,0.75)"/>
+                    <ellipse cx="137" cy="197" rx="4" ry="2.5" fill="rgba(160,110,30,0.8)"/>
+                    <ellipse cx="150" cy="196.5" rx="5" ry="2" fill="rgba(200,160,50,0.7)"/>
+                    <ellipse cx="160" cy="197.5" rx="3.5" ry="2" fill="rgba(170,120,40,0.8)"/>
+                    <ellipse cx="144" cy="198.5" rx="3" ry="1.5" fill="rgba(140,90,20,0.6)"/>
+                  </g>
+                  <!-- Bubbles A (shown during heating) -->
+                  <g id="bubblesA" opacity="0">
+                    <circle cx="147" cy="180" r="3" fill="rgba(255,255,255,0.6)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-40" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="1.5s" repeatCount="indefinite"/></circle>
+                    <circle cx="155" cy="190" r="2" fill="rgba(255,255,255,0.5)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-50" dur="1.2s" begin="0.3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0" dur="1.2s" begin="0.3s" repeatCount="indefinite"/></circle>
+                    <circle cx="140" cy="195" r="2.5" fill="rgba(255,255,255,0.5)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-45" dur="1.8s" begin="0.7s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="1.8s" begin="0.7s" repeatCount="indefinite"/></circle>
+                  </g>
+                </g>
+                <!-- Glass shine -->
+                <rect x="132" y="60" width="8" height="130" rx="4" fill="url(#glassGrad)" opacity="0.7"/>
+                <!-- Tube cap -->
+                <rect x="122" y="48" width="50" height="14" rx="4" fill="#64748b"/>
+                <rect x="126" y="50" width="42" height="6" rx="3" fill="#94a3b8" opacity="0.5"/>
+                <!-- Label A -->
+                <text x="147" y="43" font-family="Outfit,sans-serif" font-size="12" font-weight="800" fill="#4c1d95" text-anchor="middle">A</text>
+                <!-- Tube label bottom -->
+                <text id="tubeLabelA" x="147" y="220" font-family="Outfit,sans-serif" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle" style="text-shadow:0 1px 3px rgba(0,0,0,0.5);">Albumin Telur</text>
+                <!-- Result badge -->
+                <g id="resultBadgeA" opacity="0" style="transition:opacity .5s;">
+                  <rect x="115" y="226" width="64" height="14" rx="7" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.2"/>
+                  <text id="resultTextA" x="147" y="236" font-family="Outfit,sans-serif" font-size="7.5" font-weight="800" fill="#166534" text-anchor="middle">—</text>
+                </g>
+              </g>
+
+              <!-- TUBE B -->
+              <g id="tubeGroupB">
+                <rect x="248" y="55" width="38" height="150" rx="19" fill="rgba(255,240,250,0.35)" stroke="#94a3b8" stroke-width="2"/>
+                <g clip-path="url(#clipB)">
+                  <rect id="liqSvgB" x="248" y="205" width="38" height="0" rx="3" fill="url(#liquidGradB)" style="transition:y 1.2s ease,height 1.2s ease;"/>
+                  <!-- Sediment B -->
+                  <g id="sedB" style="display:none;">
+                    <rect x="248" y="196" width="38" height="9" rx="2" fill="rgba(180,140,60,0.75)"/>
+                    <ellipse cx="257" cy="197" rx="4" ry="2.5" fill="rgba(160,110,30,0.8)"/>
+                    <ellipse cx="270" cy="196.5" rx="5" ry="2" fill="rgba(200,160,50,0.7)"/>
+                    <ellipse cx="280" cy="197.5" rx="3.5" ry="2" fill="rgba(170,120,40,0.8)"/>
+                    <ellipse cx="264" cy="198.5" rx="3" ry="1.5" fill="rgba(140,90,20,0.6)"/>
+                  </g>
+                  <g id="bubblesB" opacity="0">
+                    <circle cx="267" cy="180" r="3" fill="rgba(255,255,255,0.6)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-40" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="1.6s" repeatCount="indefinite"/></circle>
+                    <circle cx="275" cy="192" r="2" fill="rgba(255,255,255,0.5)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-48" dur="1.3s" begin="0.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0" dur="1.3s" begin="0.4s" repeatCount="indefinite"/></circle>
+                    <circle cx="260" cy="195" r="2.5" fill="rgba(255,255,255,0.5)"><animateTransform attributeName="transform" type="translate" values="0,0;0,-42" dur="1.9s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="1.9s" begin="0.8s" repeatCount="indefinite"/></circle>
+                  </g>
+                </g>
+                <rect x="252" y="60" width="8" height="130" rx="4" fill="url(#glassGrad)" opacity="0.7"/>
+                <rect x="242" y="48" width="50" height="14" rx="4" fill="#64748b"/>
+                <rect x="246" y="50" width="42" height="6" rx="3" fill="#94a3b8" opacity="0.5"/>
+                <text x="267" y="43" font-family="Outfit,sans-serif" font-size="12" font-weight="800" fill="#be185d" text-anchor="middle">B</text>
+                <text id="tubeLabelB" x="267" y="220" font-family="Outfit,sans-serif" font-size="9" font-weight="800" fill="#ffffff" text-anchor="middle" style="text-shadow:0 1px 3px rgba(0,0,0,0.5);">Gelatin</text>
+                <g id="resultBadgeB" opacity="0" style="transition:opacity .5s;">
+                  <rect x="235" y="226" width="64" height="14" rx="7" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.2"/>
+                  <text id="resultTextB" x="267" y="236" font-family="Outfit,sans-serif" font-size="7.5" font-weight="800" fill="#166534" text-anchor="middle">—</text>
+                </g>
+              </g>
+
+              <!-- PIPETTE animation -->
+              <g id="pipetteGroup" opacity="0" style="transition:opacity .3s;">
+                <!-- Pipette A -->
+                <g id="pipA">
+                  <ellipse cx="147" cy="20" rx="12" ry="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+                  <rect x="144" y="28" width="6" height="30" rx="3" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+                  <polygon points="144,57 150,57 149,68 145,68" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+                  <ellipse id="dropA" cx="147" cy="72" rx="3" ry="4" fill="#7c3aed" opacity="0"/>
+                </g>
+                <!-- Pipette B -->
+                <g id="pipB">
+                  <ellipse cx="267" cy="20" rx="12" ry="10" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+                  <rect x="264" y="28" width="6" height="30" rx="3" fill="#f8fafc" stroke="#94a3b8" stroke-width="1"/>
+                  <polygon points="264,57 270,57 269,68 265,68" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+                  <ellipse id="dropB" cx="267" cy="72" rx="3" ry="4" fill="#7c3aed" opacity="0"/>
+                </g>
+              </g>
+
+              <!-- BUNSEN burner -->
+              <g id="bunsenGroup" opacity="0">
+                <!-- Base -->
+                <rect x="180" y="205" width="60" height="20" rx="4" fill="#374151"/>
+                <rect x="205" y="185" width="10" height="22" rx="3" fill="#4b5563"/>
+                <!-- Flame -->
+                <g id="flameGroup">
+                  <ellipse cx="210" cy="182" rx="7" ry="12" fill="#f59e0b" opacity="0.9" style="animation:flameFlicker 0.4s ease-in-out infinite;"/>
+                  <ellipse cx="210" cy="180" rx="5" ry="9" fill="#fcd34d" opacity="0.95" style="animation:flameFlicker 0.35s ease-in-out infinite 0.1s;"/>
+                  <ellipse cx="210" cy="178" rx="3" ry="6" fill="#fff" opacity="0.7" style="animation:flameFlicker 0.3s ease-in-out infinite 0.2s;"/>
+                  <!-- Heat waves -->
+                  <ellipse cx="210" cy="168" rx="8" ry="3" fill="rgba(251,191,36,0.15)" style="animation:heatWave 0.8s ease-in-out infinite;"/>
+                  <ellipse cx="210" cy="160" rx="6" ry="2.5" fill="rgba(251,191,36,0.1)" style="animation:heatWave 0.9s ease-in-out infinite 0.2s;"/>
+                </g>
+                <!-- Penjepit holding tube during heat -->
+                <g id="penjepitVis" opacity="0">
+                  <line x1="130" y1="140" x2="180" y2="175" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+                  <line x1="133" y1="138" x2="183" y2="173" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+                </g>
+              </g>
+
+              <!-- Labels -->
+              <text x="147" y="10" font-family="Syne,sans-serif" font-size="10" font-weight="800" fill="#7c3aed" text-anchor="middle" opacity="0.7">Tabung A</text>
+              <text x="267" y="10" font-family="Syne,sans-serif" font-size="10" font-weight="800" fill="#be185d" text-anchor="middle" opacity="0.7">Tabung B</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Result boxes -->
+        <div class="result-panel" id="resultPanel">
+          <div class="result-box" id="resultBoxA">
+            <div class="result-box-label">🟢 Albumin (A)</div>
+            <div class="result-box-value" id="hasilA">—</div>
+          </div>
+          <div class="result-box" id="resultBoxB">
+            <div class="result-box-label">🟣 Gelatin (B)</div>
+            <div class="result-box-value" id="hasilB">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SIMULATOR DATA =====
+const SIM_DATA={
+  biuret:{
+    albumin:{color:'rgba(139,92,246,0.82)',gradTop:'rgba(167,139,250,0.5)',gradBot:'rgba(109,40,217,0.85)',result:'🟣 Ungu Kebiruan ✓',badge:'pos',sediment:false,hasilText:'Ungu Kebiruan (+)'},
+    gelatin:{color:'rgba(167,139,250,0.72)',gradTop:'rgba(196,181,253,0.4)',gradBot:'rgba(139,92,246,0.75)',result:'🟣 Ungu Muda ✓',badge:'pos',sediment:false,hasilText:'Ungu Muda (+)'}
+  },
+  xantho:{
+    albumin:{color:'rgba(245,158,11,0.88)',gradTop:'rgba(253,230,138,0.5)',gradBot:'rgba(180,83,9,0.9)',result:'🟡 Endapan Kuning ✓',badge:'pos',sediment:true,hasilText:'Endapan Kuning (+)'},
+    gelatin:{color:'rgba(253,230,138,0.80)',gradTop:'rgba(254,240,180,0.45)',gradBot:'rgba(217,119,6,0.8)',result:'🟡 Kuning Muda ✓',badge:'pos',sediment:true,hasilText:'Kuning Muda (+)'}
+  },
+  ninhidrin:{
+    albumin:{color:'rgba(37,99,235,0.85)',gradTop:'rgba(147,197,253,0.5)',gradBot:'rgba(29,78,216,0.88)',result:'🔵 Biru Intens ✓',badge:'pos',sediment:false,hasilText:'Biru Intens (+)'},
+    gelatin:{color:'rgba(59,130,246,0.75)',gradTop:'rgba(191,219,254,0.4)',gradBot:'rgba(37,99,235,0.78)',result:'🔵 Biru Intens ✓',badge:'pos',sediment:false,hasilText:'Biru Intens (+)'}
+  },
+  millon:{
+    albumin:{color:'rgba(220,38,38,0.85)',gradTop:'rgba(252,165,165,0.5)',gradBot:'rgba(185,28,28,0.9)',result:'🔴 Merah Bata ✓',badge:'pos',sediment:true,hasilText:'Merah Bata (+)'},
+    gelatin:{color:'rgba(226,232,240,0.6)',gradTop:'rgba(241,245,249,0.4)',gradBot:'rgba(203,213,225,0.65)',result:'⬜ Tidak Berubah ✗',badge:'neg',sediment:false,hasilText:'Tidak Berubah (−)'}
+  }
+};
+
+const SIM_STEPS={
+  biuret:[
+    {label:'Siapkan Tabung & Rak',icon:'🧪',instr:'Siapkan 2 tabung reaksi, beri label <b>A (Albumin)</b> dan <b>B (Gelatin)</b>. Letakkan di rak tabung.',action:'prepare',reagents:[]},
+    {label:'Masukkan Sampel (2 mL)',icon:'💧',instr:'Gunakan pipet tetes. Masukkan <b>2 mL albumin</b> ke tabung A dan <b>2 mL gelatin</b> ke tabung B.',action:'addSample',reagents:['rbAlbumin','rbGelatin','rbPipet'],dropColor:'rgba(200,200,200,0.8)'},
+    {label:'Tambah NaOH (2 mL)',icon:'🧴',instr:'Tambahkan <b>2 mL larutan NaOH</b> ke setiap tabung dengan pipet. Kocok perlahan — membuat suasana basa.',action:'addNaOH',reagents:['rbNaOH','rbPipet'],dropColor:'rgba(220,235,255,0.9)'},
+    {label:'Tambah CuSO₄ (4-5 tetes)',icon:'💙',instr:'Teteskan <b>4–5 tetes CuSO₄ 1%</b> ke setiap tabung. Ion Cu²⁺ akan bereaksi dengan ikatan peptida.',action:'addCuSO4',reagents:['rbCuSO4','rbPipet'],dropColor:'rgba(147,210,255,0.9)'},
+    {label:'Panaskan ± 5 Menit',icon:'🔥',instr:'Gunakan <b>penjepit</b>, panaskan tabung di atas api bunsen ± 5 menit. Amati perubahan warna menjadi <b>ungu kebiruan</b>.',action:'heat',reagents:['rbBunsen','rbPenjepit']}
+  ],
+  xantho:[
+    {label:'Siapkan Tabung & Rak',icon:'🧪',instr:'Siapkan 2 tabung reaksi berlabel <b>A (Albumin)</b> dan <b>B (Gelatin)</b>. Masukkan ke rak.',action:'prepare',reagents:[]},
+    {label:'Masukkan Sampel (2 mL)',icon:'💧',instr:'Masukkan <b>2 mL sampel</b> ke masing-masing tabung menggunakan pipet tetes.',action:'addSample',reagents:['rbAlbumin','rbGelatin','rbPipet'],dropColor:'rgba(200,200,200,0.8)'},
+    {label:'Tambah HNO₃ Pekat',icon:'⚠️',instr:'⚠️ <b>Hati-hati!</b> Teteskan beberapa tetes <b>HNO₃ pekat</b> ke setiap tabung dengan pipet. Gunakan APD (kacamata + sarung tangan).',action:'addHNO3',reagents:['rbHNO3','rbPipet'],dropColor:'rgba(253,210,100,0.9)'},
+    {label:'Panaskan (Penjepit)',icon:'🔥',instr:'Gunakan <b>penjepit tabung</b>, panaskan di atas bunsen. Amati perubahan warna menjadi <b>kuning</b> (reaksi nitrasi cincin benzena).',action:'heat',reagents:['rbBunsen','rbPenjepit']},
+    {label:'Catat Hasil',icon:'📝',instr:'Amati endapan kuning = <b>positif</b> (mengandung cincin benzena/asam amino aromatik). Dinginkan sebelum mencatat.',action:'result',reagents:[]}
+  ],
+  ninhidrin:[
+    {label:'Siapkan Tabung & Rak',icon:'🧪',instr:'Siapkan 2 tabung reaksi berlabel <b>A (Albumin)</b> dan <b>B (Gelatin)</b>. Masukkan ke rak.',action:'prepare',reagents:[]},
+    {label:'Masukkan Sampel (2 mL)',icon:'💧',instr:'Masukkan <b>2 mL sampel</b> ke masing-masing tabung menggunakan pipet tetes.',action:'addSample',reagents:['rbAlbumin','rbGelatin','rbPipet'],dropColor:'rgba(200,200,200,0.8)'},
+    {label:'Tambah Ninhidrin (3-4 tetes)',icon:'🔵',instr:'Tambahkan <b>3–4 tetes larutan Ninhidrin</b> ke setiap tabung menggunakan pipet.',action:'addNinhidrin',reagents:['rbNinhidrin','rbPipet'],dropColor:'rgba(100,150,255,0.9)'},
+    {label:'Panaskan Hingga Mendidih',icon:'🔥',instr:'Gunakan <b>penjepit tabung</b>, panaskan hingga mendidih <b>2–3 menit</b>. Amati perubahan warna menjadi <b>biru/ungu intens</b>.',action:'heat',reagents:['rbBunsen','rbPenjepit']},
+    {label:'Catat Hasil',icon:'📝',instr:'Warna <b>biru intens = positif</b> (gugus α-amino bebas). Catatan: Prolin menghasilkan warna kuning/coklat.',action:'result',reagents:[]}
+  ],
+  millon:[
+    {label:'Siapkan Tabung & Rak',icon:'🧪',instr:'Siapkan 2 tabung reaksi berlabel <b>A (Albumin)</b> dan <b>B (Gelatin)</b>. Masukkan ke rak.',action:'prepare',reagents:[]},
+    {label:'Masukkan Sampel (1-2 mL)',icon:'💧',instr:'Masukkan <b>1–2 mL sampel</b> ke masing-masing tabung menggunakan pipet.',action:'addSample',reagents:['rbAlbumin','rbGelatin','rbPipet'],dropColor:'rgba(200,200,200,0.8)'},
+    {label:'Tambah Reagen Millon (2 tetes)',icon:'🔴',instr:'Tambahkan <b>2 tetes reagen Millon</b> ke setiap tabung. Amati endapan putih awal pada albumin.',action:'addMillon',reagents:['rbMillon','rbPipet'],dropColor:'rgba(220,80,80,0.9)'},
+    {label:'Panaskan Hingga Mendidih',icon:'🔥',instr:'Gunakan <b>penjepit</b>, panaskan dengan api bunsen hingga mendidih. Amati perubahan warna.',action:'heat',reagents:['rbBunsen','rbPenjepit']},
+    {label:'Catat Hasil',icon:'📝',instr:'Albumin → <b>merah bata (+)</b> (mengandung tirosin). Gelatin → <b>tidak berubah (–)</b> (tidak ada tirosin).',action:'result',reagents:[]}
+  ]
+};
+
+const TUBE_STATES={
+  biuret:{
+    prepare:{A:{y:205,h:0,c:'rgba(240,235,255,0.3)'},B:{y:205,h:0,c:'rgba(255,240,250,0.3)'}},
+    addSample:{A:{y:175,h:30,c:'rgba(230,230,230,0.7)'},B:{y:175,h:30,c:'rgba(245,235,225,0.7)'}},
+    addNaOH:{A:{y:155,h:50,c:'rgba(210,225,255,0.75)'},B:{y:155,h:50,c:'rgba(210,225,255,0.75)'}},
+    addCuSO4:{A:{y:140,h:65,c:'rgba(160,130,210,0.65)'},B:{y:140,h:65,c:'rgba(160,130,210,0.65)'}},
+    heat:{A:{y:110,h:95,c:'rgba(139,92,246,0.85)',topA:'rgba(167,139,250,0.5)',botA:'rgba(109,40,217,0.88)'},B:{y:115,h:90,c:'rgba(167,139,250,0.75)',topB:'rgba(196,181,253,0.4)',botB:'rgba(139,92,246,0.77)'}}
+  },
+  xantho:{
+    prepare:{A:{y:205,h:0},B:{y:205,h:0}},
+    addSample:{A:{y:175,h:30,c:'rgba(230,230,230,0.7)'},B:{y:175,h:30,c:'rgba(245,235,225,0.7)'}},
+    addHNO3:{A:{y:150,h:55,c:'rgba(253,230,138,0.65)'},B:{y:150,h:55,c:'rgba(253,230,138,0.65)'}},
+    heat:{A:{y:108,h:97,c:'rgba(245,158,11,0.85)',sed:true},B:{y:112,h:93,c:'rgba(253,200,80,0.78)',sed:true}},
+    result:{A:{y:108,h:97,c:'rgba(245,158,11,0.9)',sed:true},B:{y:112,h:93,c:'rgba(253,200,80,0.82)',sed:true}}
+  },
+  ninhidrin:{
+    prepare:{A:{y:205,h:0},B:{y:205,h:0}},
+    addSample:{A:{y:175,h:30,c:'rgba(230,230,230,0.7)'},B:{y:175,h:30,c:'rgba(245,235,225,0.7)'}},
+    addNinhidrin:{A:{y:150,h:55,c:'rgba(147,197,253,0.55)'},B:{y:150,h:55,c:'rgba(147,197,253,0.55)'}},
+    heat:{A:{y:108,h:97,c:'rgba(37,99,235,0.87)'},B:{y:112,h:93,c:'rgba(59,130,246,0.8)'}},
+    result:{A:{y:108,h:97,c:'rgba(37,99,235,0.9)'},B:{y:112,h:93,c:'rgba(59,130,246,0.83)'}}
+  },
+  millon:{
+    prepare:{A:{y:205,h:0},B:{y:205,h:0}},
+    addSample:{A:{y:175,h:30,c:'rgba(230,230,230,0.7)'},B:{y:175,h:30,c:'rgba(245,235,225,0.7)'}},
+    addMillon:{A:{y:150,h:55,c:'rgba(253,210,210,0.6)'},B:{y:150,h:55,c:'rgba(240,245,250,0.5)'}},
+    heat:{A:{y:108,h:97,c:'rgba(220,38,38,0.85)',sed:true},B:{y:115,h:90,c:'rgba(226,232,240,0.55)'}},
+    result:{A:{y:108,h:97,c:'rgba(220,38,38,0.9)',sed:true},B:{y:115,h:90,c:'rgba(226,232,240,0.55)'}}
+  }
+};
+
+const reagenInfoMap={
+  biuret:'<strong>🟣 Uji Biuret</strong><br><span style="color:#6d28d9">Reagen:</span> NaOH + CuSO₄ 1%<br><span style="color:#6d28d9">Deteksi:</span> Ikatan peptida<br><span style="color:#059669">Hasil +:</span> Ungu kebiruan',
+  xantho:'<strong>🟡 Uji Xanthoproteat</strong><br><span style="color:#92400e">Reagen:</span> HNO₃ pekat<br><span style="color:#92400e">Deteksi:</span> Cincin benzena<br><span style="color:#059669">Hasil +:</span> Endapan kuning',
+  ninhidrin:'<strong>🔵 Uji Ninhidrin</strong><br><span style="color:#1e3a8a">Reagen:</span> Larutan Ninhidrin<br><span style="color:#1e3a8a">Deteksi:</span> Gugus amino bebas<br><span style="color:#059669">Hasil +:</span> Biru intens',
+  millon:'<strong>🔴 Uji Millon</strong><br><span style="color:#991b1b">Reagen:</span> Reagen Millon<br><span style="color:#991b1b">Deteksi:</span> Gugus fenol (tirosin)<br><span style="color:#059669">Hasil +:</span> Merah bata'
+};
+
+let simCurrentStep=-1;
+function getUji(){return document.getElementById('selUji').value;}
+
+// === SVG TUBE LIQUID UPDATE ===
+function setTubeLiquid(tube, state){
+  if(!state) return;
+  const liq=document.getElementById('liqSvg'+tube);
+  const sed=document.getElementById('sed'+tube);
+  if(liq){
+    liq.style.y=state.y+'px';
+    liq.setAttribute('y',state.y);
+    liq.setAttribute('height',state.h);
+    liq.setAttribute('fill',state.c||'rgba(200,220,255,0.5)');
+  }
+  if(sed){
+    if(state.sed){
+      sed.style.display='block';
+      // color sediment by uji type
+      const uji=getUji();
+      const rects=sed.querySelectorAll('rect,ellipse');
+      if(uji==='xantho'){
+        rects.forEach((el,i)=>{
+          const yellows=['rgba(220,160,10,0.9)','rgba(200,140,0,0.85)','rgba(240,180,20,0.8)','rgba(210,150,5,0.85)','rgba(180,120,0,0.7)'];
+          el.setAttribute('fill',yellows[i]||yellows[0]);
+        });
+      } else if(uji==='millon'){
+        rects.forEach((el,i)=>{
+          const reds=['rgba(185,28,28,0.85)','rgba(153,27,27,0.9)','rgba(220,38,38,0.75)','rgba(170,20,20,0.88)','rgba(140,15,15,0.7)'];
+          el.setAttribute('fill',reds[i]||reds[0]);
+        });
+      }
+    } else {
+      sed.style.display='none';
+    }
+  }
+}
+
+function setAllReagentBottles(show){
+  const ids=['rbAlbumin','rbGelatin','rbNaOH','rbCuSO4','rbHNO3','rbNinhidrin','rbMillon','rbPipet','rbBunsen','rbPenjepit'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=show.includes(id)?'flex':'none';
+  });
+}
+
+function showBunsen(show){
+  const b=document.getElementById('bunsenGroup');
+  if(b) b.setAttribute('opacity',show?'1':'0');
+  const bbA=document.getElementById('bubblesA');
+  const bbB=document.getElementById('bubblesB');
+  if(bbA) bbA.setAttribute('opacity',show?'1':'0');
+  if(bbB) bbB.setAttribute('opacity',show?'1':'0');
+}
+
+function showRak(show){
+  const r=document.getElementById('rakVis');
+  if(r) r.setAttribute('opacity',show?'1':'0');
+}
+
+function animatePipette(uji,action){
+  const pg=document.getElementById('pipetteGroup');
+  if(!pg) return;
+  pg.setAttribute('opacity','1');
+  const colors={biuret:'#a78bfa',xantho:'#fbbf24',ninhidrin:'#60a5fa',millon:'#f87171'};
+  const c = action==='addSample'?'#94a3b8':(colors[uji]||'#7c3aed');
+  // update drop color
+  ['dropA','dropB'].forEach(id=>{
+    const d=document.getElementById(id);
+    if(d) d.setAttribute('fill',c);
+  });
+  // animate drops
+  function animDrop(id){
+    const d=document.getElementById(id);
+    if(!d) return;
+    d.setAttribute('opacity','1');
+    let y=72,t=0;
+    const iv=setInterval(()=>{
+      t+=0.08;y+=2;
+      d.setAttribute('cy',y);
+      d.setAttribute('opacity',Math.max(0,1-t));
+      if(t>=1){clearInterval(iv);d.setAttribute('opacity','0');d.setAttribute('cy',72);}
+    },50);
+  }
+  setTimeout(()=>animDrop('dropA'),400);
+  setTimeout(()=>animDrop('dropB'),700);
+  setTimeout(()=>{ pg.setAttribute('opacity','0'); },2500);
+}
+
+function initTubes(){
+  const uji=getUji();
+  document.getElementById('reagenInfo').innerHTML=reagenInfoMap[uji]||'';
+  document.getElementById('hasilA').textContent='—';
+  document.getElementById('hasilB').textContent='—';
+  document.getElementById('resultBoxA').className='result-box';
+  document.getElementById('resultBoxB').className='result-box';
+  // Reset SVG
+  ['A','B'].forEach(t=>{
+    setTubeLiquid(t,{y:205,h:0,c:'rgba(200,220,255,0.3)',sed:false});
+    const badge=document.getElementById('resultBadge'+t);
+    if(badge) badge.setAttribute('opacity','0');
+  });
+  showBunsen(false);
+  showRak(false);
+  const pg=document.getElementById('pipetteGroup');
+  if(pg) pg.setAttribute('opacity','0');
+  // Show only base reagents
+  const baseMap={biuret:['rbAlbumin','rbGelatin','rbNaOH','rbCuSO4','rbPipet'],xantho:['rbAlbumin','rbGelatin','rbHNO3','rbPipet'],ninhidrin:['rbAlbumin','rbGelatin','rbNinhidrin','rbPipet'],millon:['rbAlbumin','rbGelatin','rbMillon','rbPipet']};
+  const toShow=baseMap[uji]||['rbAlbumin','rbGelatin','rbPipet'];
+  ['rbAlbumin','rbGelatin','rbNaOH','rbCuSO4','rbHNO3','rbNinhidrin','rbMillon','rbPipet','rbBunsen','rbPenjepit'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.display=toShow.includes(id)?'flex':'none';el.className='reagent-bottle'+(toShow.includes(id)?' available':'');}
+  });
+  document.getElementById('instrText').innerHTML='Pilih jenis uji di kiri, lalu klik setiap langkah secara berurutan untuk melakukan simulasi percobaan.';
+  renderStepButtons();renderStepBar();
+}
+
+function renderStepButtons(){
+  const uji=getUji();const steps=SIM_STEPS[uji]||[];
+  const container=document.getElementById('stepBtns');
+  container.innerHTML=steps.map((s,i)=>{
+    const isDone=i<simCurrentStep;
+    const isActive=i===simCurrentStep;
+    const isNext=i===simCurrentStep+1;
+    const isLocked=i>simCurrentStep+1;
+    return `<button onclick="doStep(${i})" class="step-btn-sim ${isDone?'done':isActive?'active':''}" ${isLocked?'disabled':''}><span class="step-num">${isDone?'✓':(i+1)}</span><span class="step-icon">${isDone?'':s.icon}</span><span style="flex:1;font-size:10.5px;">${s.label}</span></button>`;
+  }).join('');
+}
+
+function renderStepBar(){
+  const uji=getUji();const steps=SIM_STEPS[uji]||[];
+  const dots=document.getElementById('stepDots');const label=document.getElementById('simStepLabel');
+  if(dots) dots.innerHTML=steps.map((_,i)=>`<div class="progress-seg ${i<simCurrentStep?'done':i===simCurrentStep?'active':''}"></div>`).join('');
+  if(label) label.textContent=simCurrentStep>=0?`${simCurrentStep+1}/${steps.length} langkah`:'Pilih uji & mulai';
+}
+
+function doStep(stepIdx){
+  const uji=getUji();const steps=SIM_STEPS[uji]||[];
+  if(stepIdx!==simCurrentStep+1&&stepIdx>simCurrentStep) return;
+  simCurrentStep=stepIdx;
+  const step=steps[stepIdx];if(!step) return;
+
+  // Update instruction
+  document.getElementById('instrText').innerHTML=step.instr||'';
+
+  // Update reagent bottles highlight
+  const allBottles=['rbAlbumin','rbGelatin','rbNaOH','rbCuSO4','rbHNO3','rbNinhidrin','rbMillon','rbPipet','rbBunsen','rbPenjepit'];
+  allBottles.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const inStep=step.reagents&&step.reagents.includes(id);
+    if(inStep){el.style.display='flex';el.className='reagent-bottle available';}
+    else if(el.style.display!=='none'){el.className='reagent-bottle used';}
+  });
+  if(step.reagents){
+    step.reagents.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.style.display='flex';el.style.transform='translateY(-6px)';setTimeout(()=>{if(el)el.style.transform='';},800);}
+    });
+  }
+
+  // Animate pipette for liquid steps
+  const liquidActions=['addSample','addNaOH','addCuSO4','addHNO3','addNinhidrin','addMillon'];
+  if(liquidActions.includes(step.action)){
+    animatePipette(uji,step.action);
+  }
+
+  // Show rak on prepare
+  if(step.action==='prepare') showRak(true);
+
+  // Apply tube states
+  const states=TUBE_STATES[uji];
+  const stateNow=states&&states[step.action];
+  setTimeout(()=>{
+    if(stateNow){
+      setTubeLiquid('A',stateNow.A);
+      setTubeLiquid('B',stateNow.B);
+    }
+    if(step.action==='heat'){
+      showBunsen(true);
+      const pjVis=document.getElementById('penjepitVis');
+      if(pjVis) pjVis.setAttribute('opacity','1');
+      setTimeout(()=>{
+        showBunsen(false);
+        if(pjVis) pjVis.setAttribute('opacity','0');
+      },3500);
+    }
+    // Final step – show results
+    if(stepIdx===steps.length-1){
+      setTimeout(()=>{
+        const data=SIM_DATA[uji];
+        // Albumin result
+        setTubeLiquid('A',{y:108,h:97,c:data.albumin.color,sed:data.albumin.sediment});
+        setTubeLiquid('B',{y:112,h:93,c:data.gelatin.color,sed:data.gelatin.sediment});
+        // Badges
+        const badgeA=document.getElementById('resultBadgeA');
+        const badgeB=document.getElementById('resultBadgeB');
+        const rtA=document.getElementById('resultTextA');
+        const rtB=document.getElementById('resultTextB');
+        if(badgeA) badgeA.setAttribute('opacity','1');
+        if(badgeB) badgeB.setAttribute('opacity','1');
+        if(rtA) rtA.textContent=data.albumin.hasilText;
+        if(rtB) rtB.textContent=data.gelatin.hasilText;
+        // Color result boxes
+        const rA=document.getElementById('hasilA');
+        const rB=document.getElementById('hasilB');
+        const rbA=document.getElementById('resultBoxA');
+        const rbB=document.getElementById('resultBoxB');
+        if(rA) rA.textContent=data.albumin.hasilText;
+        if(rB) rB.textContent=data.gelatin.hasilText;
+        if(rbA) rbA.className='result-box '+(data.albumin.badge==='pos'?'positive':'negative');
+        if(rbB) rbB.className='result-box '+(data.gelatin.badge==='pos'?'positive':'negative');
+        document.getElementById('instrText').innerHTML='✅ <strong>Percobaan selesai!</strong> Bandingkan warna tabung A (Albumin) dan B (Gelatin). Catat hasilmu di Lembar Kerja.';
+        playSound('sndBerhasil');
+      },1200);
+    }
+    renderStepButtons();renderStepBar();
+  },300);
+}
+
+function simChangeUji(){simCurrentStep=-1;initTubes();}
+function resetSim(){simCurrentStep=-1;initTubes();}
+initTubes();
+</script>
+
+<!-- ===== LEMBAR KERJA ===== -->
+<div id="page-lembarkerja" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;gap:7px;">
+    <div class="hero" style="flex-shrink:0;margin-bottom:0;">
+      <div>
+        <div class="h-label">📝 Lembar Kerja Murid</div>
+        <div class="h-title">Tabel Pengamatan &amp; <span>Analisis</span></div>
+        <div class="h-desc">Isi tabel berdasarkan hasil simulasi. Klik tombol Unduh untuk menyimpan lembar kerjamu.</div>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;">
+      <div class="card">
+        <div class="ch"><div class="ci p">📊</div><div class="ct">Tabel Hasil Pengamatan Identifikasi Protein</div></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Kolom bertanda <strong style="color:#7c3aed;">*</strong> sudah diisi sebagai referensi dari hasil simulasi.</p>
+        <div style="overflow-x:auto;">
+          <table class="lk-table" style="min-width:600px;">
+            <thead>
+              <tr>
+                <th rowspan="2">Jenis Uji</th>
+                <th colspan="2" style="background:#5b21b6;">Albumin Telur (A)</th>
+                <th colspan="2" style="background:#be185d;">Gelatin (B)</th>
+                <th rowspan="2">Kesimpulan</th>
+              </tr>
+              <tr>
+                <th style="background:#7c3aed;">Warna/Perubahan</th>
+                <th style="background:#7c3aed;">Hasil (+/−)</th>
+                <th style="background:#ec4899;">Warna/Perubahan</th>
+                <th style="background:#ec4899;">Hasil (+/−)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>🟣 Biuret</strong><br><span style="font-size:9px;color:var(--text3);">NaOH + CuSO₄</span></td><td style="background:#f5f0ff;"><input type="text" value="Ungu Kebiruan" style="background:transparent;border:none;font-weight:700;color:#5b21b6;" readonly> *</td><td><select><option value="">Pilih...</option><option selected>Positif (+)</option><option>Negatif (−)</option></select></td><td><input type="text" placeholder="Warna/perubahan..."></td><td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td><td><textarea placeholder="Kesimpulan..." style="min-height:40px;"></textarea></td></tr>
+              <tr><td><strong>🟡 Xanthoproteat</strong><br><span style="font-size:9px;color:var(--text3);">HNO₃ pekat</span></td><td><input type="text" placeholder="Warna/perubahan..."></td><td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td><td><input type="text" placeholder="Warna/perubahan..."></td><td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td><td><textarea placeholder="Kesimpulan..." style="min-height:40px;"></textarea></td></tr>
+              <tr><td><strong>🔵 Ninhidrin</strong><br><span style="font-size:9px;color:var(--text3);">Larutan Ninhidrin</span></td><td><input type="text" placeholder="Warna/perubahan..."></td><td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td><td style="background:#eff6ff;"><input type="text" value="Biru Intens" style="background:transparent;border:none;font-weight:700;color:#1d4ed8;" readonly> *</td><td><select><option value="">Pilih...</option><option selected>Positif (+)</option><option>Negatif (−)</option></select></td><td><textarea placeholder="Kesimpulan..." style="min-height:40px;"></textarea></td></tr>
+              <tr><td><strong>🔴 Millon</strong><br><span style="font-size:9px;color:var(--text3);">Reagen Millon</span></td><td style="background:#fff1f2;"><input type="text" value="Merah Bata" style="background:transparent;border:none;font-weight:700;color:#dc2626;" readonly> *</td><td><select><option value="">Pilih...</option><option selected>Positif (+)</option><option>Negatif (−)</option></select></td><td><input type="text" placeholder="Warna/perubahan..."></td><td><select><option value="">Pilih...</option><option>Positif (+)</option><option selected>Negatif (−)</option></select></td><td><textarea placeholder="Kesimpulan..." style="min-height:40px;"></textarea></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+        <button onclick="unduhLK()" style="background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;">⬇️ Unduh Lembar Kerja</button>
+        <button onclick="window.print()" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;">🖨️ Cetak</button>
+        <button onclick="resetLK()" style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 18px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function resetLK(){if(!confirm('Reset semua isian?')) return;document.querySelectorAll('#page-lembarkerja input[type=text]:not([readonly])').forEach(i=>i.value='');document.querySelectorAll('#page-lembarkerja select').forEach(s=>s.selectedIndex=0);document.querySelectorAll('#page-lembarkerja textarea').forEach(t=>t.value='');}
+function unduhLK(){
+  const rows=document.querySelectorAll('#page-lembarkerja .lk-table tbody tr');
+  let csv='Jenis Uji,Albumin (Warna),Albumin (Hasil),Gelatin (Warna),Gelatin (Hasil),Kesimpulan\n';
+  rows.forEach(row=>{
+    const cells=row.querySelectorAll('td');const vals=[cells[0].textContent.trim()];
+    [1,2,3,4,5].forEach(ci=>{if(cells[ci]){const el=cells[ci].querySelector('input,select,textarea');vals.push(el?el.value:cells[ci].textContent.trim());}});
+    csv+=vals.map(v=>`"${v}"`).join(',')+'\n';
+  });
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='LembarKerja_IdentifikasiProtein.csv';a.click();
+}
+</script>
+
+<!-- ===== KUIS ===== -->
+<div id="page-kuis" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;gap:6px;">
+    <div style="display:flex;gap:5px;flex-shrink:0;">
+      <button id="modeBtn-mc" onclick="setQuizMode('mc')" style="flex:1;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:9px;padding:8px 10px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">🧩 Pilihan Ganda</button>
+      <button id="modeBtn-mg" onclick="setQuizMode('mg')" style="flex:1;background:#fff;border:1.5px solid #f59e0b;color:#b45309;border-radius:9px;padding:8px 10px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">🎮 Memory Game</button>
+      <button id="modeBtn-fc" onclick="setQuizMode('fc')" style="flex:1;background:#fff;border:1.5px solid #be185d;color:#be185d;border-radius:9px;padding:8px 10px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;">🃏 Flash Card</button>
+    </div>
+    <div id="quizProgressWrap" style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+      <div class="qprog" id="quizProg" style="flex:1;"></div>
+      <button onclick="resetKuis()" style="flex-shrink:0;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-family:var(--font);font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;">↺ Ulangi</button>
+    </div>
+    <div id="quizContainer" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+  </div>
+</div>
+
+<!-- Score Overlay -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div class="score-big" id="scoreBig">0</div>
+    <div class="score-pct" id="scorePct">/ 100</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="closeScore()">Tutup</button>
+      <button class="btn-score btn-ulangi" onclick="resetKuis()">↺ Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function closeScore(){document.getElementById('scoreOverlay').classList.remove('on');}
+
+// ===== QUIZ DATA =====
+const QUIZ_MC=[
+  {type:'mc-complex',q:'Reagen apa saja yang digunakan dalam Uji Biuret untuk mengidentifikasi protein?',opts:['Larutan NaOH','Larutan CuSO₄ 1%','HNO₃ pekat','Reagen Millon'],ans:[0,1],fb:'Uji Biuret menggunakan NaOH (suasana basa) DAN CuSO₄ 1% (sumber Cu²⁺). Keduanya diperlukan untuk membentuk kompleks ungu dengan ikatan peptida.'},
+  {type:'mc-complex',q:'Manakah pernyataan yang BENAR mengenai Uji Millon pada albumin dan gelatin?',opts:['Albumin menghasilkan warna merah bata','Gelatin menghasilkan warna merah bata','Albumin positif karena mengandung tirosin','Gelatin negatif karena rendah gugus fenol'],ans:[0,2,3],fb:'Hanya albumin yang positif Millon. Albumin kaya tirosin (gugus fenol → merah bata). Gelatin sangat rendah tirosin sehingga negatif.'},
+  {type:'mc-complex',q:'Sifat apa saja yang dimiliki oleh Uji Ninhidrin?',opts:['Mendeteksi gugus amino bebas (–NH₂)','Menghasilkan warna biru intens (ungu Ruhemann) untuk protein','Spesifik hanya untuk asam amino aromatik','Dapat digunakan untuk mendeteksi prolin (warna kuning)'],ans:[0,1,3],fb:'Ninhidrin mendeteksi gugus α-amino bebas → biru intens. Prolin memberi warna kuning/coklat. Asam amino aromatik dideteksi Xanthoproteat, bukan Ninhidrin.'},
+  {type:'mc-complex',q:'Mengapa NaOH harus ditambahkan SEBELUM CuSO₄ pada uji Biuret?',opts:['Menciptakan suasana basa agar Cu²⁺ dapat berkoordinasi dengan ikatan peptida','Mencegah pengendapan Cu(OH)₂ sebelum bereaksi','Membantu denaturasi protein agar terbuka strukturnya','NaOH berfungsi sebagai pelarut protein'],ans:[0,1],fb:'NaOH diperlukan untuk: (1) menciptakan suasana basa, (2) mencegah Cu(OH)₂ mengendap terlebih dahulu. Jika CuSO₄ ditambah lebih dulu, Cu akan mengendap dan tidak bereaksi dengan ikatan peptida.'},
+  {type:'mc-complex',q:'Asam amino apa saja yang dapat terdeteksi dalam Uji Xanthoproteat?',opts:['Tirosin (memiliki cincin benzena)','Fenilalanin (memiliki gugus fenil)','Glisin (hanya memiliki H sebagai gugus R)','Triptofan (memiliki cincin indol benzena)'],ans:[0,1,3],fb:'Uji Xanthoproteat mendeteksi asam amino aromatik yang memiliki cincin benzena: tirosin, fenilalanin, dan triptofan. Glisin tidak memiliki cincin benzena sehingga negatif.'},
+  {type:'mc-complex',q:'Risiko keselamatan apa yang harus diwaspadai saat uji Xanthoproteat?',opts:['HNO₃ pekat bersifat sangat korosif dan dapat membakar kulit','Perlu menggunakan penjepit tabung saat pemanasan','Uap HNO₃ berbahaya jika terhirup','Reaksi dapat berjalan sendiri tanpa pemanasan'],ans:[0,1,2],fb:'HNO₃ pekat korosif, mengoksidasi, dan menghasilkan uap berbahaya. Wajib penjepit tabung dan APD. Pemanasan memang diperlukan untuk reaksi nitrasi.'},
+];
+
+const FLASHCARDS=[
+  {front:'Apa yang dideteksi oleh Uji Biuret?',back:'Ikatan peptida (–CO–NH–)\n\nReagen: NaOH + CuSO₄\nHasil: Ungu kebiruan = positif protein',color:'#7c3aed'},
+  {front:'Apa warna hasil positif Uji Xanthoproteat?',back:'Endapan KUNING\n\nReagen: HNO₃ pekat (panas)\nDeteksi: Cincin benzena (Tirosin, Phe, Trp)',color:'#b45309'},
+  {front:'Mengapa Gelatin negatif pada Uji Millon?',back:'Gelatin (kolagen terhidrolisis) sangat rendah atau tidak mengandung TIROSIN.\nReagen Millon spesifik untuk gugus fenol (–OH) pada tirosin.\nTanpa tirosin → tidak ada warna merah bata.',color:'#dc2626'},
+  {front:'Apa perbedaan warna hasil Ninhidrin pada protein vs prolin?',back:'Protein/asam amino umum:\n→ Biru Intens (Ungu Ruhemann)\n\nProlin (gugus imino):\n→ Kuning/coklat\n\nKarena prolin tidak punya gugus α-amino bebas biasa.',color:'#1d4ed8'},
+  {front:'Mengapa NaOH ditambahkan sebelum CuSO₄ pada Uji Biuret?',back:'1. Menciptakan suasana BASA\n2. Mencegah pengendapan Cu(OH)₂\n\nJika urutan dibalik → Cu mengendap sebelum bereaksi dengan protein → tidak terbentuk warna ungu.',color:'#5b21b6'},
+  {front:'Sampel X: positif Biuret, negatif Xanthoproteat. Protein apa ini?',back:'Protein yang TIDAK mengandung asam amino aromatik (tanpa cincin benzena).\n\nContoh: Glisin, Alanin (tidak aromatik).\nKemungkinan: protein struktural seperti kolagen/gelatin atau protein sederhana.',color:'#059669'},
+  {front:'Sebutkan 4 uji protein dan apa yang dideteksinya!',back:'🟣 Biuret → Ikatan peptida\n🟡 Xanthoproteat → Cincin benzena\n🔵 Ninhidrin → Gugus amino bebas\n🔴 Millon → Gugus fenol (tirosin)',color:'#be185d'},
+  {front:'Apa fungsi penjepit tabung dalam uji Xanthoproteat?',back:'Melindungi tangan dari:\n• Luka bakar panas api Bunsen\n• Kontak langsung dengan HNO₃ pekat yang sangat korosif\n\nAPD wajib: sarung tangan, kacamata, jas lab.',color:'#dc2626'},
+];
+
+const MEMORY_PAIRS=[
+  {id:0,emoji:'🟣',label:'Uji Biuret',color:'#7c3aed'},{id:0,emoji:'🔗',label:'Ikatan Peptida',color:'#7c3aed'},
+  {id:1,emoji:'🟡',label:'Xanthoproteat',color:'#b45309'},{id:1,emoji:'⬡',label:'Cincin Benzena',color:'#b45309'},
+  {id:2,emoji:'🔵',label:'Ninhidrin',color:'#1d4ed8'},{id:2,emoji:'💙',label:'Gugus Amino',color:'#1d4ed8'},
+  {id:3,emoji:'🔴',label:'Uji Millon',color:'#dc2626'},{id:3,emoji:'🫀',label:'Tirosin/Fenol',color:'#dc2626'},
+  {id:4,label:'Albumin Telur',color:'#059669',img:'https://85meydiaafrina.github.io/ujiprotein/albumin.png'},{id:4,emoji:'✅',label:'Semua Positif',color:'#059669'},
+  {id:5,label:'Gelatin',color:'#be185d',img:'https://85meydiaafrina.github.io/ujiprotein/gelatin.png'},{id:5,emoji:'❌',label:'Millon Negatif',color:'#be185d'},
+];
+
+let quizMC_State={cur:0,answers:Array(QUIZ_MC.length).fill(null),submitted:Array(QUIZ_MC.length).fill(false)};
+let fcState={cur:0,flipped:false,viewed:new Set()};
+let mgState={cards:[],revealed:[],matched:[],first:null,locked:false,moves:0};
+let currentMode='mc';
+
+function isCorrectMC(q,sel){
+  if(sel===null) return false;
+  const multi=Array.isArray(q.ans);
+  if(multi){if(!Array.isArray(sel)) return false;if(sel.length!==q.ans.length) return false;return q.ans.every(a=>sel.includes(a));}
+  return sel===q.ans;
+}
+
+function setQuizMode(mode){
+  currentMode=mode;
+  ['mc','mg','fc'].forEach(m=>{
+    const btn=document.getElementById('modeBtn-'+m);
+    if(m===mode){btn.style.background=m==='mc'?'linear-gradient(135deg,#5b21b6,#7c3aed)':m==='mg'?'linear-gradient(135deg,#b45309,#f59e0b)':'linear-gradient(135deg,#9d174d,#be185d)';btn.style.color='#fff';btn.style.border='none';}
+    else{const c=m==='mc'?'#7c3aed':m==='mg'?'#b45309':'#be185d';btn.style.background='#fff';btn.style.color=c;btn.style.border=`1.5px solid ${c}`;}
+  });
+  document.getElementById('quizProgressWrap').style.display=mode==='mc'?'flex':'none';
+  if(mode==='mc') renderMC();
+  else if(mode==='mg') initMemoryGame();
+  else renderFC();
+}
+
+function renderMC(){
+  const st=quizMC_State;const q=QUIZ_MC[st.cur];
+  const prog=document.getElementById('quizProg');
+  prog.innerHTML=QUIZ_MC.map((_,i)=>`<div class="qprog-dot ${i===st.cur?'current':st.answers[i]!==null?'answered':''}" onclick="gotoMC(${i})">${i+1}</div>`).join('');
+  const sub=st.submitted[st.cur];
+  const sel=st.answers[st.cur];
+  const multiAns=Array.isArray(q.ans);
+  const selArr=multiAns?(Array.isArray(sel)?sel:[]):[];
+  const hasSelection=multiAns?selArr.length>0:sel!==null;
+  const correct=sub?isCorrectMC(q,sel):false;
+  const container=document.getElementById('quizContainer');
+  container.innerHTML=`
+    <div class="q-card" style="flex:1;overflow-y:auto;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap;">
+        <div class="qnum" style="margin:0;">SOAL ${st.cur+1} / ${QUIZ_MC.length}</div>
+        <span class="qtype-badge badge-complex">🧩 Multi-Jawaban</span>
+        <span style="background:#f3e8ff;border:1px solid #d8b4fe;color:#7c3aed;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;">☑ Pilih semua jawaban benar</span>
+        ${sub?'<span style="background:#dcfce7;border:1px solid #86efac;color:#15803d;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;">✅ Selesai</span>':''}
+      </div>
+      <div class="qtext">${q.q}</div>
+      <ul class="opts">
+        ${q.opts.map((o,i)=>{
+          let cls='';
+          if(sub){const inAns=q.ans.includes(i);const inSel=selArr.includes(i);if(inAns) cls='correct';else if(inSel&&!inAns) cls='wrong';}
+          else cls=selArr.includes(i)?'sel':'';
+          return `<li class="opt ${cls}" onclick="${sub?'':'selectMC('+i+')'}" style="${sub?'cursor:default':''}"><input type="checkbox" ${selArr.includes(i)?'checked':''} ${sub?'disabled':''} style="flex-shrink:0;accent-color:var(--acc);"> ${o}</li>`;
+        }).join('')}
+      </ul>
+      <div class="qfb ${sub?'on':''} ${sub?(correct?'ok':'bad'):''}">${sub?(correct?'✅ Benar! Semua pilihan tepat! ':'❌ Kurang tepat. ')+q.fb:''}</div>
+    </div>
+    <div class="quiz-foot" style="flex-shrink:0;">
+      <button class="btn-qnav btn-prev" onclick="gotoMC(${st.cur-1})" ${st.cur===0?'disabled':''}>← Sebelumnya</button>
+      ${!sub?`<button class="btn-qnav btn-next" onclick="submitMC()" style="background:linear-gradient(135deg,#5b21b6,#7c3aed);" ${!hasSelection?'disabled':''}>Konfirmasi ✓</button>`:''}
+      ${st.cur<QUIZ_MC.length-1?`<button class="btn-qnav btn-next" onclick="gotoMC(${st.cur+1})">Berikutnya →</button>`:''}
+      ${st.cur===QUIZ_MC.length-1?`<button class="btn-qnav btn-submit-q" onclick="showScoreMC()">Lihat Nilai 🏆</button>`:''}
+      <span class="qcounter">${st.answers.filter(x=>x!==null).length}/${QUIZ_MC.length} dijawab</span>
+    </div>
+  `;
+}
+function selectMC(i){
+  if(quizMC_State.submitted[quizMC_State.cur]) return;
+  let cur=Array.isArray(quizMC_State.answers[quizMC_State.cur])?[...quizMC_State.answers[quizMC_State.cur]]:[];
+  const idx=cur.indexOf(i);if(idx>=0) cur.splice(idx,1);else cur.push(i);
+  quizMC_State.answers[quizMC_State.cur]=cur.length>0?cur:null;renderMC();
+}
+function submitMC(){
+  if(quizMC_State.answers[quizMC_State.cur]===null) return;
+  quizMC_State.submitted[quizMC_State.cur]=true;
+  const correct=isCorrectMC(QUIZ_MC[quizMC_State.cur],quizMC_State.answers[quizMC_State.cur]);
+  playSound(correct?'sndBenar':'sndSalah');renderMC();
+}
+function gotoMC(i){if(i<0||i>=QUIZ_MC.length) return;quizMC_State.cur=i;renderMC();}
+function showScoreMC(){
+  const score=QUIZ_MC.reduce((acc,q,i)=>acc+(isCorrectMC(q,quizMC_State.answers[i])?1:0),0);
+  const pct=Math.round(score/QUIZ_MC.length*100);
+  document.getElementById('scoreBig').textContent=pct;
+  document.getElementById('scorePct').textContent='/ 100';
+  document.getElementById('scoreSub').textContent=`Kamu menjawab ${score} dari ${QUIZ_MC.length} soal dengan benar.`;
+  const grade=pct>=90?'🌟 Sangat Baik (A)':pct>=75?'😊 Baik (B)':pct>=60?'😐 Cukup (C)':'💪 Perlu Belajar Lagi (D)';
+  const gc=pct>=90?'#059669':pct>=75?'#2563eb':pct>=60?'#d97706':'#dc2626';
+  document.getElementById('scoreGrade').textContent=grade;document.getElementById('scoreGrade').style.color=gc;
+  document.getElementById('scoreOverlay').classList.add('on');
+  playSound(pct>=75?'sndBerhasil':'sndBenar');
+}
+
+// MEMORY GAME
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function initMemoryGame(){
+  const cards=shuffle([...MEMORY_PAIRS.map((p,idx)=>({...p,uid:idx}))]);
+  mgState={cards,revealed:Array(cards.length).fill(false),matched:Array(cards.length).fill(false),first:null,locked:false,moves:0};
+  renderMG();
+}
+function renderMG(){
+  const container=document.getElementById('quizContainer');
+  const totalPairs=MEMORY_PAIRS.length/2;
+  const matchedCount=mgState.matched.filter(Boolean).length/2;
+  container.innerHTML=`
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px;min-height:0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg,#1a0040,#5b21b6);border-radius:10px;padding:8px 14px;color:#fff;">
+        <span style="font-size:12px;font-weight:800;font-family:'Syne',sans-serif;">🎮 Memory Game – Cocokkan Pasangan!</span>
+        <div style="display:flex;gap:10px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.15);padding:3px 9px;border-radius:6px;">✅ ${matchedCount}/${totalPairs}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.15);padding:3px 9px;border-radius:6px;">🔄 ${mgState.moves}</span>
+          <button onclick="initMemoryGame()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);">↺</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;align-content:start;overflow-y:auto;">
+        ${mgState.cards.map((card,idx)=>{
+          const revealed=mgState.matched[idx]||mgState.revealed[idx];
+          const mc=card.color||'#7c3aed';
+          return '<div onclick="flipMG('+idx+')" style="'
+            +'border-radius:12px;cursor:pointer;min-height:88px;'
+            +'display:flex;flex-direction:column;align-items:center;justify-content:center;'
+            +'font-weight:800;text-align:center;padding:10px 6px;'
+            +'transition:all .3s cubic-bezier(.34,1.56,.64,1);user-select:none;'
+            +(mgState.matched[idx]?
+              'background:linear-gradient(135deg,'+mc+'dd,'+mc+'99);border:2.5px solid '+mc+';box-shadow:0 4px 18px '+mc+'55;transform:scale(1.04);':
+              revealed?
+              'background:#fff;border:2.5px solid '+mc+';box-shadow:0 3px 12px rgba(0,0,0,.12);':
+              'background:linear-gradient(135deg,#2d0060,#5b21b6);border:2px solid rgba(255,255,255,.15);box-shadow:0 2px 8px rgba(45,0,103,.35);')
+            +'">'
+            +(revealed?
+              (card.img?'<img src="'+card.img+'" style="width:48px;height:48px;object-fit:contain;border-radius:8px;margin-bottom:5px;" onerror="this.style.display=\'none\'">'
+               :'<div style="font-size:30px;margin-bottom:5px;">'+(card.emoji||'?')+'</div>')
+              +'<div style="font-size:10.5px;font-weight:800;color:'+(mgState.matched[idx]?'#fff':mc)+';line-height:1.3;">'+card.label+'</div>'
+              :'<div style="font-size:28px;animation:floatMolQ 2.5s ease-in-out infinite;">🧬</div><div style="font-size:9px;color:rgba(255,255,255,.45);margin-top:4px;font-weight:600;">?</div>')
+            +'</div>';
+        }).join('')}
+      </div>
+      ${matchedCount===totalPairs?`
+      <div style="background:linear-gradient(135deg,#059669,#10b981);border-radius:10px;padding:12px;text-align:center;color:#fff;flex-shrink:0;">
+        <div style="font-size:28px;margin-bottom:4px;">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;">Semua Pasangan Ditemukan!</div>
+        <div style="font-size:11px;margin-top:3px;opacity:.9;">${mgState.moves} langkah · Kerja bagus!</div>
+        <button onclick="initMemoryGame()" style="margin-top:9px;background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.6);color:#fff;border-radius:8px;padding:7px 20px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;">🔄 Main Lagi</button>
+      </div>`:''}
+    </div>`;
+}
+function flipMG(idx){
+  if(mgState.locked||mgState.revealed[idx]||mgState.matched[idx]) return;
+  mgState.revealed[idx]=true;
+  if(mgState.first===null){mgState.first=idx;renderMG();return;}
+  mgState.moves++;
+  const first=mgState.first;mgState.first=null;
+  if(mgState.cards[first].id===mgState.cards[idx].id){
+    mgState.matched[first]=mgState.matched[idx]=true;renderMG();playSound('sndBenar');
+    if(mgState.matched.every(Boolean)){setTimeout(()=>{playSound('sndBerhasil');},300);}
+  } else {
+    mgState.locked=true;renderMG();
+    setTimeout(()=>{mgState.revealed[first]=mgState.revealed[idx]=false;mgState.locked=false;renderMG();playSound('sndSalah');},900);
+  }
+}
+
+// FLASHCARDS
+function renderFC(){
+  const card=FLASHCARDS[fcState.cur];
+  const container=document.getElementById('quizContainer');
+  container.innerHTML=`
+    <div style="flex:1;display:flex;flex-direction:column;min-height:0;gap:8px;">
+      <div style="text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;flex-shrink:0;">${fcState.cur+1} / ${FLASHCARDS.length} — Klik kartu untuk membalik</div>
+      <div id="fcCardWrap" onclick="flipFC()" style="flex:1;perspective:1000px;cursor:pointer;min-height:0;">
+        <div id="fcCardInner" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);transform:${fcState.flipped?'rotateY(180deg)':'rotateY(0deg)'};">
+          <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,${card.color}dd,${card.color}aa);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+            <div style="font-size:13px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;font-family:'DM Mono',monospace;">❓ Pertanyaan</div>
+            <div style="font-family:'Syne',sans-serif;font-size:clamp(13px,1.8vw,18px);font-weight:800;color:#fff;text-align:center;line-height:1.5;text-shadow:0 2px 8px rgba(0,0,0,.2);">${card.front}</div>
+            <div style="margin-top:20px;font-size:11px;color:rgba(255,255,255,0.55);">👆 Ketuk untuk melihat jawaban</div>
+          </div>
+          <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:#fff;border:2.5px solid ${card.color};border-radius:16px;display:flex;flex-direction:column;padding:20px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.15);overflow-y:auto;">
+            <div style="font-size:11px;color:${card.color};text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;font-family:'DM Mono',monospace;font-weight:700;">✅ Jawaban</div>
+            <div style="font-size:clamp(12px,1.4vw,14.5px);color:#1e293b;line-height:1.8;white-space:pre-line;font-weight:500;">${card.back}</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+        <button onclick="prevFC()" style="padding:8px 16px;border-radius:8px;background:var(--surf2);border:1.5px solid var(--border);font-family:var(--font);font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;" ${fcState.cur===0?'disabled':''}>← Sebelumnya</button>
+        <div style="flex:1;display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+          ${FLASHCARDS.map((_,i)=>`<div onclick="gotoFC(${i})" style="width:10px;height:10px;border-radius:50%;background:${i===fcState.cur?card.color:'#dde3ec'};cursor:pointer;transition:background .2s;"></div>`).join('')}
+        </div>
+        <button onclick="nextFC()" style="padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,${card.color}cc,${card.color});color:#fff;border:none;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;" ${fcState.cur===FLASHCARDS.length-1?'disabled':''}>Berikutnya →</button>
+      </div>
+    </div>`;
+}
+function flipFC(){fcState.flipped=!fcState.flipped;if(fcState.flipped) fcState.viewed.add(fcState.cur);renderFC();}
+function prevFC(){if(fcState.cur>0){fcState.cur--;fcState.flipped=false;renderFC();}}
+function nextFC(){if(fcState.cur<FLASHCARDS.length-1){fcState.cur++;fcState.flipped=false;renderFC();}}
+function gotoFC(i){fcState.cur=i;fcState.flipped=false;renderFC();}
+
+function resetKuis(){
+  quizMC_State={cur:0,answers:Array(QUIZ_MC.length).fill(null),submitted:Array(QUIZ_MC.length).fill(false)};
+  fcState={cur:0,flipped:false,viewed:new Set()};
+  mgState={cards:[],revealed:[],matched:[],first:null,locked:false,moves:0};
+  closeScore();setQuizMode(currentMode);
+}
+setQuizMode('mc');
+</script>
+
+<!-- NAV & PAGE SWITCH -->
+<script>
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('mainNav').classList.remove('open');
+  document.body.classList.remove('cover-active');
+}
+function startLab(){
+  document.body.classList.remove('cover-active');
+  showPage('page-tujuan', document.querySelectorAll('.nb')[0]);
+}
+// Aktifkan cover-active saat halaman pertama kali dimuat
+document.body.classList.add('cover-active');
+</script>
+
+</div><!-- #app -->
+</body>
+</html>
