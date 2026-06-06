@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya – Sifat Koligatif Larutan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0fdf4;--surf:#ffffff;--surf2:#f0fdf4;
+  --border:#bbf7d0;--border2:#4ade80;
+  --acc:#0f766e;--acc2:#0d9488;--acc3:#2dd4bf;
+  --acc-ice:#38bdf8;--acc-fire:#f97316;--acc-snow:#e0f2fe;
+  --text:#134e4a;--text2:#374151;--text3:#6b7280;
+  --teal:#0d9488;--blue:#0369a1;--red:#dc2626;--orange:#ea580c;
+  --h:50px;--fbase:13px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 5% 0%,rgba(186,230,253,0.55) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 55% at 95% 5%,rgba(167,243,208,0.5) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 95%,rgba(196,181,253,0.3) 0%,transparent 60%),
+    radial-gradient(ellipse 55% 50% at 5% 98%,rgba(153,246,228,0.4) 0%,transparent 60%),
+    linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 30%,#e0f2fe 65%,#f0fdf4 100%);
+}
+/* ── HEADER ── */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#0d9488,#0f766e,#134e4a);
+  border-bottom:2px solid rgba(13,148,136,0.4);
+  display:flex;align-items:center;padding:0 14px;gap:12px;
+  box-shadow:0 2px 16px rgba(13,148,136,0.3);
+}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border:1px solid rgba(45,212,191,0.4);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 10px rgba(45,212,191,0.4);}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;color:#fff;line-height:1.1;}
+.logo-sub{font-size:9px;color:#99f6e4;letter-spacing:.06em;font-weight:600;}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(204,251,241,0.75);cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(10.5px,1.1vw,12.5px);font-weight:600;padding:0 10px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:3px;background:#2dd4bf;transform:scaleX(0);transition:transform .2s;border-radius:3px 3px 0 0;}
+.nb:hover{color:#fff;}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;background:linear-gradient(180deg,#0d9488,#0f766e);border-bottom:2px solid rgba(13,148,136,.3);box-shadow:0 8px 24px rgba(13,148,136,.25);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:50px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(45,212,191,.2);font-size:13px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(45,212,191,.2);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .22s ease;}
+.scroll{flex:1;overflow-y:auto;padding:8px 12px 10px;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin;}
+.scroll::-webkit-scrollbar{width:5px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#ccfbf1,#99f6e4,#cffafe,#e0f2fe);border:2px solid rgba(13,148,136,0.2);border-radius:11px;padding:9px 16px;margin-bottom:6px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 3px 14px rgba(13,148,136,0.12);}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;color:#0f766e;text-transform:uppercase;margin-bottom:2px;font-weight:700;}
+.h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,17px);font-weight:800;color:#134e4a;line-height:1.2;}
+.h-title span{color:#0d9488;}
+.h-desc{font-size:11px;color:#0f766e;line-height:1.55;max-width:560px;}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;margin-bottom:6px;transition:border-color .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(13,148,136,0.07);}
+.card:hover{border-color:var(--border2);box-shadow:0 4px 14px rgba(13,148,136,0.14);}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.ci{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci.b{background:#dbeafe;} .ci.p{background:#ede9fe;} .ci.g{background:#d1fae5;} .ci.r{background:#fee2e2;} .ci.y{background:#fef3c7;} .ci.t{background:#ccfbf1;} .ci.ic{background:#e0f2fe;}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,14px);font-weight:800;color:#0f766e;}
+.card p{font-size:clamp(11px,1.15vw,12.5px);line-height:1.55;color:var(--text2);margin-bottom:4px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin:8px 0 4px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.15vw,12.5px);color:var(--text2);line-height:1.5;padding:3px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:700;font-size:15px;margin-top:-1px;}
+.chips{display:flex;gap:5px;margin:6px 0;flex-wrap:wrap;}
+.chip{border-radius:5px;padding:3px 9px;font-size:clamp(10.5px,1.1vw,12px);font-weight:600;}
+.chip-t{background:#ccfbf1;border:1px solid #5eead4;color:#0f766e;}
+.chip-b{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af;}
+.chip-p{background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;}
+.chip-g{background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;}
+.chip-r{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;}
+.chip-ic{background:#e0f2fe;border:1px solid #7dd3fc;color:#0369a1;}
+.sep{display:flex;align-items:center;gap:8px;margin:8px 0 5px;}
+.sep span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;font-weight:700;}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--border);}
+.steps{display:flex;flex-direction:column;gap:4px;}
+.step{display:flex;gap:9px;align-items:flex-start;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:7px;padding:6px 10px;transition:border-color .17s;}
+.step:hover{border-color:#4ade80;background:#dcfce7;}
+.snum{min-width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#2dd4bf);border:1px solid #0f766e;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:800;flex-shrink:0;}
+.step p{font-size:clamp(11px,1.15vw,12.5px);color:#374151;line-height:1.55;margin:0;}
+.notebox{background:linear-gradient(135deg,#ccfbf1,#99f6e4);border:1.5px solid #5eead4;border-radius:7px;padding:7px 12px;margin-top:6px;}
+.notebox .nt{font-size:9.5px;font-weight:800;color:#0f766e;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+.notebox p{font-size:clamp(11px,1.15vw,12.5px);color:#134e4a;line-height:1.55;margin:0;}
+/* FORMULA BOX */
+.fmbox{background:linear-gradient(135deg,#134e4a,#0f766e);border:1.5px solid #0d9488;border-radius:8px;padding:8px 14px;margin:6px 0;text-align:center;}
+.fmbox .fm-label{font-size:9px;color:#99f6e4;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
+.fmbox .fm-eq{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.5vw,15px);color:#2dd4bf;font-weight:700;}
+.fmbox .fm-note{font-size:10px;color:#5eead4;margin-top:3px;}
+/* KOLIGATIF GRID */
+.kolig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0;}
+.kolig-box{border-radius:9px;padding:9px 12px;text-align:center;border:1.5px solid;}
+.kolig-box.kb1{background:#e0f2fe;border-color:#7dd3fc;}
+.kolig-box.kb2{background:#ccfbf1;border-color:#5eead4;}
+.kolig-box.kb3{background:#ede9fe;border-color:#c4b5fd;}
+.kolig-sym{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;margin-bottom:3px;}
+.kb1 .kolig-sym{color:#0369a1;} .kb2 .kolig-sym{color:#0d9488;} .kb3 .kolig-sym{color:#7c3aed;}
+.kolig-name{font-size:11px;font-weight:700;color:#1e293b;margin-bottom:2px;}
+.kolig-desc{font-size:10px;color:#475569;line-height:1.4;}
+
+/* SIMULASI */
+.sim-wrap{display:grid;grid-template-columns:220px 1fr;gap:8px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:11px;display:flex;flex-direction:column;gap:7px;overflow-y:auto;box-shadow:0 2px 8px rgba(13,148,136,.1);}
+.ctrl-panel h3{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:var(--acc);}
+.cg{display:flex;flex-direction:column;gap:4px;}
+.cg label{display:block;font-size:9.5px;font-weight:700;color:#0d9488;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;}
+.cg .sl-row{display:flex;align-items:center;gap:6px;}
+.cg input[type=range]{flex:1;accent-color:#0d9488;cursor:pointer;height:4px;}
+.sv-sm{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#0f766e;min-width:34px;text-align:right;}
+select{width:100%;background:#fff;border:1.5px solid var(--border);border-radius:6px;color:var(--text);padding:6px 24px 6px 8px;font-family:'Inter',sans-serif;font-size:11.5px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%230d9488' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .17s;}
+select:focus{border-color:var(--acc);}
+.btn{width:100%;border:none;border-radius:7px;padding:8px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;box-shadow:0 2px 10px rgba(13,148,136,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(13,148,136,.5);}
+.btn-stop{background:#fee2e2;border:1.5px solid #fca5a5;color:#991b1b;}
+.btn-reset{background:#f1f5f9;border:1.5px solid #cbd5e1;color:#475569;}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.aquarium{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:9px;flex:1;min-height:0;box-shadow:0 2px 8px rgba(13,148,136,.1);display:flex;flex-direction:column;}
+.aquarium h3{font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:800;color:var(--acc);margin-bottom:6px;}
+#simCanvas{width:100%;border-radius:6px;display:block;background:linear-gradient(135deg,#0f172a,#1e293b);flex:1;}
+.statsrow{display:flex;gap:6px;margin-top:6px;}
+.sbox{flex:1;background:linear-gradient(135deg,#ccfbf1,#99f6e4);border:1.5px solid #5eead4;border-radius:7px;padding:6px;text-align:center;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#0f766e;display:block;}
+.sl{font-size:9px;color:#0d9488;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+.tipinfo{background:#dbeafe;border:1.5px solid #93c5fd;border-radius:7px;padding:7px 10px;margin-top:6px;font-size:11px;color:#1e40af;display:none;line-height:1.55;}
+.tipinfo.on{display:block;}
+
+/* LEMBAR KERJA */
+.lk-input{width:100%;background:#fff;border:1.5px solid var(--border);border-radius:6px;color:var(--text);padding:6px 9px;font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color .17s;}
+.lk-input:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(13,148,136,.12);}
+select.lk-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%230d9488' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.lk-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:7px;}
+.lk-table th{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;padding:6px 8px;text-align:left;border:1px solid #0f766e;font-size:10px;text-transform:uppercase;letter-spacing:.04em;font-weight:700;}
+.lk-table td{padding:3px 5px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;background:#fff;}
+.lk-table tr:nth-child(even) td{background:#f0fdf4;}
+.lk-table input,.lk-table select,.lk-table textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:11.5px;padding:2px 4px;}
+.lk-table input:focus,.lk-table select:focus{background:#ccfbf1;border-radius:4px;}
+.disc-area{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);background:#fff;resize:none;outline:none;transition:border-color .17s;line-height:1.55;margin-top:5px;}
+.disc-area:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(13,148,136,.12);}
+.lk-fit{flex:1;display:flex;flex-direction:column;gap:6px;padding:7px 12px 9px;overflow:hidden;min-height:0;}
+.lk-top{display:flex;gap:8px;align-items:stretch;flex-shrink:0;}
+.lk-hero{background:linear-gradient(135deg,#ccfbf1,#99f6e4,#cffafe);border:1.5px solid rgba(13,148,136,.22);border-radius:9px;padding:6px 14px;display:flex;flex-direction:column;justify-content:center;min-width:180px;box-shadow:0 2px 8px rgba(13,148,136,.1);position:relative;overflow:hidden;}
+.lk-hero::after{content:'🧪';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:30px;opacity:.22;}
+.lk-hero .h-label{font-size:8.5px;}
+.lk-hero .h-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:#134e4a;line-height:1.15;}
+.lk-identitas{flex:1;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:6px;background:#fff;border:1.5px solid var(--border);border-radius:9px;padding:6px 10px;box-shadow:0 2px 8px rgba(13,148,136,.08);}
+.lk-identitas>div{display:flex;flex-direction:column;justify-content:center;}
+.lk-identitas label{font-size:8.5px;color:#0d9488;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:2px;display:block;}
+.lk-identitas .lk-input{padding:4px 8px;font-size:11px;}
+.lk-main{flex:1;display:grid;grid-template-columns:1.35fr 1fr;gap:7px;min-height:0;overflow:hidden;}
+.lk-col-tables{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+.lk-col-questions{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+.lk-card{background:var(--surf);border:1.5px solid var(--border);border-radius:9px;padding:7px 9px;display:flex;flex-direction:column;min-height:0;flex:1;box-shadow:0 2px 8px rgba(13,148,136,.08);}
+.lk-card-head{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-shrink:0;}
+.lk-card-head .ci{width:22px;height:22px;font-size:11px;border-radius:6px;}
+.lk-card-head .ct{font-size:12px;font-weight:800;color:#0f766e;flex:1;}
+.lk-mini-btn{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border:none;border-radius:5px;padding:3px 10px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;box-shadow:0 1px 4px rgba(13,148,136,.3);transition:all .15s;}
+.lk-mini-btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(13,148,136,.45);}
+.lk-table-scroll{flex:1;overflow:auto;border:1px solid var(--border);border-radius:6px;min-height:0;}
+.lk-table-scroll::-webkit-scrollbar{width:5px;height:5px;}
+.lk-table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.lk-table-scroll .lk-table{margin:0;font-size:10.5px;}
+.lk-table-scroll .lk-table th{position:sticky;top:0;z-index:2;padding:4px 5px;font-size:9px;}
+.lk-table-scroll .lk-table td{padding:2px 4px;}
+.lk-qlist{flex:1;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden;}
+.lk-qitem{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;}
+.lk-qtext{font-size:10.5px;font-weight:700;color:#0f766e;line-height:1.3;flex-shrink:0;}
+.lk-qarea{flex:1;min-height:0;resize:none;padding:5px 8px;font-size:11px;line-height:1.4;margin-top:0;}
+.lk-actions{display:flex;gap:7px;justify-content:flex-end;flex-shrink:0;}
+.lk-actions .dl-btn{padding:6px 14px;font-size:11px;border-radius:7px;}
+@media(max-width:900px){.lk-main{grid-template-columns:1fr;}.lk-top{flex-direction:column;}.lk-hero{min-width:0;}.lk-identitas{grid-template-columns:1fr 1fr;}}
+
+/* ── TUJUAN ── */
+.tujuan-hero{background:linear-gradient(135deg,#ccfbf1,#99f6e4,#cffafe,#e0f2fe);border:2px solid rgba(13,148,136,0.2);border-radius:12px;padding:14px 18px;margin-bottom:8px;position:relative;overflow:hidden;box-shadow:0 4px 18px rgba(13,148,136,.15);}
+.tujuan-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%,rgba(167,139,250,.12) 0%,transparent 70%);pointer-events:none;}
+.tp-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #0d9488;border-radius:20px;padding:3px 11px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#0f766e;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.tp-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(18px,2.5vw,24px);font-weight:800;color:#134e4a;margin-bottom:4px;line-height:1.2;}
+.tp-sub{font-size:12px;color:#0f766e;margin-bottom:10px;font-weight:500;}
+.tp-card{background:#fff;border:1.5px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start;transition:border-color .2s,background .2s;box-shadow:0 2px 8px rgba(13,148,136,.1);}
+.tp-card:hover{border-color:#4ade80;background:#f0fdf4;}
+.tp-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.tp-icon.t{background:#ccfbf1;} .tp-icon.b{background:#dbeafe;} .tp-icon.p{background:#ede9fe;} .tp-icon.g{background:#d1fae5;} .tp-icon.ic{background:#e0f2fe;}
+.tp-label{font-size:9.5px;font-weight:700;color:#0d9488;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.tp-text{font-size:13px;color:#1e293b;font-weight:600;line-height:1.45;}
+.tp-desc{font-size:11.5px;color:#64748b;margin-top:2px;line-height:1.45;}
+.kd-box{background:linear-gradient(135deg,#ccfbf1,#99f6e4);border:1.5px solid #5eead4;border-radius:10px;padding:11px 14px;margin-top:6px;box-shadow:0 2px 8px rgba(13,148,136,.15);}
+.kd-title{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:800;color:#0f766e;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.kd-row{display:flex;gap:8px;flex-wrap:wrap;}
+.kd-item{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#134e4a;line-height:1.5;padding:7px 11px;background:#fff;border:1.5px solid #a7f3d0;border-radius:8px;flex:1;min-width:200px;font-weight:500;}
+.kd-item::before{content:'🎯';flex-shrink:0;}
+
+/* QUIZ */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;flex-shrink:0;box-shadow:0 2px 8px rgba(13,148,136,.1);}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:24px;height:24px;border-radius:5px;border:1.5px solid var(--border);background:#fff;font-size:9.5px;font-weight:700;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.qprog-dot.answered{border-color:var(--acc);color:var(--acc);background:#ccfbf1;}
+.qprog-dot.current{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border-color:#0f766e;}
+.q-card{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:13px;flex:1;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(13,148,136,.1);min-height:0;}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#0d9488;letter-spacing:.1em;margin-bottom:4px;font-weight:700;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:6px;letter-spacing:.04em;}
+.badge-mc{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af;}
+.badge-hots{background:#ccfbf1;border:1px solid #5eead4;color:#0f766e;}
+.badge-kompleks{background:#ede9fe;border:1px solid #c4b5fd;color:#5b21b6;}
+.qtext{font-size:13px;color:var(--text);line-height:1.5;font-weight:600;margin-bottom:9px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);}
+.opt:hover{border-color:#4ade80;background:#f0fdf4;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;}
+.opt.sel{border-color:#0d9488;background:#ccfbf1;color:#134e4a;}
+.opt.correct{background:#d1fae5;border-color:#34d399;color:#065f46;}
+.opt.wrong{background:#fee2e2;border-color:#f87171;color:#991b1b;}
+.qfb{margin-top:7px;padding:7px 10px;border-radius:6px;font-size:11.5px;display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#d1fae5;color:#065f46;border:1.5px solid #34d399;}
+.qfb.partial{background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;}
+.qfb.bad{background:#fee2e2;color:#991b1b;border:1.5px solid #f87171;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:6px 14px;border-radius:7px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:#fff;border:1.5px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);}
+.btn-next{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,.3);}
+.btn-next:hover{box-shadow:0 4px 16px rgba(13,148,136,.5);}
+.btn-submit-q{background:linear-gradient(135deg,#059669,#34d399);color:#fff;box-shadow:0 2px 8px rgba(52,211,153,.35);}
+.btn-reset-q{background:#fff;border:1.5px solid var(--border);color:var(--text2);}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#64748b;font-weight:700;}
+
+/* SCORE OVERLAY */
+.score-overlay{position:fixed;inset:0;background:rgba(240,253,244,.85);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(12px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:2px solid #2dd4bf;border-radius:16px;padding:32px 44px;text-align:center;box-shadow:0 20px 60px rgba(13,148,136,.25);animation:fu .28s ease;min-width:280px;}
+.score-big{font-family:'Space Grotesk',sans-serif;font-size:68px;font-weight:800;background:linear-gradient(135deg,#0d9488,#2dd4bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.score-pct{font-size:20px;color:#64748b;margin-top:2px;}
+.score-sub{font-size:12.5px;color:var(--text2);margin:8px 0 4px;}
+.score-grade{font-size:15px;font-weight:700;margin-top:8px;color:#0f766e;}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:18px;}
+.btn-score{padding:8px 20px;border-radius:8px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:#fff;border:1.5px solid var(--border);color:var(--text2);}
+.btn-review:hover{border-color:var(--acc);color:var(--acc);}
+.btn-ulangi{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;}
+.btn-ulangi:hover{box-shadow:0 4px 18px rgba(13,148,136,.5);}
+
+/* MEMORY GAME */
+.memory-area{flex:1;display:flex;flex-direction:column;gap:8px;padding:8px 12px 10px;overflow:hidden;}
+.mem-header{display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--surf);border:1.5px solid var(--border);border-radius:9px;padding:7px 12px;}
+.mem-stat{display:flex;flex-direction:column;align-items:center;}
+.mem-stat-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;color:#0f766e;}
+.mem-stat-lbl{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;}
+.mem-grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:7px;min-height:0;}
+.mem-card{border-radius:8px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,.2,.2,1);min-height:0;}
+.mem-card.flipped{transform:rotateY(180deg);}
+.mem-card.matched{transform:rotateY(180deg);opacity:.7;cursor:default;}
+.mc-front,.mc-back{position:absolute;inset:0;border-radius:8px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;padding:6px;text-align:center;line-height:1.3;}
+.mc-front{background:linear-gradient(135deg,#134e4a,#0f766e);border:2px solid #0d9488;font-size:clamp(18px,2.5vw,26px);}
+.mc-back{transform:rotateY(180deg);background:#fff;border:2px solid #2dd4bf;font-size:clamp(9px,1vw,11px);color:#134e4a;font-weight:600;}
+
+/* FLASHCARD */
+.flash-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:8px 12px 10px;overflow:hidden;}
+.fc-wrap{width:100%;max-width:640px;height:200px;perspective:1200px;cursor:pointer;flex-shrink:0;}
+.fc-inner{width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1);position:relative;}
+.fc-wrap.flipped .fc-inner{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 28px;backface-visibility:hidden;text-align:center;}
+.fc-front{background:linear-gradient(135deg,#134e4a,#0f766e,#0d9488);border:2px solid #2dd4bf;box-shadow:0 4px 20px rgba(13,148,136,.25);}
+.fc-back{transform:rotateY(180deg);background:#fff;border:2px solid #2dd4bf;}
+.fc-q-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:#99f6e4;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.fc-q-text{font-size:clamp(12px,1.5vw,15px);color:#fff;font-weight:700;line-height:1.45;}
+.fc-a-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:#0d9488;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.fc-a-text{font-size:clamp(11px,1.3vw,13.5px);color:#134e4a;line-height:1.5;}
+.fc-hint{font-size:10px;color:rgba(255,255,255,.55);margin-top:8px;}
+.fc-nav-row{display:flex;align-items:center;gap:12px;}
+.fc-btn{padding:7px 20px;border-radius:8px;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .17s;}
+.fc-btn-prev{background:#fff;border:1.5px solid var(--border);color:var(--text2);}
+.fc-btn-prev:hover{border-color:var(--acc);color:var(--acc);}
+.fc-btn-next{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;box-shadow:0 2px 8px rgba(13,148,136,.3);}
+.fc-counter{font-family:'JetBrains Mono',monospace;font-size:11px;color:#64748b;font-weight:700;}
+.fc-progress{width:100%;max-width:640px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
+.fc-progress-fill{height:100%;background:linear-gradient(90deg,#0d9488,#2dd4bf);transition:width .4s ease;}
+
+/* QUIZ MODE TABS */
+.quiz-mode-tabs{display:flex;gap:5px;margin-bottom:6px;flex-shrink:0;}
+.qmode-btn{padding:5px 14px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text2);font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;}
+.qmode-btn.active{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border-color:#0d9488;box-shadow:0 2px 8px rgba(13,148,136,.3);}
+.quiz-panel{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.quiz-panel.active{display:flex;}
+
+/* LOADING */
+#loadScreen{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#ecfdf5 0%,#cffafe 40%,#e0f2fe 70%,#f0fdf4 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s ease;overflow:hidden;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+#loadCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.load-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.load-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,3vw,32px);font-weight:800;color:#134e4a;text-align:center;margin-bottom:4px;text-shadow:0 2px 12px rgba(13,148,136,.18);}
+.load-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1.1vw,12px);color:#0d9488;letter-spacing:.18em;text-transform:uppercase;text-align:center;margin-bottom:28px;}
+.load-bar-wrap{width:clamp(220px,30vw,360px);height:6px;background:rgba(13,148,136,.15);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#0d9488,#2dd4bf,#38bdf8);border-radius:5px;transition:width .1s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.4vw,16px);color:#0f766e;font-weight:700;margin-bottom:12px;text-align:center;}
+.load-status{font-size:12px;color:#0d9488;margin-bottom:30px;min-height:16px;text-align:center;}
+#btnMulai{display:none;background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border:none;border-radius:10px;padding:11px 32px;font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,15px);font-weight:700;cursor:pointer;letter-spacing:.04em;box-shadow:0 4px 24px rgba(13,148,136,.35);animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;transition:transform .18s,box-shadow .18s;}
+#btnMulai:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 8px 36px rgba(13,148,136,.5);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+@media(max-width:900px){.sim-wrap{grid-template-columns:1fr;}.mem-grid{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- ── LOADING SCREEN ── -->
+<div id="loadScreen">
+  <canvas id="loadCanvas"></canvas>
+  <div class="load-content">
+    <div style="font-size:54px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(45,212,191,.8));">🧊</div>
+    <div class="load-title">Lab Maya Kimia</div>
+    <div class="load-sub">Sifat Koligatif Larutan</div>
+    <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+    <div class="load-percent" id="loadPercent">0%</div>
+    <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+    <button id="btnMulai" onclick="startLab()">❄️ Mulai Praktikum</button>
+  </div>
+</div>
+
+<script>
+// ── Loading canvas: bright teal molecular animation ──
+(function(){
+  const canvas=document.getElementById('loadCanvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,t=0;
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  resize(); window.addEventListener('resize',resize);
+
+  // Molecules
+  const mols=[];
+  for(let i=0;i<60;i++) mols.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*0.002,vy:(Math.random()-.5)*0.002,r:2+Math.random()*4,type:Math.random()<.4?'water':Math.random()<.5?'solute':'ice',a:Math.random()*Math.PI*2});
+
+  function render(){
+    ctx.clearRect(0,0,W,H);
+
+    // Floating soft circles
+    if(!window._bc){window._bc=[];for(let i=0;i<8;i++)window._bc.push({x:Math.random(),y:Math.random(),r:40+Math.random()*80,hue:Math.random()<.5?168:195,a:Math.random()*Math.PI*2});}
+    window._bc.forEach(b=>{
+      b.x+=Math.sin(t*.008+b.a)*.0003; b.y+=Math.cos(t*.007+b.a)*.0003;
+      const g=ctx.createRadialGradient(b.x*W,b.y*H,0,b.x*W,b.y*H,b.r*2);
+      g.addColorStop(0,`hsla(${b.hue},85%,75%,0.18)`); g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(b.x*W,b.y*H,b.r*2,0,Math.PI*2); ctx.fill();
+    });
+
+    // Ice crystal patterns (subtle, light colors)
+    const crystals=[{x:.15,y:.3},{x:.82,y:.25},{x:.5,y:.7},{x:.28,y:.78},{x:.72,y:.15},{x:.9,y:.72},{x:.08,y:.6}];
+    crystals.forEach((c,ci)=>{
+      const cx=c.x*W,cy=c.y*H,cr=30+ci*8;
+      const spin=t*.006*(ci%2===0?1:-1);
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(spin);
+      for(let arm=0;arm<6;arm++){
+        ctx.save(); ctx.rotate(arm*Math.PI/3);
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-cr);
+        ctx.strokeStyle=`rgba(13,148,136,${.15+.08*Math.sin(t*.03+ci)})`;
+        ctx.lineWidth=1.5; ctx.stroke();
+        for(let b=1;b<=2;b++){
+          const by=-cr*(b/3);
+          ctx.beginPath(); ctx.moveTo(0,by); ctx.lineTo(cr*.22,by-cr*.14);
+          ctx.strokeStyle=`rgba(56,189,248,${.12+.06*Math.sin(t*.04+ci+b)})`;
+          ctx.lineWidth=1; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0,by); ctx.lineTo(-cr*.22,by-cr*.14);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+      ctx.restore();
+    });
+
+    // Moving molecules (bright colors on light bg)
+    mols.forEach(m=>{
+      m.x+=m.vx; m.y+=m.vy;
+      if(m.x<0)m.x=1; if(m.x>1)m.x=0;
+      if(m.y<0)m.y=1; if(m.y>1)m.y=0;
+      const px=m.x*W, py=m.y*H;
+      ctx.beginPath(); ctx.arc(px,py,m.r,0,Math.PI*2);
+      if(m.type==='water') ctx.fillStyle=`rgba(14,165,233,${.45+.2*Math.sin(t*.04+m.a)})`;
+      else if(m.type==='solute') ctx.fillStyle=`rgba(234,88,12,${.4+.2*Math.sin(t*.035+m.a)})`;
+      else ctx.fillStyle=`rgba(13,148,136,${.35+.15*Math.sin(t*.05+m.a)})`;
+      ctx.fill();
+    });
+
+    // Connection lines
+    ctx.lineWidth=.5;
+    for(let i=0;i<mols.length;i++) for(let j=i+1;j<mols.length;j++){
+      const dx=(mols[i].x-mols[j].x)*W, dy=(mols[i].y-mols[j].y)*H;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<80){const al=Math.max(0,(1-d/80)*.12);ctx.strokeStyle=`rgba(13,148,136,${al})`;ctx.beginPath();ctx.moveTo(mols[i].x*W,mols[i].y*H);ctx.lineTo(mols[j].x*W,mols[j].y*H);ctx.stroke();}
+    }
+    t++; requestAnimationFrame(render);
+  }
+  render();
+
+  // Progress bar
+  const bar=document.getElementById('loadBar'),pct=document.getElementById('loadPercent'),status=document.getElementById('loadStatus');
+  const msgs=['Memuat laboratorium virtual…','Menyusun model molekul…','Memuat data koligatif…','Menyiapkan simulasi…','✅ Lab siap digunakan!'];
+  let cur=0,mIdx=0;
+  const iv=setInterval(()=>{
+    cur=Math.min(100,cur+100/140);
+    const v=Math.floor(cur);
+    bar.style.width=v+'%'; pct.textContent=v+'%';
+    const mi=Math.min(Math.floor(v/25),msgs.length-1);
+    if(mi!==mIdx){mIdx=mi;status.textContent=msgs[mi];}
+    if(cur>=100){clearInterval(iv);document.getElementById('btnMulai').style.display='block';}
+  },18);
+})();
+function startLab(){
+  try{const a=new Audio('https://denicendrianto41.github.io/tring.wav');a.play().catch(()=>{});}catch(e){}
+  const ls=document.getElementById('loadScreen');
+  ls.classList.add('hide');
+  setTimeout(()=>{ls.style.display='none';},700);
+}
+</script>
+
+<!-- ── AUDIO ── -->
+<audio id="sndClick" src="https://denicendrianto41.github.io/jump.wav" preload="auto"></audio>
+<audio id="sndBenar" src="https://denicendrianto41.github.io/benar.wav" preload="auto"></audio>
+<audio id="sndSalah" src="https://denicendrianto41.github.io/salah.wav" preload="auto"></audio>
+<audio id="sndBerhasil" src="https://denicendrianto41.github.io/berhasil.wav" preload="auto"></audio>
+
+<script>
+function playClick(){try{const a=document.getElementById('sndClick');a.currentTime=0;a.play().catch(()=>{});}catch(e){}}
+function playSound(id){try{const a=document.getElementById(id);a.currentTime=0;a.play().catch(()=>{});}catch(e){}}
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.nb,.btn,select,input[type=range],.opt,.qprog-dot,.mem-card,.fc-btn,.qmode-btn');
+  if(!el||el.id==='btnMulai') return;
+  playClick();
+});
+</script>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">❄️</div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Sifat Koligatif Larutan</div>
+    </div>
+  </div>
+  <nav id="mainNav">
+    <button class="nb active" onclick="showPage('tujuan',this)">🎯 Tujuan</button>
+    <button class="nb" onclick="showPage('teori',this)">📚 Teori</button>
+    <button class="nb" onclick="showPage('alatbahan',this)">🧪 Alat &amp; Bahan</button>
+    <button class="nb" onclick="showPage('prosedur',this)">📋 Prosedur</button>
+    <button class="nb" onclick="showPage('simulasi',this)">🔬 Simulasi</button>
+    <button class="nb" onclick="showPage('lk',this)">📝 Lembar Kerja</button>
+    <button class="nb" onclick="showPage('evaluasi',this)">🎯 Evaluasi</button>
+  </nav>
+  <button id="menuToggle" onclick="toggleNav()">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="19" y2="6"/><line x1="3" y1="11" x2="19" y2="11"/><line x1="3" y1="16" x2="19" y2="16"/></svg>
+  </button>
+</header>
+
+<script>
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('mainNav').classList.remove('open');
+  if(id==='simulasi') initSim();
+  if(id==='evaluasi'){renderQ();showQuizMode('mc');}
+}
+function toggleNav(){document.getElementById('mainNav').classList.toggle('open');}
+</script>
+
+<div id="app">
+
+<!-- ===== TUJUAN ===== -->
+<div id="page-tujuan" class="page active">
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:7px 12px 8px;gap:6px;min-height:0;">
+  <div class="tujuan-hero" style="flex-shrink:0;">
+    <div class="kd-box">
+      <div class="kd-title">🏆 Tujuan Pembelajaran</div>
+      <div class="kd-row">
+        <div class="kd-item">Menganalisis daya hantar listrik dan sifat koligatif larutan serta penerapannya</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;min-height:0;">
+  <div class="tp-card">
+    <div class="tp-icon t">❄️</div>
+    <div>
+      <div class="tp-label">Tujuan Percobaan 1</div>
+      <div class="tp-text">Menganalisis penurunan titik beku (ΔTf) larutan</div>
+      <div class="tp-desc">Membandingkan ΔTf air murni, larutan gula, NaCl, dan CaCl₂ menggunakan simulasi mikroskopis dan perhitungan ΔTf = i × Kf × m</div>
+    </div>
+  </div>
+  <div class="tp-card">
+    <div class="tp-icon b">🌡️</div>
+    <div>
+      <div class="tp-label">Tujuan Percobaan 2</div>
+      <div class="tp-text">Menganalisis kenaikan titik didih (ΔTb) larutan</div>
+      <div class="tp-desc">Membuktikan bahwa zat terlarut menghalangi molekul pelarut menguap sehingga titik didih meningkat, dihitung dengan ΔTb = i × Kb × m</div>
+    </div>
+  </div>
+  <div class="tp-card">
+    <div class="tp-icon p">🔬</div>
+    <div>
+      <div class="tp-label">Tujuan Percobaan 3</div>
+      <div class="tp-text">Membuktikan faktor Van't Hoff (i) pada elektrolit</div>
+      <div class="tp-desc">Menjelaskan mengapa CaCl₂ (i=3) lebih efektif mencairkan salju daripada NaCl (i=2) berdasarkan jumlah ion yang dihasilkan</div>
+    </div>
+  </div>
+  <div class="tp-card">
+    <div class="tp-icon ic">⚡</div>
+    <div>
+      <div class="tp-label">Tujuan Percobaan 4</div>
+      <div class="tp-text">Menguji daya hantar listrik larutan elektrolit vs nonelektrolit</div>
+      <div class="tp-desc">Membedakan larutan elektrolit kuat, elektrolit lemah, dan nonelektrolit berdasarkan keberadaan ion dalam larutan</div>
+    </div>
+  </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page">
+<style>
+.teori-tabs{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;}
+.teori-tab-btn{padding:5px 12px;border-radius:7px;border:1.5px solid var(--border);background:#fff;color:var(--text2);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .17s;white-space:nowrap;}
+.teori-tab-btn.active{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;border-color:#0d9488;}
+.teori-panel{display:none;flex:1;flex-direction:column;gap:6px;overflow-y:auto;min-height:0;}
+.teori-panel.active{display:flex;}
+</style>
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:7px 12px 8px;gap:6px;min-height:0;">
+  <!-- Compact hero -->
+  <div class="hero" style="flex-shrink:0;margin-bottom:0;padding:7px 14px;">
+    <div>
+      <div class="h-label">Dasar Teori</div>
+      <div class="h-title">Sifat <span>Koligatif</span> Larutan</div>
+      <div class="h-desc">Sifat yang bergantung pada <strong>jumlah partikel</strong> zat terlarut, bukan jenis zatnya.</div>
+    </div>
+  </div>
+  <!-- Tab buttons -->
+  <div class="teori-tabs">
+    <button class="teori-tab-btn active" onclick="switchTeoriTab('tf',this)">❄️ Titik Beku</button>
+    <button class="teori-tab-btn" onclick="switchTeoriTab('tb',this)">🌡️ Titik Didih</button>
+    <button class="teori-tab-btn" onclick="switchTeoriTab('tp',this)">💧 Tekanan Uap</button>
+    <button class="teori-tab-btn" onclick="switchTeoriTab('vth',this)">🔢 Van't Hoff</button>
+    <button class="teori-tab-btn" onclick="switchTeoriTab('tbl',this)">📊 Tabel</button>
+  </div>
+
+  <!-- Panel: Titik Beku -->
+  <div class="teori-panel active" id="tp-tf">
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci t">❄️</div><div class="ct">Penurunan Titik Beku (ΔTf)</div></div>
+      <p>Zat terlarut <strong>mengganggu pembentukan kristal es</strong> — molekul pelarut sulit tersusun rapi. Akibatnya suhu harus lebih rendah agar larutan membeku.</p>
+      <div class="fmbox">
+        <div class="fm-label">Rumus</div>
+        <div class="fm-eq">ΔTf = i × Kf × m</div>
+        <div class="fm-note">Kf air = 1,86 °C·kg/mol &nbsp;|&nbsp; Tf larutan = 0°C − ΔTf</div>
+      </div>
+      <p style="font-size:11px;color:#64748b;margin-top:4px;">Contoh: NaCl 1m → ΔTf = 2 × 1,86 × 1 = <strong>3,72°C</strong> → Titik beku = <strong>−3,72°C</strong></p>
+    </div>
+    <div class="notebox">
+      <div class="nt">🧊 Aplikasi Nyata</div>
+      <p>Garam ditabur di jalan bersalju untuk menurunkan titik beku dan mencairkan es. CaCl₂ lebih efektif daripada NaCl karena menghasilkan lebih banyak ion (i=3 vs i=2).</p>
+    </div>
+  </div>
+
+  <!-- Panel: Titik Didih -->
+  <div class="teori-panel" id="tp-tb">
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci b">🌡️</div><div class="ct">Kenaikan Titik Didih (ΔTb)</div></div>
+      <p>Zat terlarut <strong>menghalangi molekul pelarut menguap</strong> ke fase gas. Tekanan uap lebih rendah → dibutuhkan suhu lebih tinggi agar mendidih.</p>
+      <div class="fmbox">
+        <div class="fm-label">Rumus</div>
+        <div class="fm-eq">ΔTb = i × Kb × m</div>
+        <div class="fm-note">Kb air = 0,52 °C·kg/mol &nbsp;|&nbsp; Tb larutan = 100°C + ΔTb</div>
+      </div>
+      <p style="font-size:11px;color:#64748b;margin-top:4px;">Contoh: NaCl 1m → ΔTb = 2 × 0,52 × 1 = <strong>1,04°C</strong> → Titik didih = <strong>101,04°C</strong></p>
+    </div>
+    <div class="notebox">
+      <div class="nt">🍲 Aplikasi Nyata</div>
+      <p>Menambahkan garam saat memasak air membuat air mendidih pada suhu lebih tinggi, sehingga makanan matang lebih merata.</p>
+    </div>
+  </div>
+
+  <!-- Panel: Tekanan Uap -->
+  <div class="teori-panel" id="tp-tp">
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci ic">💧</div><div class="ct">Penurunan Tekanan Uap (ΔP)</div></div>
+      <p>Partikel zat terlarut <strong>menempati permukaan larutan</strong> dan menghalangi molekul pelarut lepas ke fase gas, sehingga tekanan uap larutan lebih rendah dari pelarut murni.</p>
+      <div class="fmbox">
+        <div class="fm-label">Hukum Raoult</div>
+        <div class="fm-eq">P = X<sub>pelarut</sub> × P°</div>
+        <div class="fm-note">X<sub>pelarut</sub> = fraksi mol pelarut &nbsp;|&nbsp; P° = tekanan uap pelarut murni</div>
+      </div>
+    </div>
+    <div class="notebox">
+      <div class="nt">💡 Hubungan dengan Sifat Lain</div>
+      <p>Penurunan tekanan uap adalah dasar dari kenaikan titik didih dan penurunan titik beku. Semakin besar penurunan tekanan uap, semakin besar efek koligatif lainnya.</p>
+    </div>
+  </div>
+
+  <!-- Panel: Van't Hoff -->
+  <div class="teori-panel" id="tp-vth">
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci p">🔢</div><div class="ct">Faktor Van't Hoff (i)</div></div>
+      <p>Untuk larutan <strong>elektrolit</strong>, sifat koligatif dikalikan faktor <em>i</em> yang menyatakan jumlah partikel per satuan rumus kimia setelah ionisasi:</p>
+      <div class="kolig-grid" style="margin:8px 0;">
+        <div class="kolig-box kb1"><div class="kolig-sym">i = 1</div><div class="kolig-name">Gula</div><div class="kolig-desc">Nonelektrolit → 1 partikel</div></div>
+        <div class="kolig-box kb2"><div class="kolig-sym">i = 2</div><div class="kolig-name">NaCl</div><div class="kolig-desc">Na⁺ + Cl⁻ → 2 ion</div></div>
+        <div class="kolig-box kb3"><div class="kolig-sym">i = 3</div><div class="kolig-name">CaCl₂</div><div class="kolig-desc">Ca²⁺ + 2Cl⁻ → 3 ion</div></div>
+      </div>
+    </div>
+    <div class="notebox">
+      <div class="nt">🧊 CaCl₂ vs NaCl di Jalan Salju</div>
+      <p>CaCl₂ menghasilkan 3 ion (i=3) vs NaCl 2 ion (i=2). Pada molalitas sama, CaCl₂ menurunkan titik beku 50% lebih besar → lebih efektif di bawah −15°C.</p>
+    </div>
+  </div>
+
+  <!-- Panel: Tabel -->
+  <div class="teori-panel" id="tp-tbl">
+    <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;">
+      <div class="ch"><div class="ci g">📊</div><div class="ct">Perbandingan Sifat Koligatif (m = 1 mol/kg)</div></div>
+      <div style="overflow-x:auto;flex:1;">
+        <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+          <tr style="background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#fff;">
+            <th style="padding:6px 8px;text-align:left;">Larutan</th>
+            <th style="padding:6px 8px;">i</th>
+            <th style="padding:6px 8px;">ΔTf (°C)</th>
+            <th style="padding:6px 8px;">Tf (°C)</th>
+            <th style="padding:6px 8px;">ΔTb (°C)</th>
+            <th style="padding:6px 8px;">Tb (°C)</th>
+          </tr>
+          <tr style="background:#f0fdf4;"><td style="padding:5px 8px;border:1px solid #bbf7d0;">Air Murni</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">—</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">0</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;">0</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">0</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;">100</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid #bbf7d0;">Gula</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">1</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#0369a1;">1,86</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#0369a1;">−1,86</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#0369a1;">0,52</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#0369a1;">100,52</td></tr>
+          <tr style="background:#f0fdf4;"><td style="padding:5px 8px;border:1px solid #bbf7d0;">NaCl</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">2</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#0d9488;">3,72</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#0d9488;">−3,72</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#0d9488;">1,04</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#0d9488;">101,04</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid #bbf7d0;">CaCl₂</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;">3</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#7c3aed;font-weight:700;">5,58</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#7c3aed;">−5,58</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;color:#7c3aed;font-weight:700;">1,56</td><td style="padding:5px 8px;border:1px solid #bbf7d0;text-align:center;font-weight:700;color:#7c3aed;">101,56</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+function switchTeoriTab(id, btn){
+  document.querySelectorAll('.teori-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.teori-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tp-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+<!-- ===== ALAT & BAHAN ===== -->
+<div id="page-alatbahan" class="page">
+<style>
+.ab-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:6px 12px 8px;gap:5px;min-height:0;}
+.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0;overflow:hidden;}
+.ab-col{display:flex;flex-direction:column;gap:5px;min-height:0;overflow-y:auto;}
+.ab-col::-webkit-scrollbar{width:4px;}
+.ab-col::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.ab-section{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;box-shadow:0 2px 8px rgba(13,148,136,.07);}
+.ab-section-title{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:#0f766e;margin-bottom:7px;display:flex;align-items:center;gap:6px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.ab-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;}
+.ab-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:#f8fffe;border:1.5px solid var(--border);border-radius:8px;padding:7px 5px;cursor:default;transition:border-color .2s,box-shadow .2s;}
+.ab-item:hover{border-color:var(--border2);box-shadow:0 3px 12px rgba(13,148,136,.18);}
+.ab-item svg{width:64px;height:72px;}
+.ab-item-name{font-size:10px;font-weight:700;color:#134e4a;text-align:center;line-height:1.3;}
+.ab-item-desc{font-size:9px;color:#6b7280;text-align:center;line-height:1.2;}
+.ab-bahan-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;}
+.ab-bahan-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:#f8fffe;border:1.5px solid var(--border);border-radius:8px;padding:6px 5px;cursor:default;transition:border-color .2s,box-shadow .2s;}
+.ab-bahan-item:hover{border-color:var(--border2);box-shadow:0 3px 12px rgba(13,148,136,.18);}
+.ab-bahan-item svg{width:52px;height:60px;}
+.ab-bahan-item-name{font-size:9.5px;font-weight:700;color:#134e4a;text-align:center;line-height:1.3;}
+.ab-bahan-item-formula{font-size:8.5px;color:#0d9488;text-align:center;font-family:'JetBrains Mono',monospace;}
+@media(max-width:700px){.ab-grid{grid-template-columns:1fr;}}
+</style>
+<div class="ab-wrap">
+  <div class="hero" style="flex-shrink:0;margin-bottom:0;padding:6px 14px;">
+    <div>
+      <div class="h-label">Alat &amp; Bahan Virtual</div>
+      <div class="h-title">Peralatan <span>Laboratorium</span></div>
+      <div class="h-desc">Peralatan dan bahan yang digunakan dalam percobaan sifat koligatif larutan.</div>
+    </div>
+  </div>
+  <div class="ab-grid">
+    <!-- KOLOM KIRI: ALAT -->
+    <div class="ab-col">
+      <div class="ab-section">
+        <div class="ab-section-title">🧪 Alat Laboratorium</div>
+        <div class="ab-items">
+
+          <!-- Gelas Kimia -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <!-- beaker body -->
+              <defs>
+                <linearGradient id="beakerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#b2eaf4;stop-opacity:0.7"/>
+                  <stop offset="50%" style="stop-color:#e0f7fa;stop-opacity:0.4"/>
+                  <stop offset="100%" style="stop-color:#b2eaf4;stop-opacity:0.7"/>
+                </linearGradient>
+                <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#60cfe8;stop-opacity:0.55"/>
+                  <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- glass body -->
+              <path d="M14 8 L14 52 Q14 60 22 60 L42 60 Q50 60 50 52 L50 8 Z" fill="url(#beakerGrad)" stroke="#64b5c8" stroke-width="1.5"/>
+              <!-- water inside -->
+              <path d="M14 38 L14 52 Q14 60 22 60 L42 60 Q50 60 50 52 L50 38 Q32 42 14 38 Z" fill="url(#waterGrad)"/>
+              <!-- water surface ripple -->
+              <path d="M16 38 Q24 36 32 38 Q40 40 50 38" fill="none" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
+              <!-- glass rim/lip -->
+              <rect x="11" y="6" width="42" height="4" rx="2" fill="#90cad8" stroke="#5ba8be" stroke-width="1"/>
+              <!-- spout -->
+              <path d="M50 10 L58 6" stroke="#64b5c8" stroke-width="2" stroke-linecap="round"/>
+              <!-- measurement lines -->
+              <line x1="16" y1="44" x2="21" y2="44" stroke="#0d9488" stroke-width="0.8" opacity="0.7"/>
+              <line x1="16" y1="36" x2="21" y2="36" stroke="#0d9488" stroke-width="0.8" opacity="0.7"/>
+              <line x1="16" y1="28" x2="21" y2="28" stroke="#0d9488" stroke-width="0.8" opacity="0.7"/>
+              <line x1="16" y1="20" x2="21" y2="20" stroke="#0d9488" stroke-width="0.8" opacity="0.7"/>
+              <!-- glass shine -->
+              <path d="M18 12 L18 50" stroke="white" stroke-width="2" opacity="0.35" stroke-linecap="round"/>
+              <!-- label -->
+              <text x="32" y="70" text-anchor="middle" font-size="8" fill="#0f766e" font-family="sans-serif" font-weight="600">250 mL</text>
+            </svg>
+            <div class="ab-item-name">Gelas Kimia</div>
+            <div class="ab-item-desc">250 mL transparan</div>
+          </div>
+
+          <!-- Termometer -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="mercuryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#f87171"/>
+                  <stop offset="100%" style="stop-color:#dc2626"/>
+                </linearGradient>
+              </defs>
+              <!-- thermometer tube -->
+              <rect x="28" y="6" width="8" height="50" rx="4" fill="#e8f4f8" stroke="#94a3b8" stroke-width="1.2"/>
+              <!-- mercury column -->
+              <rect x="30" y="25" width="4" height="31" rx="2" fill="url(#mercuryGrad)"/>
+              <!-- bulb -->
+              <circle cx="32" cy="57" r="8" fill="#dc2626" stroke="#b91c1c" stroke-width="1.2"/>
+              <circle cx="32" cy="57" r="5" fill="#f87171" opacity="0.6"/>
+              <!-- tick marks -->
+              <line x1="24" y1="15" x2="28" y2="15" stroke="#475569" stroke-width="0.8"/>
+              <line x1="24" y1="22" x2="28" y2="22" stroke="#475569" stroke-width="0.8"/>
+              <line x1="24" y1="29" x2="28" y2="29" stroke="#475569" stroke-width="0.8"/>
+              <line x1="24" y1="36" x2="28" y2="36" stroke="#475569" stroke-width="0.8"/>
+              <line x1="24" y1="43" x2="28" y2="43" stroke="#475569" stroke-width="0.8"/>
+              <!-- temperature labels -->
+              <text x="22" y="16" text-anchor="end" font-size="6" fill="#475569" font-family="sans-serif">100</text>
+              <text x="22" y="30" text-anchor="end" font-size="6" fill="#475569" font-family="sans-serif">50</text>
+              <text x="22" y="44" text-anchor="end" font-size="6" fill="#475569" font-family="sans-serif">0</text>
+              <!-- glass shine -->
+              <line x1="30" y1="8" x2="30" y2="52" stroke="white" stroke-width="1" opacity="0.5"/>
+              <text x="32" y="70" text-anchor="middle" font-size="7.5" fill="#0f766e" font-family="sans-serif" font-weight="600">Termometer</text>
+            </svg>
+            <div class="ab-item-name">Termometer</div>
+            <div class="ab-item-desc">Presisi 0,01°C</div>
+          </div>
+
+          <!-- Alat Uji Elektrolit -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bulbGlow" cx="50%" cy="40%" r="50%">
+                  <stop offset="0%" style="stop-color:#fef08a"/>
+                  <stop offset="100%" style="stop-color:#eab308"/>
+                </radialGradient>
+              </defs>
+              <!-- battery/power box -->
+              <rect x="20" y="4" width="24" height="14" rx="3" fill="#374151" stroke="#1f2937" stroke-width="1"/>
+              <rect x="22" y="6" width="8" height="10" rx="1.5" fill="#4b5563"/>
+              <rect x="34" y="6" width="8" height="10" rx="1.5" fill="#4b5563"/>
+              <text x="27" y="14" font-size="6.5" fill="#9ca3af" font-family="sans-serif" font-weight="700">+</text>
+              <text x="39" y="14" font-size="6.5" fill="#9ca3af" font-family="sans-serif">−</text>
+              <!-- light bulb -->
+              <ellipse cx="32" cy="30" rx="9" ry="10" fill="url(#bulbGlow)" stroke="#ca8a04" stroke-width="1.2"/>
+              <ellipse cx="32" cy="30" rx="5" ry="6" fill="#fef9c3" opacity="0.6"/>
+              <!-- bulb base -->
+              <rect x="28" y="39" width="8" height="5" rx="1" fill="#a3a3a3" stroke="#737373" stroke-width="0.8"/>
+              <rect x="29" y="44" width="6" height="3" rx="0.5" fill="#737373"/>
+              <!-- wires -->
+              <path d="M22 18 L22 44 L29 44" stroke="#1e40af" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M42 18 L42 44 L35 44" stroke="#dc2626" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- electrodes -->
+              <rect x="18" y="47" width="3" height="14" rx="1" fill="#6b7280"/>
+              <rect x="43" y="47" width="3" height="14" rx="1" fill="#6b7280"/>
+              <!-- electrode tips (carbon) -->
+              <rect x="18" y="58" width="3" height="5" rx="1" fill="#1f2937"/>
+              <rect x="43" y="58" width="3" height="5" rx="1" fill="#1f2937"/>
+              <!-- shine on bulb -->
+              <ellipse cx="29" cy="26" rx="2" ry="3" fill="white" opacity="0.4"/>
+              <text x="32" y="70" text-anchor="middle" font-size="7.5" fill="#0f766e" font-family="sans-serif" font-weight="600">Uji Elektrolit</text>
+            </svg>
+            <div class="ab-item-name">Uji Elektrolit</div>
+            <div class="ab-item-desc">Elektroda + lampu</div>
+          </div>
+
+          <!-- Stopwatch -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="watchFace" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" style="stop-color:#f8fafc"/>
+                  <stop offset="100%" style="stop-color:#e2e8f0"/>
+                </radialGradient>
+              </defs>
+              <!-- strap at top -->
+              <rect x="26" y="5" width="12" height="7" rx="2" fill="#475569"/>
+              <rect x="29" y="3" width="6" height="4" rx="1.5" fill="#64748b"/>
+              <!-- crown -->
+              <rect x="22" y="12" width="5" height="3" rx="1.5" fill="#94a3b8"/>
+              <!-- watch body -->
+              <circle cx="32" cy="38" r="22" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
+              <circle cx="32" cy="38" r="19" fill="url(#watchFace)" stroke="#94a3b8" stroke-width="1"/>
+              <!-- tick marks around face -->
+              <line x1="32" y1="20" x2="32" y2="24" stroke="#475569" stroke-width="1.2"/>
+              <line x1="32" y1="52" x2="32" y2="56" stroke="#475569" stroke-width="1.2"/>
+              <line x1="14" y1="38" x2="18" y2="38" stroke="#475569" stroke-width="1.2"/>
+              <line x1="46" y1="38" x2="50" y2="38" stroke="#475569" stroke-width="1.2"/>
+              <!-- numbers -->
+              <text x="32" y="27" text-anchor="middle" font-size="5.5" fill="#1e293b" font-family="sans-serif" font-weight="700">12</text>
+              <text x="32" y="51.5" text-anchor="middle" font-size="5.5" fill="#1e293b" font-family="sans-serif">6</text>
+              <text x="48" y="40" text-anchor="middle" font-size="5.5" fill="#1e293b" font-family="sans-serif">3</text>
+              <text x="16.5" y="40" text-anchor="middle" font-size="5.5" fill="#1e293b" font-family="sans-serif">9</text>
+              <!-- hands -->
+              <line x1="32" y1="38" x2="32" y2="24" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="32" y1="38" x2="41" y2="38" stroke="#1e293b" stroke-width="1.2" stroke-linecap="round"/>
+              <circle cx="32" cy="38" r="2" fill="#dc2626"/>
+              <text x="32" y="70" text-anchor="middle" font-size="7.5" fill="#0f766e" font-family="sans-serif" font-weight="600">Stopwatch</text>
+            </svg>
+            <div class="ab-item-name">Stopwatch</div>
+            <div class="ab-item-desc">Pengukur waktu</div>
+          </div>
+
+          <!-- Pengaduk Magnetik -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="stirGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#60a5fa"/>
+                  <stop offset="100%" style="stop-color:#1d4ed8"/>
+                </linearGradient>
+              </defs>
+              <!-- hot plate body -->
+              <rect x="8" y="40" width="48" height="18" rx="4" fill="#374151" stroke="#1f2937" stroke-width="1.2"/>
+              <!-- heating surface -->
+              <rect x="12" y="36" width="40" height="8" rx="2" fill="#6b7280" stroke="#4b5563" stroke-width="0.8"/>
+              <!-- heating coils -->
+              <ellipse cx="32" cy="39" rx="12" ry="2.5" fill="none" stroke="#ef4444" stroke-width="1.2" opacity="0.7"/>
+              <ellipse cx="32" cy="39" rx="7" ry="1.5" fill="none" stroke="#f97316" stroke-width="1" opacity="0.6"/>
+              <!-- control knobs -->
+              <circle cx="20" cy="51" r="5" fill="#1e293b" stroke="#0d9488" stroke-width="1.2"/>
+              <circle cx="44" cy="51" r="5" fill="#1e293b" stroke="#0d9488" stroke-width="1.2"/>
+              <line x1="20" y1="51" x2="20" y2="46.5" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="44" y1="51" x2="47" y2="48" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- beaker on top -->
+              <path d="M20 10 L20 37 Q20 40 24 40 L40 40 Q44 40 44 37 L44 10 Z" fill="#d1eff5" stroke="#64b5c8" stroke-width="1" opacity="0.8"/>
+              <rect x="18" y="8" width="28" height="3" rx="1.5" fill="#90cad8" stroke="#5ba8be" stroke-width="0.8"/>
+              <!-- water in beaker -->
+              <path d="M20 28 L20 37 Q20 40 24 40 L40 40 Q44 40 44 37 L44 28 Q32 31 20 28 Z" fill="#60cfe8" opacity="0.5"/>
+              <!-- spin bar inside -->
+              <rect x="27" y="38" width="10" height="2.5" rx="1.2" fill="#dc2626" opacity="0.8"/>
+              <!-- shine -->
+              <path d="M22 12 L22 35" stroke="white" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+              <text x="32" y="70" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">Pengaduk Mag.</text>
+            </svg>
+            <div class="ab-item-name">Pengaduk Magnetik</div>
+            <div class="ab-item-desc">+ Hot plate</div>
+          </div>
+
+          <!-- Amperemeter -->
+          <div class="ab-item">
+            <svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="meterFace" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" style="stop-color:#fef9c3"/>
+                  <stop offset="100%" style="stop-color:#fde68a"/>
+                </radialGradient>
+              </defs>
+              <!-- meter body -->
+              <rect x="6" y="12" width="52" height="44" rx="5" fill="#1f2937" stroke="#111827" stroke-width="1.5"/>
+              <!-- meter display -->
+              <rect x="10" y="16" width="44" height="32" rx="3" fill="url(#meterFace)" stroke="#ca8a04" stroke-width="1"/>
+              <!-- scale arc -->
+              <path d="M16 44 A18 18 0 0 1 48 44" fill="none" stroke="#374151" stroke-width="1" stroke-dasharray="1.5 1.5"/>
+              <!-- scale ticks -->
+              <line x1="16" y1="44" x2="18" y2="38" stroke="#374151" stroke-width="0.8"/>
+              <line x1="22" y1="31" x2="23.5" y2="33.5" stroke="#374151" stroke-width="0.8"/>
+              <line x1="32" y1="28" x2="32" y2="31" stroke="#374151" stroke-width="0.8"/>
+              <line x1="42" y1="31" x2="40.5" y2="33.5" stroke="#374151" stroke-width="0.8"/>
+              <line x1="48" y1="44" x2="46" y2="38" stroke="#374151" stroke-width="0.8"/>
+              <!-- needle -->
+              <line x1="32" y1="44" x2="40" y2="33" stroke="#dc2626" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="32" cy="44" r="2.5" fill="#b45309"/>
+              <!-- A label -->
+              <text x="32" y="26" text-anchor="middle" font-size="8" fill="#92400e" font-family="sans-serif" font-weight="800">A</text>
+              <!-- terminals -->
+              <circle cx="22" cy="52" r="3.5" fill="#dc2626" stroke="#991b1b" stroke-width="0.8"/>
+              <circle cx="42" cy="52" r="3.5" fill="#1d4ed8" stroke="#1e40af" stroke-width="0.8"/>
+              <text x="22" y="54" text-anchor="middle" font-size="5" fill="white" font-family="sans-serif" font-weight="700">+</text>
+              <text x="42" y="54" text-anchor="middle" font-size="5" fill="white" font-family="sans-serif">−</text>
+              <text x="32" y="70" text-anchor="middle" font-size="7.5" fill="#0f766e" font-family="sans-serif" font-weight="600">Amperemeter</text>
+            </svg>
+            <div class="ab-item-name">Amperemeter</div>
+            <div class="ab-item-desc">Pengukur arus</div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- end ab-col left -->
+
+    <!-- KOLOM KANAN: BAHAN -->
+    <div class="ab-col">
+      <div class="ab-section">
+        <div class="ab-section-title">⚗️ Bahan &amp; Zat Terlarut</div>
+        <div class="ab-bahan-items">
+
+          <!-- Air Murni -->
+          <div class="ab-bahan-item">
+            <svg viewBox="0 0 52 60" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="botolAir" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#bae6fd;stop-opacity:0.6"/>
+                  <stop offset="60%" style="stop-color:#e0f2fe;stop-opacity:0.3"/>
+                  <stop offset="100%" style="stop-color:#bae6fd;stop-opacity:0.6"/>
+                </linearGradient>
+                <linearGradient id="airIsi" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#7dd3fc;stop-opacity:0.6"/>
+                  <stop offset="100%" style="stop-color:#0284c7;stop-opacity:0.75"/>
+                </linearGradient>
+              </defs>
+              <!-- bottle body -->
+              <path d="M14 18 L14 48 Q14 54 20 54 L32 54 Q38 54 38 48 L38 18 Z" fill="url(#botolAir)" stroke="#38bdf8" stroke-width="1.2"/>
+              <!-- water inside -->
+              <path d="M14 32 L14 48 Q14 54 20 54 L32 54 Q38 54 38 48 L38 32 Q26 35 14 32 Z" fill="url(#airIsi)"/>
+              <!-- bottle neck -->
+              <rect x="18" y="10" width="16" height="10" rx="2" fill="#bae6fd" stroke="#38bdf8" stroke-width="1" opacity="0.7"/>
+              <!-- cap -->
+              <rect x="17" y="6" width="18" height="6" rx="2" fill="#0369a1" stroke="#075985" stroke-width="0.8"/>
+              <!-- label -->
+              <rect x="16" y="36" width="20" height="9" rx="2" fill="white" opacity="0.7"/>
+              <text x="26" y="42" text-anchor="middle" font-size="5" fill="#0369a1" font-family="sans-serif" font-weight="700">H₂O</text>
+              <!-- shine -->
+              <path d="M17 20 L17 45" stroke="white" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>
+              <text x="26" y="58" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">Air Murni</text>
+            </svg>
+            <div class="ab-bahan-item-name">Air Murni</div>
+            <div class="ab-bahan-item-formula">H₂O · i=—</div>
+          </div>
+
+          <!-- Gula -->
+          <div class="ab-bahan-item">
+            <svg viewBox="0 0 52 60" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="gulaBotol" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#fef9c3;stop-opacity:0.7"/>
+                  <stop offset="50%" style="stop-color:#fefce8;stop-opacity:0.4"/>
+                  <stop offset="100%" style="stop-color:#fef9c3;stop-opacity:0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- jar body -->
+              <path d="M11 20 L11 48 Q11 54 18 54 L34 54 Q41 54 41 48 L41 20 Z" fill="url(#gulaBotol)" stroke="#fbbf24" stroke-width="1.2"/>
+              <!-- sugar crystals inside -->
+              <rect x="13" y="36" width="26" height="16" rx="1" fill="#fef08a" opacity="0.8"/>
+              <!-- crystal texture -->
+              <rect x="15" y="38" width="5" height="4" rx="0.5" fill="#fde047" opacity="0.6"/>
+              <rect x="22" y="39" width="4" height="3" rx="0.5" fill="#fde047" opacity="0.5"/>
+              <rect x="29" y="37" width="5" height="5" rx="0.5" fill="#fde047" opacity="0.6"/>
+              <rect x="17" y="44" width="4" height="4" rx="0.5" fill="#fde047" opacity="0.5"/>
+              <rect x="25" y="43" width="5" height="4" rx="0.5" fill="#fde047" opacity="0.6"/>
+              <!-- jar rim -->
+              <rect x="10" y="17" width="32" height="5" rx="2" fill="#fbbf24" stroke="#f59e0b" stroke-width="0.8"/>
+              <!-- lid -->
+              <rect x="9" y="11" width="34" height="8" rx="3" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+              <!-- label -->
+              <rect x="13" y="23" width="26" height="11" rx="2" fill="white" opacity="0.75"/>
+              <text x="26" y="31" text-anchor="middle" font-size="4.5" fill="#92400e" font-family="sans-serif" font-weight="700">GULA</text>
+              <!-- shine -->
+              <path d="M14 22 L14 46" stroke="white" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+              <text x="26" y="58" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">Gula</text>
+            </svg>
+            <div class="ab-bahan-item-name">Gula Pasir</div>
+            <div class="ab-bahan-item-formula">C₆H₁₂O₆ · i=1</div>
+          </div>
+
+          <!-- NaCl -->
+          <div class="ab-bahan-item">
+            <svg viewBox="0 0 52 60" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="naclBotol" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#d1fae5;stop-opacity:0.7"/>
+                  <stop offset="50%" style="stop-color:#ecfdf5;stop-opacity:0.3"/>
+                  <stop offset="100%" style="stop-color:#d1fae5;stop-opacity:0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- bottle body -->
+              <path d="M13 22 L13 48 Q13 54 19 54 L33 54 Q39 54 39 48 L39 22 Z" fill="url(#naclBotol)" stroke="#10b981" stroke-width="1.2"/>
+              <!-- salt crystals (white powder) -->
+              <rect x="15" y="38" width="22" height="14" rx="1" fill="white" opacity="0.85"/>
+              <!-- crystal sparkles -->
+              <circle cx="19" cy="43" r="1.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <circle cx="26" cy="41" r="1.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <circle cx="33" cy="44" r="1.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <circle cx="22" cy="48" r="1.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <circle cx="30" cy="49" r="1.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <!-- bottle neck -->
+              <rect x="18" y="13" width="16" height="11" rx="2" fill="#d1fae5" stroke="#10b981" stroke-width="1" opacity="0.7"/>
+              <!-- cap -->
+              <rect x="16" y="8" width="20" height="7" rx="2.5" fill="#059669" stroke="#047857" stroke-width="0.8"/>
+              <!-- label -->
+              <rect x="14" y="24" width="24" height="12" rx="2" fill="white" opacity="0.8"/>
+              <text x="26" y="31" text-anchor="middle" font-size="7" fill="#065f46" font-family="sans-serif" font-weight="800">NaCl</text>
+              <!-- shine -->
+              <path d="M16 24 L16 47" stroke="white" stroke-width="1.5" opacity="0.4" stroke-linecap="round"/>
+              <text x="26" y="58" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">NaCl</text>
+            </svg>
+            <div class="ab-bahan-item-name">Natrium Klorida</div>
+            <div class="ab-bahan-item-formula">NaCl · i=2</div>
+          </div>
+
+          <!-- CaCl2 -->
+          <div class="ab-bahan-item">
+            <svg viewBox="0 0 52 60" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="caclBotol" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#ede9fe;stop-opacity:0.7"/>
+                  <stop offset="50%" style="stop-color:#f5f3ff;stop-opacity:0.3"/>
+                  <stop offset="100%" style="stop-color:#ede9fe;stop-opacity:0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- bottle body -->
+              <path d="M11 20 L11 48 Q11 54 18 54 L34 54 Q41 54 41 48 L41 20 Z" fill="url(#caclBotol)" stroke="#7c3aed" stroke-width="1.2"/>
+              <!-- content (white pellets) -->
+              <rect x="13" y="36" width="26" height="16" rx="1" fill="#f5f3ff" opacity="0.9"/>
+              <!-- pellets -->
+              <ellipse cx="18" cy="41" rx="3" ry="2" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+              <ellipse cx="26" cy="40" rx="3" ry="2" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+              <ellipse cx="34" cy="41" rx="3" ry="2" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+              <ellipse cx="21" cy="47" rx="3" ry="2" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+              <ellipse cx="30" cy="47" rx="3" ry="2" fill="white" stroke="#c4b5fd" stroke-width="0.5"/>
+              <!-- bottle neck -->
+              <rect x="17" y="12" width="18" height="10" rx="2" fill="#ede9fe" stroke="#7c3aed" stroke-width="1" opacity="0.7"/>
+              <!-- cap -->
+              <rect x="15" y="7" width="22" height="7" rx="2.5" fill="#6d28d9" stroke="#5b21b6" stroke-width="0.8"/>
+              <!-- label -->
+              <rect x="13" y="22" width="26" height="12" rx="2" fill="white" opacity="0.8"/>
+              <text x="26" y="30" text-anchor="middle" font-size="6" fill="#4c1d95" font-family="sans-serif" font-weight="800">CaCl₂</text>
+              <!-- shine -->
+              <path d="M14 22 L14 46" stroke="white" stroke-width="1.5" opacity="0.35" stroke-linecap="round"/>
+              <text x="26" y="58" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">CaCl₂</text>
+            </svg>
+            <div class="ab-bahan-item-name">Kalsium Klorida</div>
+            <div class="ab-bahan-item-formula">CaCl₂ · i=3</div>
+          </div>
+
+          <!-- Es Batu -->
+          <div class="ab-bahan-item">
+            <svg viewBox="0 0 52 60" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="esGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#e0f7fa;stop-opacity:0.9"/>
+                  <stop offset="100%" style="stop-color:#80deea;stop-opacity:0.8"/>
+                </linearGradient>
+              </defs>
+              <!-- ice bucket -->
+              <path d="M10 30 L14 52 Q14 55 18 55 L34 55 Q38 55 38 52 L42 30 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2"/>
+              <!-- ice cubes -->
+              <!-- cube 1 -->
+              <rect x="15" y="34" width="12" height="10" rx="2" fill="url(#esGrad)" stroke="#7dd3fc" stroke-width="0.8"/>
+              <path d="M15 34 L21 30 L27 34" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="0.8"/>
+              <path d="M27 34 L27 44 L21 48 L15 44" fill="#bae6fd" stroke="#7dd3fc" stroke-width="0.6" opacity="0.6"/>
+              <!-- cube 2 -->
+              <rect x="26" y="38" width="11" height="9" rx="2" fill="url(#esGrad)" stroke="#7dd3fc" stroke-width="0.8"/>
+              <path d="M26 38 L31.5 34.5 L37 38" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="0.8"/>
+              <!-- shine on cubes -->
+              <path d="M17 36 L17 43" stroke="white" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+              <path d="M28 40 L28 46" stroke="white" stroke-width="0.8" opacity="0.4" stroke-linecap="round"/>
+              <!-- bucket handle -->
+              <path d="M14 30 Q26 24 38 30" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- snowflake symbol -->
+              <text x="26" y="28" text-anchor="middle" font-size="9" fill="#0369a1" font-family="sans-serif">❄</text>
+              <text x="26" y="58" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="600">Es Batu</text>
+            </svg>
+            <div class="ab-bahan-item-name">Es Batu</div>
+            <div class="ab-bahan-item-formula">−10°C</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Keterangan chip -->
+      <div class="ab-section" style="flex-shrink:0;">
+        <div class="ab-section-title">🏷️ Keterangan Jenis Larutan</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#374151;line-height:1.4;">
+            <span class="chip chip-t" style="flex-shrink:0;">Nonelektrolit</span>
+            Tidak terionisasi → i = 1 (Gula, Glukosa, Urea)
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#374151;line-height:1.4;">
+            <span class="chip chip-b" style="flex-shrink:0;">Elektrolit Lemah</span>
+            Terionisasi sebagian → 1 &lt; i &lt; 2 (CH₃COOH)
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#374151;line-height:1.4;">
+            <span class="chip chip-g" style="flex-shrink:0;">Elektrolit Kuat</span>
+            Terionisasi sempurna → i = n ion (NaCl i=2, CaCl₂ i=3)
+          </div>
+        </div>
+      </div>
+    </div><!-- end ab-col right -->
+  </div><!-- end ab-grid -->
+</div>
+</div>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+<style>
+.pros-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:6px 12px 8px;gap:5px;min-height:0;}
+.pros-body{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;min-height:0;overflow:hidden;}
+.pros-col{display:flex;flex-direction:column;gap:0;min-height:0;overflow:hidden;}
+.pros-card{background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;box-shadow:0 2px 8px rgba(13,148,136,.07);}
+.pros-card-head{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:6px;padding-bottom:5px;border-bottom:1.5px solid var(--border);}
+.pros-card-head .ci{width:24px;height:24px;font-size:12px;border-radius:6px;flex-shrink:0;}
+.pros-card-head .ct{font-size:11.5px;font-weight:800;color:#0f766e;line-height:1.2;}
+.pros-steps{flex:1;display:flex;flex-direction:column;gap:3px;overflow:hidden;justify-content:space-evenly;}
+.pros-step{display:flex;gap:7px;align-items:flex-start;background:#f8fffe;border:1.5px solid #c6f6e8;border-radius:7px;padding:5px 8px;}
+.pros-step:hover{border-color:#4ade80;background:#dcfce7;}
+.pros-snum{min-width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#2dd4bf);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#fff;font-weight:800;flex-shrink:0;}
+.pros-step p{font-size:10.5px;color:#374151;line-height:1.45;margin:0;}
+.pros-note{background:linear-gradient(135deg,#ccfbf1,#99f6e4);border:1.5px solid #5eead4;border-radius:6px;padding:5px 9px;flex-shrink:0;margin-top:5px;}
+.pros-note .nt{font-size:8.5px;font-weight:800;color:#0f766e;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.pros-note p{font-size:10px;color:#134e4a;line-height:1.4;margin:0;}
+@media(max-width:800px){.pros-body{grid-template-columns:1fr;overflow-y:auto;}}
+</style>
+<div class="pros-wrap">
+  <div class="hero" style="flex-shrink:0;margin-bottom:0;padding:6px 14px;">
+    <div>
+      <div class="h-label">Prosedur Percobaan</div>
+      <div class="h-title">Langkah-Langkah <span>Praktikum</span></div>
+      <div class="h-desc">Ikuti ketiga aktivitas secara berurutan untuk memahami sifat koligatif larutan.</div>
+    </div>
+  </div>
+  <div class="pros-body">
+
+    <!-- AKTIVITAS A -->
+    <div class="pros-col">
+      <div class="pros-card">
+        <div class="pros-card-head">
+          <div class="ci t">❄️</div>
+          <div class="ct">Aktivitas A — Penurunan Titik Beku</div>
+        </div>
+        <div class="pros-steps">
+          <div class="pros-step"><div class="pros-snum">1</div><p>Siapkan 4 gelas kimia berisi <strong>1 kg air murni</strong>. Ukur titik beku air murni sebagai kontrol (0°C).</p></div>
+          <div class="pros-step"><div class="pros-snum">2</div><p>Larutkan <strong>1 mol Gula</strong> ke gelas ke-2. Catat titik beku menggunakan termometer digital.</p></div>
+          <div class="pros-step"><div class="pros-snum">3</div><p>Larutkan <strong>1 mol NaCl</strong> ke gelas ke-3. Gunakan Zoom Molekuler → amati ion Na⁺ dan Cl⁻ mengganggu kristal es.</p></div>
+          <div class="pros-step"><div class="pros-snum">4</div><p>Larutkan <strong>1 mol CaCl₂</strong> ke gelas ke-4. Amati 3 ion (Ca²⁺ + 2Cl⁻) dan bandingkan ΔTf.</p></div>
+          <div class="pros-step"><div class="pros-snum">5</div><p>Ulangi dengan molalitas 0,5 m / 1 m / 2 m — lihat hubungan linear molalitas dan ΔTf.</p></div>
+        </div>
+        <div class="pros-note">
+          <div class="nt">📝 Analisis</div>
+          <p>Mengapa CaCl₂ 1m menurunkan titik beku lebih besar dari NaCl 1m? Kaitkan dengan faktor Van't Hoff!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AKTIVITAS B -->
+    <div class="pros-col">
+      <div class="pros-card">
+        <div class="pros-card-head">
+          <div class="ci b">🌡️</div>
+          <div class="ct">Aktivitas B — Kenaikan Titik Didih</div>
+        </div>
+        <div class="pros-steps">
+          <div class="pros-step"><div class="pros-snum">1</div><p>Ukur titik didih air murni <strong>(100°C pada 1 atm)</strong> sebagai kontrol awal.</p></div>
+          <div class="pros-step"><div class="pros-snum">2</div><p>Tambahkan <strong>NaCl 1 mol</strong> ke air murni. Nyalakan pemanas, amati dan catat ΔTb larutan.</p></div>
+          <div class="pros-step"><div class="pros-snum">3</div><p>Aktifkan <strong>Zoom Evaporasi</strong> — amati ion NaCl menghalangi molekul air menguap dari permukaan.</p></div>
+          <div class="pros-step"><div class="pros-snum">4</div><p>Bandingkan titik didih NaCl vs CaCl₂ pada molalitas sama. Catat perbedaan ΔTb dan hitung menggunakan ΔTb = i × Kb × m.</p></div>
+        </div>
+        <div class="pros-note">
+          <div class="nt">📝 Analisis</div>
+          <p>Kenapa larutan gula dan NaCl dengan molalitas sama memiliki ΔTb yang berbeda?</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AKTIVITAS C -->
+    <div class="pros-col">
+      <div class="pros-card">
+        <div class="pros-card-head">
+          <div class="ci ic">⚡</div>
+          <div class="ct">Aktivitas C — Uji Daya Hantar Listrik</div>
+        </div>
+        <div class="pros-steps">
+          <div class="pros-step"><div class="pros-snum">1</div><p>Celupkan elektroda ke <strong>air murni</strong>. Amati lampu (mati) dan amperemeter (0 A) → nonelektrolit.</p></div>
+          <div class="pros-step"><div class="pros-snum">2</div><p>Uji <strong>larutan gula</strong> — lampu tetap mati. Tidak ada ion bebas sebagai penghantar arus.</p></div>
+          <div class="pros-step"><div class="pros-snum">3</div><p>Uji <strong>NaCl 1M</strong> — lampu menyala terang. Ion Na⁺ dan Cl⁻ bebas mengalirkan arus listrik.</p></div>
+          <div class="pros-step"><div class="pros-snum">4</div><p>Uji <strong>CaCl₂ 1M</strong> — lampu lebih terang. Lebih banyak ion per mol → arus lebih besar.</p></div>
+        </div>
+        <div class="pros-note">
+          <div class="nt">📝 Analisis</div>
+          <p>Catat nyala lampu dan besar arus pada Lembar Kerja. Apa hubungan jumlah ion dengan daya hantar?</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end pros-body -->
+</div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<div id="page-simulasi" class="page">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;padding:7px 12px 8px;overflow:hidden;min-height:0;">
+  <div class="sim-wrap" style="flex:1;min-height:0;">
+    <div class="ctrl-panel">
+      <h3>⚗️ Panel Kontrol</h3>
+      <div class="cg">
+        <label>Jenis Zat Terlarut</label>
+        <select id="soluteType" onchange="updateSim()">
+          <option value="none">Air Murni</option>
+          <option value="sugar">Gula (Nonelektrolit, i=1)</option>
+          <option value="nacl" selected>NaCl (Elektrolit Kuat, i=2)</option>
+          <option value="cacl2">CaCl₂ (Elektrolit Kuat, i=3)</option>
+        </select>
+      </div>
+      <div class="cg">
+        <label>Molalitas (mol/kg)</label>
+        <div class="sl-row">
+          <input type="range" id="molSlider" min="1" max="30" value="10" oninput="updateSim()">
+          <span class="sv-sm" id="molVal">1.0</span>
+        </div>
+      </div>
+      <div class="cg">
+        <label>Mode Tampilan</label>
+        <select id="viewMode" onchange="updateSim()">
+          <option value="freeze">❄️ Penurunan Titik Beku</option>
+          <option value="boil">♨️ Kenaikan Titik Didih</option>
+          <option value="evap">💨 Tekanan Uap</option>
+          <option value="elec">⚡ Daya Hantar Listrik</option>
+        </select>
+      </div>
+      <div class="cg">
+        <label>Kecepatan Animasi</label>
+        <div class="sl-row">
+          <input type="range" id="speedSlider" min="1" max="5" value="3" oninput="updateSim()">
+          <span class="sv-sm" id="speedVal">3×</span>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:2px 0;"></div>
+      <button class="btn btn-start" id="btnStart" onclick="toggleSim()">▶ Mulai Simulasi</button>
+      <button class="btn btn-stop" onclick="resetSim()">↺ Reset</button>
+      <div style="height:1px;background:var(--border);margin:2px 0;"></div>
+      <h3>📊 Hasil Kalkulasi</h3>
+      <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.7;">
+        <div>Jenis: <strong id="res-type">NaCl</strong></div>
+        <div>i = <strong id="res-i">2</strong></div>
+        <div>m = <strong id="res-m">1,0</strong> mol/kg</div>
+        <div style="color:#0d9488;font-weight:700;">ΔTf = <span id="res-dtf">3,72</span> °C</div>
+        <div style="color:#0d9488;font-weight:700;">Tf = <span id="res-tf">−3,72</span> °C</div>
+        <div style="color:#ea580c;font-weight:700;">ΔTb = <span id="res-dtb">1,04</span> °C</div>
+        <div style="color:#ea580c;font-weight:700;">Tb = <span id="res-tb">101,04</span> °C</div>
+      </div>
+    </div>
+    <div class="sim-right">
+      <div class="aquarium" style="flex:1;">
+        <h3 id="simTitle">❄️ Visualisasi Mikroskopis — Penurunan Titik Beku (NaCl 1m)</h3>
+        <canvas id="simCanvas" style="flex:1;min-height:0;"></canvas>
+      </div>
+      <div class="statsrow">
+        <div class="sbox"><span class="sv" id="stat-tf">−3,72°C</span><span class="sl">Titik Beku</span></div>
+        <div class="sbox"><span class="sv" id="stat-tb">101,04°C</span><span class="sl">Titik Didih</span></div>
+        <div class="sbox"><span class="sv" id="stat-i">2</span><span class="sl">Van't Hoff (i)</span></div>
+        <div class="sbox"><span class="sv" id="stat-ion">2</span><span class="sl">Ion/Molekul</span></div>
+      </div>
+      <div class="tipinfo on" id="simTip">💡 <strong>Zoom Kristal:</strong> Ion NaCl (merah & hijau) mengganggu barisan molekul air (biru) yang mencoba membentuk kristal es. Semakin banyak ion, semakin terganggu pembentukan kristal.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== LEMBAR KERJA ===== -->
+<div id="page-lk" class="page">
+<div class="lk-fit">
+  <div class="lk-top">
+    <div class="lk-hero">
+      <div class="h-label">Lembar Kerja Murid</div>
+      <div class="h-title">Sifat <span style="color:#0d9488">Koligatif</span></div>
+    </div>
+    <div class="lk-identitas">
+      <div><label>Nama Murid</label><input class="lk-input" id="lkNama" placeholder="Nama lengkap"></div>
+      <div><label>Kelas</label><input class="lk-input" id="lkKelas" placeholder="XII IPA 1"></div>
+      <div><label>Kelompok</label><input class="lk-input" id="lkKelompok" placeholder="Kelompok"></div>
+      <div><label>Tanggal</label><input class="lk-input" id="lkTanggal" type="date"></div>
+    </div>
+  </div>
+  <div class="lk-main">
+    <div class="lk-col-tables">
+      <div class="lk-card" style="flex:1.4;">
+        <div class="lk-card-head"><div class="ci t" style="width:22px;height:22px;font-size:11px;">❄️</div><div class="ct">Tabel 1 — Sifat Koligatif Larutan</div><button class="lk-mini-btn" onclick="isiOtomatis()">✨ Isi Otomatis</button></div>
+        <div class="lk-table-scroll">
+          <table class="lk-table">
+            <thead><tr><th>Larutan</th><th>m (mol/kg)</th><th>i</th><th>ΔTf (°C)</th><th>Tf (°C)</th><th>ΔTb (°C)</th><th>Tb (°C)</th><th>Daya Hantar</th></tr></thead>
+            <tbody id="lkTable1"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="lk-card" style="flex:1;">
+        <div class="lk-card-head"><div class="ci b" style="width:22px;height:22px;font-size:11px;">📊</div><div class="ct">Tabel 2 — Uji Daya Hantar Listrik</div></div>
+        <div class="lk-table-scroll">
+          <table class="lk-table">
+            <thead><tr><th>Larutan</th><th>Nyala Lampu</th><th>Kuat Arus</th><th>Jenis</th><th>Ion Bebas</th></tr></thead>
+            <tbody>
+              <tr><td>Air Murni</td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Tidak menyala</option><option>Redup</option><option>Terang</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="0 mA"></td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Nonelektrolit</option><option>Elektrolit lemah</option><option>Elektrolit kuat</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="..."></td></tr>
+              <tr><td>Gula 1M</td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Tidak menyala</option><option>Redup</option><option>Terang</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="0 mA"></td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Nonelektrolit</option><option>Elektrolit lemah</option><option>Elektrolit kuat</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="..."></td></tr>
+              <tr><td>NaCl 1M</td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Tidak menyala</option><option>Redup</option><option selected>Terang</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="120 mA"></td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Nonelektrolit</option><option>Elektrolit lemah</option><option selected>Elektrolit kuat</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="Na⁺, Cl⁻"></td></tr>
+              <tr><td>CaCl₂ 1M</td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Tidak menyala</option><option>Redup</option><option selected>Terang</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="180 mA"></td><td><select style="font-size:10.5px;background:transparent;border:none;outline:none;"><option>Nonelektrolit</option><option>Elektrolit lemah</option><option selected>Elektrolit kuat</option></select></td><td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="Ca²⁺, 2Cl⁻"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="lk-col-questions">
+      <div class="lk-card lk-card-q">
+        <div class="lk-card-head"><div class="ci p" style="width:22px;height:22px;font-size:11px;">❓</div><div class="ct">Pertanyaan Analisis</div></div>
+        <div class="lk-qlist">
+          <div class="lk-qitem" style="flex:1;">
+            <div class="lk-qtext">1. Mengapa CaCl₂ lebih efektif mencairkan salju daripada NaCl pada suhu ekstrem (< −15°C)?</div>
+            <textarea class="disc-area lk-qarea" id="lkQ1" placeholder="Jelaskan menggunakan konsep Van't Hoff, jumlah ion, dan rumus ΔTf..."></textarea>
+          </div>
+          <div class="lk-qitem" style="flex:1;">
+            <div class="lk-qtext">2. Mengapa larutan gula dan NaCl 1m memiliki ΔTf yang berbeda meskipun molalitas sama?</div>
+            <textarea class="disc-area lk-qarea" id="lkQ2" placeholder="Jelaskan peran faktor ionisasi dan jumlah partikel terlarut..."></textarea>
+          </div>
+          <div class="lk-qitem" style="flex:.8;">
+            <div class="lk-qtext">3. Kesimpulan Percobaan</div>
+            <textarea class="disc-area lk-qarea" id="lkKesimpulan" placeholder="Tuliskan kesimpulan berdasarkan data yang diperoleh..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="lk-actions">
+        <button class="btn btn-start lk-actions dl-btn" onclick="cetakLKM()" style="width:auto;padding:6px 16px;">⬇️ Cetak LKM</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== EVALUASI ===== -->
+<div id="page-evaluasi" class="page">
+<div style="flex:1;display:flex;flex-direction:column;gap:5px;padding:7px 12px 8px;overflow:hidden;min-height:0;">
+  <div class="quiz-mode-tabs">
+    <button class="qmode-btn active" id="btnMcMode" onclick="showQuizMode('mc')">🎯 HOTS Kompleks</button>
+    <button class="qmode-btn" id="btnMemMode" onclick="showQuizMode('mem')">🃏 Memory Game</button>
+    <button class="qmode-btn" id="btnFcMode" onclick="showQuizMode('fc')">⚡ Flashcard</button>
+  </div>
+
+  <!-- MC PANEL -->
+  <div class="quiz-panel active" id="panelMc">
+    <div class="quiz-nav-header">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:#0f766e;">🎯 Pilihan Ganda Kompleks HOTS</div>
+      <div class="qprog" id="qprog"></div>
+      <div style="font-size:10px;color:#64748b;font-style:italic;">Bisa lebih dari satu jawaban benar</div>
+    </div>
+    <div class="q-card">
+      <div class="qnum" id="qnum">SOAL 01</div>
+      <div id="qbadge" class="qtype-badge badge-kompleks">Kompleks HOTS</div>
+      <div class="qtext" id="qtext"></div>
+      <ul class="opts" id="qopts"></ul>
+      <div class="qfb" id="qfb"></div>
+      <div class="quiz-foot">
+        <button class="btn-qnav btn-prev" id="btnPrev" onclick="qNav(-1)">← Sebelumnya</button>
+        <button class="btn-qnav btn-next" id="btnNext" onclick="qNav(1)">Selanjutnya →</button>
+        <button class="btn-qnav btn-submit-q" id="btnSubmit" onclick="submitQ()" style="display:none;">✅ Selesai & Nilai</button>
+        <button class="btn-qnav btn-reset-q" onclick="resetQ()">↺ Ulangi</button>
+        <div class="qcounter" id="qcounter">1 / 8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMORY PANEL -->
+  <div class="quiz-panel" id="panelMem">
+    <div class="memory-area">
+      <div class="mem-header">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:#0f766e;flex:1;">🃏 Jodohkan Pasangan — Sifat Koligatif</div>
+        <div class="mem-stat"><div class="mem-stat-val" id="memScore">0</div><div class="mem-stat-lbl">Pasangan</div></div>
+        <div style="width:1px;height:28px;background:var(--border);margin:0 8px;"></div>
+        <div class="mem-stat"><div class="mem-stat-val" id="memMoves">0</div><div class="mem-stat-lbl">Langkah</div></div>
+        <div style="width:1px;height:28px;background:var(--border);margin:0 8px;"></div>
+        <div class="mem-stat"><div class="mem-stat-val" id="memTime">0s</div><div class="mem-stat-lbl">Waktu</div></div>
+        <button class="btn btn-start" onclick="initMemory()" style="width:auto;padding:5px 14px;font-size:11px;margin-left:8px;">↺ Ulang</button>
+      </div>
+      <div class="mem-grid" id="memGrid"></div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD PANEL -->
+  <div class="quiz-panel" id="panelFc">
+    <div class="flash-area">
+      <div class="fc-progress"><div class="fc-progress-fill" id="fcFill" style="width:10%;"></div></div>
+      <div class="fc-wrap" id="fcWrap" onclick="flipCard()">
+        <div class="fc-inner" id="fcInner">
+          <div class="fc-face fc-front">
+            <div class="fc-q-lbl">❓ Pertanyaan</div>
+            <div class="fc-q-text" id="fcQ">Loading...</div>
+            <div class="fc-hint">Klik untuk melihat jawaban</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-a-lbl">✅ Jawaban</div>
+            <div class="fc-a-text" id="fcA">Loading...</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-nav-row">
+        <button class="fc-btn fc-btn-prev" onclick="fcNav(-1)">← Prev</button>
+        <div class="fc-counter" id="fcCounter">1 / 12</div>
+        <button class="fc-btn fc-btn-next" onclick="fcNav(1)">Next →</button>
+      </div>
+      <div style="font-size:11px;color:#64748b;text-align:center;">Klik kartu untuk membalik | Navigasi dengan tombol atau keyboard ←→</div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- end #app -->
+
+<!-- SCORE OVERLAY -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:40px;margin-bottom:8px;">🏆</div>
+    <div class="score-big" id="scoreBig">85</div>
+    <div class="score-pct">dari 100</div>
+    <div class="score-sub" id="scoreSub">Jawaban benar: 7 dari 8</div>
+    <div class="score-grade" id="scoreGrade">⭐ Baik! Pertahankan!</div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="document.getElementById('scoreOverlay').classList.remove('on')">📋 Review</button>
+      <button class="btn-score btn-ulangi" onclick="resetQ();document.getElementById('scoreOverlay').classList.remove('on')">↺ Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// QUIZ MODE TOGGLE
+// ═══════════════════════════════════════════
+function showQuizMode(mode){
+  document.querySelectorAll('.quiz-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.qmode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel'+mode.charAt(0).toUpperCase()+mode.slice(1)).classList.add('active');
+  if(mode==='mc') document.getElementById('btnMcMode').classList.add('active');
+  else if(mode==='mem'){document.getElementById('btnMemMode').classList.add('active');initMemory();}
+  else if(mode==='fc'){document.getElementById('btnFcMode').classList.add('active');initFlashcards();}
+}
+
+// ═══════════════════════════════════════════
+// SOAL HOTS KOMPLEKS (multi-answer)
+// ═══════════════════════════════════════════
+const QS=[
+  {
+    text:'Pernyataan manakah yang BENAR tentang sifat koligatif larutan?',
+    opts:['A. Sifat koligatif bergantung pada jenis zat terlarut, bukan jumlahnya','B. Kenaikan titik didih larutan NaCl 1m lebih besar dari larutan gula 1m','C. Penurunan titik beku larutan CaCl₂ 1m lebih besar dari NaCl 1m','D. Larutan elektrolit memiliki sifat koligatif yang sama dengan nonelektrolit pada molalitas yang sama'],
+    ans:[1,2],fb:'B dan C benar. Sifat koligatif bergantung pada JUMLAH partikel, bukan jenis. NaCl (i=2) menghasilkan lebih banyak partikel dari gula (i=1), dan CaCl₂ (i=3) lebih banyak dari NaCl (i=2). Elektrolit selalu menghasilkan sifat koligatif yang lebih besar karena ionisasi.'
+  },
+  {
+    text:'Seorang teknisi kota menuang CaCl₂ dan NaCl ke jalan bersalju pada suhu −12°C. Pernyataan manakah yang TEPAT menjelaskan mengapa CaCl₂ lebih efektif?',
+    opts:['A. CaCl₂ memiliki massa molar yang lebih besar sehingga lebih berat','B. CaCl₂ menghasilkan 3 ion per satuan rumus (Ca²⁺ + 2Cl⁻), NaCl hanya 2 ion','C. ΔTf CaCl₂ = 3 × 1,86 × m, sedangkan NaCl = 2 × 1,86 × m pada molalitas yang sama','D. CaCl₂ bersifat higroskopis, menarik lebih banyak air dari udara'],
+    ans:[1,2],fb:'B dan C benar. Faktor Van\'t Hoff CaCl₂ (i=3) lebih besar dari NaCl (i=2), sehingga ΔTf CaCl₂ 50% lebih besar pada molalitas sama. Pilihan A tidak relevan; pilihan D adalah bonus tambahan tapi bukan alasan utama sifat koligatif.'
+  },
+  {
+    text:'Larutan NaCl 2m dibuat dengan melarutkan NaCl ke dalam air. Pernyataan manakah yang BENAR?',
+    opts:['A. ΔTf = 2 × 1,86 × 2 = 7,44°C, sehingga titik beku = −7,44°C','B. ΔTb = 2 × 0,52 × 2 = 2,08°C, sehingga titik didih = 102,08°C','C. Jika molalitas digandakan menjadi 4m, maka ΔTf menjadi 4× lipat (14,88°C)','D. Tekanan uap larutan NaCl 2m lebih tinggi dari air murni'],
+    ans:[0,1,2],fb:'A, B, C benar. ΔTf dan ΔTb keduanya linear terhadap molalitas (sifat koligatif!). Menggandakan m menggandakan ΔTf. Pilihan D SALAH — tekanan uap larutan LEBIH RENDAH dari air murni (zat terlarut menghalangi penguapan).'
+  },
+  {
+    text:'Dalam uji daya hantar listrik, larutan mana yang menyebabkan lampu menyala PALING TERANG?',
+    opts:['A. Gula 1M — karena molekulnya besar','B. NaCl 0,5M — menghasilkan Na⁺ dan Cl⁻','C. CaCl₂ 1M — menghasilkan Ca²⁺ dan 2Cl⁻ (3 ion per mol)','D. NaCl 1M — sama terangnya dengan CaCl₂ 1M'],
+    ans:[2],fb:'C benar. CaCl₂ 1M menghasilkan 3 ion per mol (Ca²⁺ + 2Cl⁻), lebih banyak dari NaCl 1M yang hanya 2 ion. Lebih banyak ion bebas = konduktivitas lebih tinggi = lampu lebih terang. Gula adalah nonelektrolit, lampu tidak menyala.'
+  },
+  {
+    text:'Diagram fase menunjukkan bahwa larutan NaCl 1m memiliki titik beku −3,72°C dan titik didih 101,04°C dibanding air murni (0°C dan 100°C). Pernyataan HOTS manakah yang benar?',
+    opts:['A. Penambahan zat terlarut memperlebar rentang fase cair dari larutan','B. Jika konsentrasi NaCl dijadikan 2m, titik beku menjadi −7,44°C (linier)','C. Penambahan CaCl₂ pada konsentrasi sama akan memperlebar rentang cair lebih jauh dari NaCl','D. Penurunan tekanan uap tidak berhubungan dengan perubahan titik didih dan beku'],
+    ans:[0,1,2],fb:'A, B, C benar. Rentang fase cair (Tf ke Tb) melebar karena Tf turun dan Tb naik — makin banyak partikel, makin lebar. Hubungan ΔTf dengan m bersifat linier. CaCl₂ (i=3) memberikan efek lebih besar dari NaCl (i=2). D SALAH — penurunan tekanan uap adalah SEBAB dari kenaikan titik didih dan penurunan titik beku.'
+  },
+  {
+    text:'Seorang siswa melarutkan 1 mol zat X ke dalam 1 kg air dan mendapatkan ΔTf = 5,58°C. Kesimpulan manakah yang VALID?',
+    opts:['A. Zat X adalah elektrolit yang terionisasi menjadi 3 ion (i = 5,58/1,86 = 3)','B. Zat X kemungkinan adalah CaCl₂ yang terurai menjadi Ca²⁺ + 2Cl⁻','C. Zat X pasti adalah nonelektrolit karena ΔTf besar','D. Kenaikan titik didih larutan ini adalah ΔTb = 3 × 0,52 × 1 = 1,56°C'],
+    ans:[0,1,3],fb:'A, B, D benar. i = ΔTf / (Kf × m) = 5,58 / 1,86 = 3, artinya zat menghasilkan 3 partikel → kemungkinan besar CaCl₂. ΔTb juga dapat dihitung menggunakan i yang sama = 3 × 0,52 × 1 = 1,56°C. C SALAH — i=3 justru menunjukkan elektrolit kuat, bukan nonelektrolit.'
+  },
+  {
+    text:'Fenomena apa saja yang terjadi secara MIKROSKOPIS ketika NaCl dilarutkan dalam air?',
+    opts:['A. Ion Na⁺ dan Cl⁻ tersebar di antara molekul air, mengganggu kristalisasi','B. Molekul NaCl tetap utuh dan mengurangi jumlah molekul air di permukaan','C. Ion-ion NaCl menghalangi molekul air menguap ke fase gas (ΔP berkurang)','D. Ketika membeku, ion-ion mengganggu barisan heksagonal kristal es'],
+    ans:[0,2,3],fb:'A, C, D benar. NaCl adalah elektrolit kuat yang terionisasi sempurna — ion, bukan molekul utuh (B SALAH). Ion-ion ini: (1) mengganggu kisi kristal es → ΔTf; (2) menghalangi penguapan → ΔP dan ΔTb; (3) tersebar acak dalam larutan.'
+  },
+  {
+    text:'Seorang peneliti menghitung ΔTf sebuah larutan protein konsentrasi tinggi dan menemukan ΔTf jauh lebih kecil dari yang diharapkan berdasarkan molalitas. Hipotesis manakah yang MASUK AKAL?',
+    opts:['A. Protein tidak terionisasi (i=1) sehingga efek koligatifnya kecil meskipun massa molnya besar','B. Untuk melarutkan protein berat molekul tinggi, dibutuhkan massa yang sangat besar per mol','C. Karena BM protein sangat besar, molalitas dalam gram/kg sebenarnya sangat kecil','D. Protein justru meningkatkan tekanan uap, mengurangi efek ΔTf'],
+    ans:[0,1,2],fb:'A, B, C benar. Sifat koligatif bergantung pada JUMLAH MOL partikel, bukan massa. Protein BM tinggi (misal, 50.000 g/mol) → untuk mendapatkan 1 mol butuh 50 kg protein! Sehingga molalitas efektif sangat kecil dan ΔTf sangat kecil. D SALAH — zat terlarut selalu MENURUNKAN tekanan uap.'
+  },
+];
+
+let qCur=0, qSel=QS.map(()=>new Set()), qSub=false;
+
+function renderQ(){
+  const q=QS[qCur];
+  document.getElementById('qnum').textContent='SOAL '+(qCur+1).toString().padStart(2,'0');
+  document.getElementById('qtext').textContent=q.text;
+  document.getElementById('qcounter').textContent=(qCur+1)+' / '+QS.length;
+  const opts=document.getElementById('qopts'); opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const li=document.createElement('li');
+    const sel=qSel[qCur].has(i);
+    li.className='opt'+(sel?' sel':'');
+    if(qSub){
+      if(q.ans.includes(i)) li.classList.add('correct');
+      else if(sel) li.classList.add('wrong');
+    }
+    li.innerHTML=`<input type="checkbox" ${sel?'checked':''} ${qSub?'disabled':''}><span>${o}</span>`;
+    li.addEventListener('click',()=>{
+      if(qSub) return;
+      if(qSel[qCur].has(i)) qSel[qCur].delete(i); else qSel[qCur].add(i);
+      renderQ();
+    });
+    opts.appendChild(li);
+  });
+  const fb=document.getElementById('qfb');
+  if(qSub){
+    const sel=[...qSel[qCur]].sort().join(','), cor=q.ans.slice().sort().join(',');
+    const exact=sel===cor;
+    const partial=q.ans.some(a=>qSel[qCur].has(a));
+    const cls=exact?'ok':partial?'partial':'bad';
+    const icon=exact?'✅ ':'⚠️ ';
+    fb.textContent=icon+q.fb; fb.className='qfb on '+cls;
+  } else {fb.className='qfb'; fb.textContent='';}
+  // Progress dots
+  const prog=document.getElementById('qprog'); prog.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='qprog-dot'+(i===qCur?' current':qSel[i].size>0?' answered':'');
+    d.textContent=i+1; d.addEventListener('click',()=>{qCur=i;renderQ();});
+    prog.appendChild(d);
+  });
+  document.getElementById('btnPrev').style.display=qCur===0?'none':'';
+  const last=qCur===QS.length-1;
+  document.getElementById('btnNext').style.display=last?'none':'';
+  document.getElementById('btnSubmit').style.display=last&&!qSub?'':'none';
+}
+function qNav(d){qCur=Math.max(0,Math.min(QS.length-1,qCur+d));renderQ();}
+function submitQ(){
+  qSub=true;
+  let correct=0;
+  QS.forEach((q,i)=>{
+    const sel=[...qSel[i]].sort().join(','), cor=q.ans.slice().sort().join(',');
+    if(sel===cor) correct++;
+  });
+  const score=Math.round(correct/QS.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scoreSub').textContent=`Jawaban benar: ${correct} dari ${QS.length}`;
+  let grade='';
+  if(score>=90) grade='🏆 Sangat Baik! Luar biasa!';
+  else if(score>=75) grade='⭐ Baik! Pertahankan!';
+  else if(score>=60) grade='📚 Cukup, pelajari kembali.';
+  else grade='💪 Perlu belajar lebih keras!';
+  document.getElementById('scoreGrade').textContent=grade;
+  document.getElementById('scoreOverlay').classList.add('on');
+  renderQ();
+  score>=75?playSound('sndBerhasil'):playSound('sndSalah');
+}
+function resetQ(){qCur=0;qSel=QS.map(()=>new Set());qSub=false;renderQ();}
+
+// ═══════════════════════════════════════════
+// MEMORY GAME
+// ═══════════════════════════════════════════
+const MEM_PAIRS=[
+  {emoji:'❄️',term:'Penurunan Titik Beku',def:'ΔTf = i × Kf × m'},
+  {emoji:'🌡️',term:'Kenaikan Titik Didih',def:'ΔTb = i × Kb × m'},
+  {emoji:'💧',term:'Penurunan Tekanan Uap',def:'P = Xpelarut × P°'},
+  {emoji:'🔢',term:"Van't Hoff (i)",def:'Jumlah ion/partikel per mol'},
+  {emoji:'🧂',term:'NaCl (i = 2)',def:'Na⁺ + Cl⁻ → 2 ion'},
+  {emoji:'⚗️',term:'CaCl₂ (i = 3)',def:'Ca²⁺ + 2Cl⁻ → 3 ion'},
+  {emoji:'🍬',term:'Gula (i = 1)',def:'Nonelektrolit, 1 partikel'},
+  {emoji:'⚡',term:'Elektrolit Kuat',def:'Ionisasi sempurna, lampu terang'},
+  {emoji:'🏔️',term:'Kf air',def:'1,86 °C·kg/mol'},
+  {emoji:'♨️',term:'Kb air',def:'0,52 °C·kg/mol'},
+  {emoji:'🔬',term:'Molalitas (m)',def:'mol zat terlarut / kg pelarut'},
+  {emoji:'🧊',term:'Titik Beku NaCl 1m',def:'−3,72°C (turun 3,72°C)'},
+];
+let memFlipped=[],memMatched=new Set(),memLocked=false,memMoveCount=0,memTimeCount=0,memTimerIv=null,memCards=[];
+
+function initMemory(){
+  clearInterval(memTimerIv); memFlipped=[];memMatched=new Set();memLocked=false;memMoveCount=0;memTimeCount=0;
+  document.getElementById('memScore').textContent='0';
+  document.getElementById('memMoves').textContent='0';
+  document.getElementById('memTime').textContent='0s';
+  // Build cards: each pair → 2 cards (emoji+term | definition)
+  const pairs=MEM_PAIRS;
+  let arr=[];
+  pairs.forEach((p,i)=>{
+    arr.push({id:i,face:'front',display:p.emoji+'<br><span style="font-size:9px;font-weight:600">'+p.term+'</span>',match:i});
+    arr.push({id:i,face:'back',display:'<span style="font-size:9px">'+p.def+'</span>',match:i});
+  });
+  // Shuffle
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  memCards=arr;
+  const grid=document.getElementById('memGrid'); grid.innerHTML='';
+  arr.forEach((card,idx)=>{
+    const el=document.createElement('div');
+    el.className='mem-card';
+    el.innerHTML=`<div class="mc-front">🧊</div><div class="mc-back">${card.display}</div>`;
+    el.addEventListener('click',()=>memFlip(el,idx));
+    grid.appendChild(el);
+  });
+  memTimerIv=setInterval(()=>{memTimeCount++;document.getElementById('memTime').textContent=memTimeCount+'s';},1000);
+}
+
+function memFlip(el,idx){
+  if(memLocked||memFlipped.includes(idx)||memMatched.has(idx)) return;
+  el.classList.add('flipped'); memFlipped.push(idx);
+  if(memFlipped.length===2){
+    memLocked=true; memMoveCount++;
+    document.getElementById('memMoves').textContent=memMoveCount;
+    const [a,b]=memFlipped;
+    const ca=memCards[a], cb=memCards[b];
+    if(ca.match===cb.match&&ca.face!==cb.face){
+      memMatched.add(a); memMatched.add(b);
+      document.querySelectorAll('.mem-card')[a].classList.add('matched');
+      document.querySelectorAll('.mem-card')[b].classList.add('matched');
+      document.getElementById('memScore').textContent=memMatched.size/2;
+      memFlipped=[]; memLocked=false;
+      if(memMatched.size===memCards.length){clearInterval(memTimerIv);setTimeout(()=>alert(`🎉 Selesai! ${memMoveCount} langkah, ${memTimeCount} detik!`),200);}
+    } else {
+      setTimeout(()=>{
+        document.querySelectorAll('.mem-card')[a].classList.remove('flipped');
+        document.querySelectorAll('.mem-card')[b].classList.remove('flipped');
+        memFlipped=[]; memLocked=false;
+      },900);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════════
+const FC=[
+  {q:'Apa yang dimaksud sifat koligatif larutan?',a:'Sifat larutan yang bergantung pada JUMLAH PARTIKEL zat terlarut, bukan pada jenisnya. Contoh: ΔTf, ΔTb, ΔP.'},
+  {q:'Tuliskan rumus penurunan titik beku dan sebutkan nilai Kf air!',a:'ΔTf = i × Kf × m\nKf air = 1,86 °C·kg/mol\nTitik beku larutan = 0°C − ΔTf'},
+  {q:'Tuliskan rumus kenaikan titik didih dan sebutkan nilai Kb air!',a:'ΔTb = i × Kb × m\nKb air = 0,52 °C·kg/mol\nTitik didih larutan = 100°C + ΔTb'},
+  {q:'Apa yang dimaksud faktor Van\'t Hoff (i)?',a:'Jumlah partikel (ion/molekul) yang dihasilkan per satuan rumus kimia setelah dilarutkan.\nGula → i=1 | NaCl → i=2 | CaCl₂ → i=3'},
+  {q:'Mengapa CaCl₂ lebih efektif mencairkan salju dari NaCl?',a:'CaCl₂ (i=3) menghasilkan 3 ion per mol (Ca²⁺ + 2Cl⁻), sedangkan NaCl (i=2) hanya 2 ion. ΔTf CaCl₂ 50% lebih besar pada molalitas yang sama.'},
+  {q:'Berapa titik beku larutan NaCl 2m?',a:'ΔTf = i × Kf × m = 2 × 1,86 × 2 = 7,44°C\nTitik beku = 0 − 7,44 = −7,44°C'},
+  {q:'Berapa titik didih larutan CaCl₂ 1m?',a:'ΔTb = i × Kb × m = 3 × 0,52 × 1 = 1,56°C\nTitik didih = 100 + 1,56 = 101,56°C'},
+  {q:'Mengapa tekanan uap larutan lebih rendah dari pelarut murni?',a:'Partikel zat terlarut menempati permukaan larutan dan menghalangi molekul pelarut untuk menguap ke fase gas, sehingga P larutan < P° pelarut.'},
+  {q:'Apa perbedaan antara elektrolit kuat dan nonelektrolit dalam konteks sifat koligatif?',a:'Elektrolit kuat (NaCl, CaCl₂) terionisasi sempurna → i > 1 → sifat koligatif lebih besar.\nNonelektrolit (gula) tidak terionisasi → i = 1.'},
+  {q:'Bagaimana cara menghitung molalitas (m)?',a:'m = mol zat terlarut / kg pelarut\nContoh: 2 mol NaCl dalam 500 g air → m = 2/0,5 = 4 mol/kg'},
+  {q:'Jelaskan secara mikroskopis bagaimana zat terlarut mengganggu pembentukan kristal es!',a:'Ion/molekul zat terlarut tersisip di antara molekul air dan mencegah mereka tersusun dalam kisi kristal heksagonal yang teratur. Suhu harus diturunkan lebih jauh agar gerakan termal cukup rendah untuk membentuk kristal.'},
+  {q:'Apa itu Hukum Raoult dan bagaimana hubungannya dengan sifat koligatif?',a:'P = Xpelarut × P° (tekanan uap larutan = fraksi mol pelarut × tekanan uap murni).\nPenurunan tekanan uap ini adalah penyebab utama kenaikan titik didih DAN penurunan titik beku.'},
+];
+let fcIdx=0, fcFlipped=false;
+function initFlashcards(){fcIdx=0;fcFlipped=false;renderFC();}
+function renderFC(){
+  const fc=FC[fcIdx];
+  document.getElementById('fcQ').textContent=fc.q;
+  document.getElementById('fcA').textContent=fc.a;
+  document.getElementById('fcCounter').textContent=(fcIdx+1)+' / '+FC.length;
+  document.getElementById('fcFill').style.width=((fcIdx+1)/FC.length*100)+'%';
+  fcFlipped=false; document.getElementById('fcWrap').classList.remove('flipped');
+}
+function flipCard(){fcFlipped=!fcFlipped; document.getElementById('fcWrap').classList.toggle('flipped',fcFlipped);}
+function fcNav(d){fcIdx=(fcIdx+d+FC.length)%FC.length;renderFC();}
+document.addEventListener('keydown',e=>{if(document.getElementById('panelFc').classList.contains('active')){if(e.key==='ArrowRight')fcNav(1);else if(e.key==='ArrowLeft')fcNav(-1);else if(e.key===' '){e.preventDefault();flipCard();}}});
+
+// ═══════════════════════════════════════════
+// SIMULASI CANVAS
+// ═══════════════════════════════════════════
+let simRunning=false,simAnim=null,simParticles=[],simT=0;
+const SOLUTES={none:{name:'Air Murni',i:1,color:'#38bdf8',ions:[]},sugar:{name:'Gula',i:1,color:'#fbbf24',ions:['🍬']},nacl:{name:'NaCl',i:2,color:'#f87171',ions:['Na⁺','Cl⁻']},cacl2:{name:'CaCl₂',i:3,color:'#a78bfa',ions:['Ca²⁺','Cl⁻','Cl⁻']}};
+
+function updateSim(){
+  const mol=parseInt(document.getElementById('molSlider').value);
+  const m=(mol/10).toFixed(1);
+  document.getElementById('molVal').textContent=m;
+  document.getElementById('speedVal').textContent=document.getElementById('speedSlider').value+'×';
+  const type=document.getElementById('soluteType').value;
+  const i=SOLUTES[type].i;
+  const dTf=(i*1.86*(mol/10)).toFixed(2);
+  const dTb=(i*0.52*(mol/10)).toFixed(2);
+  const tf=(parseFloat(dTf)*-1).toFixed(2);
+  const tb=(100+parseFloat(dTb)).toFixed(2);
+  document.getElementById('res-type').textContent=SOLUTES[type].name;
+  document.getElementById('res-i').textContent=i;
+  document.getElementById('res-m').textContent=m;
+  document.getElementById('res-dtf').textContent=dTf;
+  document.getElementById('res-tf').textContent=tf;
+  document.getElementById('res-dtb').textContent=dTb;
+  document.getElementById('res-tb').textContent=tb;
+  document.getElementById('stat-tf').textContent=tf+'°C';
+  document.getElementById('stat-tb').textContent=tb+'°C';
+  document.getElementById('stat-i').textContent=i;
+  document.getElementById('stat-ion').textContent=i===1?(type==='none'?'H₂O':i):i+' ion';
+  const vm=document.getElementById('viewMode').value;
+  const vmNames={freeze:'❄️ Penurunan Titik Beku',boil:'♨️ Kenaikan Titik Didih',evap:'💨 Penurunan Tekanan Uap',elec:'⚡ Daya Hantar Listrik'};
+  document.getElementById('simTitle').textContent=vmNames[vm]+' ('+SOLUTES[type].name+' '+m+'m)';
+  const tips={freeze:'💡 Ion/molekul zat terlarut (warna-warni) mengganggu barisan molekul air (biru) yang mencoba membentuk kristal es heksagonal.',boil:'💡 Ion/molekul zat terlarut menghalangi molekul air menguap dari permukaan. Semakin banyak partikel, semakin sedikit air yang bisa menguap.',evap:'💡 Partikel zat terlarut menduduki permukaan larutan, mengurangi fraksi mol pelarut yang dapat menguap → tekanan uap turun.',elec:'💡 Ion-ion bebas (Na⁺, Cl⁻, Ca²⁺) bertindak sebagai pembawa muatan listrik. Semakin banyak ion, semakin besar arus listrik.'};
+  document.getElementById('simTip').textContent=tips[vm];
+}
+
+function initSim(){
+  updateSim();
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas) return;
+  canvas.width=canvas.offsetWidth||400;
+  canvas.height=canvas.offsetHeight||300;
+}
+
+function toggleSim(){
+  const btn=document.getElementById('btnStart');
+  if(simRunning){simRunning=false;cancelAnimationFrame(simAnim);btn.textContent='▶ Mulai Simulasi';}
+  else{simRunning=true;btn.textContent='⏸ Pause';spawnParticles();simLoop();}
+}
+
+function resetSim(){
+  simRunning=false;cancelAnimationFrame(simAnim);simParticles=[];simT=0;
+  document.getElementById('btnStart').textContent='▶ Mulai Simulasi';
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawIdleSim(ctx,canvas.width,canvas.height);
+}
+
+function spawnParticles(){
+  simParticles=[];
+  const canvas=document.getElementById('simCanvas');
+  const W=canvas.width, H=canvas.height;
+  const type=document.getElementById('soluteType').value;
+  const mol=parseInt(document.getElementById('molSlider').value);
+  const nWater=50, nSolute=Math.min(mol*2,40);
+  for(let i=0;i<nWater;i++) simParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,r:7,type:'water',a:Math.random()*Math.PI*2,bonded:Math.random()<.4&&type==='none'});
+  if(type!=='none'){
+    const colors={sugar:['#fbbf24'],nacl:['#f87171','#4ade80'],cacl2:['#a78bfa','#4ade80','#4ade80']};
+    const cl=colors[type]||['#f87171'];
+    for(let i=0;i<nSolute;i++) simParticles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,r:9,type:'solute',color:cl[i%cl.length],label:SOLUTES[type].ions[i%SOLUTES[type].ions.length],a:Math.random()*Math.PI*2});
+  }
+}
+
+function simLoop(){
+  if(!simRunning) return;
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas){return;}
+  canvas.width=canvas.offsetWidth;
+  canvas.height=canvas.offsetHeight;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const spd=parseInt(document.getElementById('speedSlider').value);
+  const vm=document.getElementById('viewMode').value;
+  simT++;
+
+  ctx.clearRect(0,0,W,H);
+  // Background
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  if(vm==='freeze'){bg.addColorStop(0,'#0f2744');bg.addColorStop(1,'#1e3a5f');}
+  else if(vm==='boil'){bg.addColorStop(0,'#2d0a00');bg.addColorStop(1,'#3d1200');}
+  else if(vm==='evap'){bg.addColorStop(0,'#0d1f2d');bg.addColorStop(1,'#1a2f45');}
+  else{bg.addColorStop(0,'#1a0d33');bg.addColorStop(1,'#2d1a4a');}
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Mode-specific background elements
+  if(vm==='freeze'){
+    // Ice crystal pattern background
+    for(let cx=60;cx<W;cx+=80) for(let cy=60;cy<H;cy+=80){
+      const di=Math.sin(simT*.012+cx*.05+cy*.05)*.2+.05;
+      drawCrystal(ctx,cx,cy,20,`rgba(147,197,253,${di})`);
+    }
+    // Ice layer at bottom
+    ctx.fillStyle='rgba(147,197,253,0.08)';
+    ctx.fillRect(0,H*.75,W,H*.25);
+    ctx.fillStyle='rgba(186,230,253,0.12)';
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=20){const y=H*.75+Math.sin(x*.08+simT*.02)*8;x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+  } else if(vm==='boil'){
+    // Heat shimmer
+    for(let i=0;i<8;i++){
+      const bx=W/(9)*(i+1), by=H-.4*H*Math.random();
+      const bh=H*.4+Math.random()*H*.2;
+      const gr=ctx.createLinearGradient(bx,H,bx,by);
+      gr.addColorStop(0,'rgba(251,146,60,0.08)');gr.addColorStop(1,'rgba(251,146,60,0)');
+      ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(bx,H,15,bh,0,0,Math.PI*2);ctx.fill();
+    }
+    // Hot surface
+    ctx.fillStyle='rgba(251,146,60,0.1)';ctx.fillRect(0,H*.85,W,H*.15);
+  } else if(vm==='evap'){
+    // Surface layer
+    ctx.fillStyle='rgba(56,189,248,0.06)';ctx.fillRect(0,H*.4,W,H*.05);
+    // Rising vapor dots
+    if(simT%4===0&&simParticles.filter(p=>p.type==='vapor').length<12){
+      simParticles.push({x:Math.random()*W,y:H*.42,vx:(Math.random()-.5)*.5,vy:-(.5+Math.random()*.5),r:4,type:'vapor',a:1,life:1});
+    }
+  } else {
+    // Electric field lines
+    for(let x=30;x<W;x+=30){
+      ctx.strokeStyle='rgba(167,139,250,0.06)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+    }
+  }
+
+  // Update & draw particles
+  simParticles=simParticles.filter(p=>p.type!=='vapor'||p.life>0);
+  simParticles.forEach(p=>{
+    for(let s=0;s<spd;s++){p.x+=p.vx;p.y+=p.vy;}
+    if(p.type==='vapor'){p.y+=p.vy;p.x+=p.vx;p.life-=.008;p.a=p.life;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(147,197,253,${p.life*.4})`;ctx.fill();return;}
+    if(p.x<p.r){p.x=p.r;p.vx*=-1;} if(p.x>W-p.r){p.x=W-p.r;p.vx*=-1;}
+    if(p.y<p.r){p.y=p.r;p.vy*=-1;} if(p.y>H-p.r){p.y=H-p.r;p.vy*=-1;}
+    p.a+=.03;
+    if(p.type==='water'){
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(56,189,248,0.75)`;ctx.fill();
+      ctx.strokeStyle='rgba(147,210,255,0.5)';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='7px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('H₂O',p.x,p.y);
+    } else if(p.type==='solute'){
+      const gr=ctx.createRadialGradient(p.x-2,p.y-2,1,p.x,p.y,p.r);
+      gr.addColorStop(0,'rgba(255,255,255,0.4)');gr.addColorStop(1,p.color||'#f87171');
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font='bold 7px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(p.label||'S',p.x,p.y);
+      // Glow
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r+4,0,Math.PI*2);
+      ctx.strokeStyle=(p.color||'#f87171').replace(')',',0.25)').replace('rgb','rgba').replace('rgba(rgba','rgba');
+      ctx.lineWidth=2;ctx.stroke();
+    }
+  });
+
+  // Mode overlay
+  if(vm==='freeze'){
+    // Show disrupted crystals near solute particles
+    simParticles.filter(p=>p.type==='solute').forEach(p=>{
+      ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.arc(p.x,p.y,25,0,Math.PI*2);ctx.stroke();
+      ctx.setLineDash([]);
+    });
+  } else if(vm==='elec'){
+    // Draw lightning bolts between electrodes
+    const ex1=30,ex2=W-30,ey=H/2;
+    ctx.fillStyle='rgba(167,139,250,0.5)';ctx.fillRect(ex1-5,ey-30,10,60);ctx.fillRect(ex2-5,ey-30,10,60);
+    if(document.getElementById('soluteType').value!=='none'&&document.getElementById('soluteType').value!=='sugar'){
+      const segs=6;
+      ctx.strokeStyle='rgba(196,181,253,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(ex1+10,ey);
+      for(let s=1;s<segs;s++){const lx=ex1+10+(ex2-ex1-20)*s/segs,ly=ey+(Math.random()-0.5)*20;ctx.lineTo(lx,ly);}
+      ctx.lineTo(ex2-10,ey);ctx.stroke();
+    }
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font='9px sans-serif';ctx.textAlign='center';
+    ctx.fillText('(−)',ex1,ey+48);ctx.fillText('(+)',ex2,ey+48);
+  }
+
+  simAnim=requestAnimationFrame(simLoop);
+}
+
+function drawCrystal(ctx,cx,cy,r,color){
+  ctx.save();ctx.translate(cx,cy);
+  for(let a=0;a<6;a++){
+    ctx.rotate(Math.PI/3);
+    ctx.strokeStyle=color;ctx.lineWidth=.8;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-r);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,-r*.5);ctx.lineTo(r*.25,-r*.7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,-r*.5);ctx.lineTo(-r*.25,-r*.7);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawIdleSim(ctx,W,H){
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0f2744');bg.addColorStop(1,'#1e3a5f');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(147,197,253,0.3)';ctx.font='13px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('▶ Tekan Mulai Simulasi untuk memulai animasi',W/2,H/2);
+}
+
+// ═══════════════════════════════════════════
+// LEMBAR KERJA
+// ═══════════════════════════════════════════
+function isiOtomatis(){
+  const data=[
+    ['Air Murni','0','—','0,00','0,00','0,00','100,00','Tidak ada'],
+    ['Gula 0,5m','0.5','1','0,93','−0,93','0,26','100,26','Tidak ada'],
+    ['Gula 1m','1','1','1,86','−1,86','0,52','100,52','Tidak ada'],
+    ['NaCl 0,5m','0.5','2','1,86','−1,86','0,52','100,52','Kuat (Na⁺,Cl⁻)'],
+    ['NaCl 1m','1','2','3,72','−3,72','1,04','101,04','Kuat (Na⁺,Cl⁻)'],
+    ['NaCl 2m','2','2','7,44','−7,44','2,08','102,08','Kuat (Na⁺,Cl⁻)'],
+    ['CaCl₂ 1m','1','3','5,58','−5,58','1,56','101,56','Sangat Kuat'],
+    ['CaCl₂ 2m','2','3','11,16','−11,16','3,12','103,12','Sangat Kuat'],
+  ];
+  const tbody=document.getElementById('lkTable1');
+  tbody.innerHTML=data.map(r=>`<tr>${r.map((c,i)=>`<td>${i===0?c:`<input style="width:100%;border:none;background:transparent;font-size:10.5px;" value="${c}">`}</td>`).join('')}</tr>`).join('');
+}
+// Build empty table
+(function(){
+  const rows=['Air Murni','Gula','NaCl','CaCl₂'];
+  document.getElementById('lkTable1').innerHTML=rows.map(r=>`<tr><td>${r}</td>${Array(7).fill('<td><input style="width:100%;border:none;background:transparent;font-size:10.5px;" placeholder="..."></td>').join('')}</tr>`).join('');
+})();
+
+function cetakLKM(){
+  const d={nama:document.getElementById('lkNama').value||'—',kelas:document.getElementById('lkKelas').value||'—',kelompok:document.getElementById('lkKelompok').value||'—',tanggal:document.getElementById('lkTanggal').value||'—',q1:document.getElementById('lkQ1').value,q2:document.getElementById('lkQ2').value,ksl:document.getElementById('lkKesimpulan').value};
+  const rows=Array.from(document.querySelectorAll('#lkTable1 tr')).map(r=>{
+    const cols=Array.from(r.querySelectorAll('td')).map(td=>td.querySelector('input')?td.querySelector('input').value:td.textContent);
+    return `<tr>${cols.map((c,i)=>`<td${i===0?' style="font-weight:600"':''}>${c||'—'}</td>`).join('')}</tr>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>LKM Koligatif</title>
+  <style>body{font-family:Arial,sans-serif;padding:24px;max-width:800px;margin:0 auto;color:#1e293b;}h1{color:#0d9488;font-size:20px;}h2{color:#0f766e;font-size:14px;border-bottom:2px solid #0d9488;padding-bottom:4px;margin-top:20px;}
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;font-size:13px;} .info strong{color:#374151;}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px;} th{background:#0d9488;color:#fff;padding:7px;text-align:left;} td{border:1px solid #bbf7d0;padding:6px 8px;} tr:nth-child(even) td{background:#f0fdf4;}
+  .qa{background:#f0fdf4;border-left:3px solid #0d9488;padding:10px 14px;margin:8px 0;border-radius:0 8px 8px 0;} .qa-q{font-size:12px;font-weight:700;color:#0d9488;margin-bottom:5px;} .qa-a{font-size:13px;color:#1e293b;min-height:40px;border-bottom:1px solid #bbf7d0;padding-bottom:6px;} .footer{margin-top:20px;font-size:11px;color:#64748b;text-align:center;border-top:1px solid #bbf7d0;padding-top:10px;}</style></head><body>
+  <h1>🧊 Lembar Kerja Murid (LKM) — Sifat Koligatif Larutan</h1>
+  <div class="info"><div><strong>Nama:</strong> ${d.nama}</div><div><strong>Kelas:</strong> ${d.kelas}</div><div><strong>Kelompok:</strong> ${d.kelompok}</div><div><strong>Tanggal:</strong> ${d.tanggal}</div></div>
+  <h2>Tabel Data — Sifat Koligatif Larutan</h2>
+  <table><thead><tr><th>Larutan</th><th>m</th><th>i</th><th>ΔTf</th><th>Tf</th><th>ΔTb</th><th>Tb</th><th>Daya Hantar</th></tr></thead><tbody>${rows}</tbody></table>
+  <h2>Pertanyaan Analisis</h2>
+  <div class="qa"><div class="qa-q">1. Mengapa CaCl₂ lebih efektif mencairkan salju daripada NaCl?</div><div class="qa-a">${d.q1}</div></div>
+  <div class="qa"><div class="qa-q">2. Mengapa larutan gula dan NaCl 1m memiliki ΔTf yang berbeda meskipun molalitas sama?</div><div class="qa-a">${d.q2}</div></div>
+  <div class="qa"><div class="qa-q">Kesimpulan:</div><div class="qa-a">${d.ksl}</div></div>
+  <div class="footer">Lab Maya Kimia — Sifat Koligatif Larutan · Dicetak: ${new Date().toLocaleDateString('id-ID',{dateStyle:'full'})}</div>
+  </body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`LKM_Koligatif_${d.nama}_${d.kelas}.html`;a.click();
+  playSound('sndBerhasil');
+}
+
+// Init
+renderQ();
+updateSim();
+initFlashcards();
+</script>
+</body>
+</html>
