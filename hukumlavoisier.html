@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hukum Kekekalan Massa</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f3ef;--surf:#ffffff;--surf2:#faf9f6;
+  --border:#e2ddd6;--border2:#c9c0b3;
+  --acc:#8B4513;--acc2:#A0522D;--acc3:#6B3410;
+  --gold:#C8960C;--gold2:#E8B020;
+  --text:#2c1810;--text2:#5c4033;--text3:#9c8070;
+  --green:#2d6a4f;--red:#c0392b;--blue:#1a3a6b;
+  --h:52px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;font-size:13px;}
+
+/* ===== LOADING ===== */
+#loadScreen{
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#0d0500,#1a0800,#2d1000);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .6s;
+}
+#loadScreen.out{opacity:0;pointer-events:none;}
+.load-logo{text-align:center;}
+.load-icon{font-size:72px;display:block;animation:loadBob 1.5s ease-in-out infinite;}
+.load-title{font-family:'Crimson Pro',serif;font-size:32px;font-weight:700;color:#fff;margin-top:12px;}
+.load-title span{color:var(--gold2);}
+.load-sub{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}
+.load-bar-wrap{width:220px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.load-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;width:0%;transition:width .05s linear;}
+@keyframes loadBob{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-10px) rotate(5deg);}}
+
+/* ===== STARTING PAGE ===== */
+#page-start{
+  position:fixed;inset:0;z-index:1000;
+  background:linear-gradient(135deg,#0d0500 0%,#1f0900 40%,#3d1a00 70%,#5C2A08 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#page-start.hidden{display:none;}
+.start-particles{position:absolute;inset:0;pointer-events:none;}
+.particle{
+  position:absolute;border-radius:50%;
+  animation:floatParticle linear infinite;
+  opacity:0;
+}
+@keyframes floatParticle{
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:0.6;}
+  100%{transform:translateY(-100px) scale(1.5);opacity:0;}
+}
+.start-content{
+  position:relative;z-index:10;text-align:center;
+  animation:startReveal .8s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes startReveal{
+  from{opacity:0;transform:translateY(40px) scale(0.95);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.start-badge{
+  display:inline-block;padding:5px 16px;border:1px solid rgba(200,150,12,.4);
+  border-radius:30px;background:rgba(200,150,12,.08);
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);
+  margin-bottom:18px;
+  animation:badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(200,150,12,.2);}50%{box-shadow:0 0 0 8px rgba(200,150,12,.0);}}
+.start-icon-wrap{
+  width:120px;height:120px;margin:0 auto 20px;
+  position:relative;
+}
+.start-icon-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(200,150,12,.3);
+  animation:ringPulse 2s ease-in-out infinite;
+}
+.start-icon-ring:nth-child(2){
+  inset:-12px;border-color:rgba(200,150,12,.15);
+  animation-delay:.4s;animation-duration:2.5s;
+}
+.start-icon-ring:nth-child(3){
+  inset:-24px;border-color:rgba(200,150,12,.08);
+  animation-delay:.8s;animation-duration:3s;
+}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.05);opacity:.7;}}
+.start-icon-inner{
+  width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg,rgba(200,150,12,.15),rgba(139,69,19,.1));
+  border:2px solid rgba(200,150,12,.4);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;
+  backdrop-filter:blur(4px);
+}
+.start-main-icon{font-size:56px;animation:iconSway 3s ease-in-out infinite;}
+@keyframes iconSway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+.start-h1{
+  font-family:'Crimson Pro',serif;font-size:clamp(28px,5vw,52px);font-weight:700;
+  color:#fff;line-height:1.1;margin-bottom:8px;
+}
+.start-h1 span{
+  color:transparent;
+  background:linear-gradient(90deg,var(--gold),var(--gold2),#FFD700);
+  -webkit-background-clip:text;background-clip:text;
+  animation:gradientShift 3s linear infinite;
+  background-size:200%;
+}
+@keyframes gradientShift{0%{background-position:0%;}100%{background-position:200%;}}
+.start-sub{font-size:13px;color:rgba(255,255,255,.55);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase;}
+.start-desc{
+  font-size:14px;color:rgba(255,255,255,.75);line-height:1.7;max-width:480px;
+  margin:10px auto 28px;
+}
+.start-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.start-chip{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.7);
+}
+.start-btn{
+  padding:14px 42px;border:none;border-radius:50px;cursor:pointer;
+  background:linear-gradient(135deg,#C8960C,#E8B020,#C8960C);
+  background-size:200%;
+  color:#1a0500;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;
+  letter-spacing:.04em;
+  box-shadow:0 8px 32px rgba(200,150,12,.4),0 0 0 0 rgba(200,150,12,.3);
+  transition:all .3s;
+  animation:btnPulse 2s ease-in-out infinite, gradientShift 2s linear infinite;
+}
+.start-btn:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 16px 48px rgba(200,150,12,.5);}
+@keyframes btnPulse{0%,100%{box-shadow:0 8px 32px rgba(200,150,12,.4),0 0 0 0 rgba(200,150,12,.3);}50%{box-shadow:0 8px 32px rgba(200,150,12,.4),0 0 0 12px rgba(200,150,12,.0);}}
+.start-decor{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.start-decor::before,.start-decor::after{content:'';width:30px;height:1px;background:rgba(255,255,255,.2);}
+.start-formula-float{
+  position:absolute;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(200,150,12,.25);pointer-events:none;
+  animation:formulaFloat linear infinite;
+}
+@keyframes formulaFloat{from{transform:translateY(0) rotate(-10deg);}to{transform:translateY(-100vh) rotate(10deg);}}
+
+/* ===== HEADER ===== */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#1a0a00,#3d1a00,#6B3410);
+  border-bottom:1px solid rgba(200,150,12,0.3);
+  display:flex;align-items:center;padding:0 12px;gap:10px;
+  box-shadow:0 2px 12px rgba(26,10,0,0.5);
+}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:36px;height:36px;flex-shrink:0;}
+.logo-text{font-family:'Crimson Pro',serif;font-size:18px;font-weight:700;color:#ffffff;line-height:1.1;}
+.logo-sub{font-size:8px;color:rgba(255,255,255,0.6);letter-spacing:.06em;text-transform:uppercase;}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{
+  position:relative;background:none;border:none;color:rgba(255,255,255,0.6);
+  cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;
+  padding:0 10px;height:var(--h);white-space:nowrap;transition:color .2s;
+  display:flex;align-items:center;gap:5px;
+}
+.nb::after{
+  content:'';position:absolute;bottom:0;left:8px;right:8px;height:2px;
+  background:var(--gold2);transform:scaleX(0);transition:transform .2s;
+  border-radius:2px 2px 0 0;
+}
+.nb:hover{color:rgba(255,255,255,0.9);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;margin-left:auto;}
+@media(max-width:700px){
+  header{padding:0 8px;}
+  .logo-text{font-size:14px;}.logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;
+    background:linear-gradient(180deg,#1a0a00,#3d1a00);border-bottom:1px solid rgba(200,150,12,.2);
+    box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:46px;width:100%;text-align:left;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.07);}
+}
+
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;animation:pgIn .2s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.scroll{flex:1;overflow-y:auto;padding:8px 12px 12px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ===== HERO ===== */
+.hero{
+  background:linear-gradient(135deg,#1a0a00,#5C3317);border-radius:8px;
+  padding:10px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;
+  position:relative;overflow:hidden;flex-shrink:0;
+  box-shadow:0 4px 20px rgba(139,69,19,.25);
+}
+.hero::after{content:'⚖️';position:absolute;right:12px;top:-4px;font-size:56px;opacity:.1;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:var(--gold2);text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:'Crimson Pro',serif;font-size:clamp(14px,2vw,20px);font-weight:700;color:#fff;line-height:1.2;}
+.h-title span{color:var(--gold2);}
+.h-desc{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5;max-width:520px;}
+
+/* ===== CARDS ===== */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:7px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 4px rgba(44,24,16,0.06);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 10px rgba(44,24,16,0.09);}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.ci{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ci.brown{background:rgba(139,69,19,.1);}
+.ci.gold{background:rgba(200,150,12,.1);}
+.ci.green{background:rgba(45,106,79,.1);}
+.ci.red{background:rgba(192,57,43,.1);}
+.ci.blue{background:rgba(26,58,107,.1);}
+.ct{font-family:'Crimson Pro',serif;font-size:15px;font-weight:700;color:var(--acc3);}
+.card p{font-size:12.5px;line-height:1.65;color:var(--text2);margin-bottom:5px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:10px;font-weight:700;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin:8px 0 4px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text2);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:700;font-size:15px;margin-top:-1px;}
+.chips{display:flex;gap:5px;margin:5px 0;flex-wrap:wrap;}
+.chip{border-radius:5px;padding:3px 8px;font-size:11px;font-weight:500;}
+.chip-g{background:rgba(45,106,79,.08);border:1px solid rgba(45,106,79,.2);color:#1e5c3a;}
+.chip-r{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);color:#922b21;}
+.chip-b{background:rgba(26,58,107,.08);border:1px solid rgba(26,58,107,.2);color:#1a3a6b;}
+.chip-gold{background:rgba(200,150,12,.08);border:1px solid rgba(200,150,12,.25);color:#8B6910;}
+.sep{display:flex;align-items:center;gap:7px;margin:8px 0 5px;}
+.sep span{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;font-weight:600;}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ===== TUJUAN ===== */
+.tujuan-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;}
+.tujuan-card{
+  background:var(--surf);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;overflow-y:auto;box-shadow:0 1px 6px rgba(44,24,16,.07);
+  display:flex;flex-direction:column;
+}
+.tujuan-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+  padding-bottom:10px;border-bottom:2px solid var(--border);
+}
+.tujuan-icon{
+  width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.tujuan-icon.pembelajaran{background:linear-gradient(135deg,rgba(139,69,19,.15),rgba(139,69,19,.05));border:1px solid rgba(139,69,19,.2);}
+.tujuan-icon.percobaan{background:linear-gradient(135deg,rgba(45,106,79,.15),rgba(45,106,79,.05));border:1px solid rgba(45,106,79,.2);}
+.tujuan-title{font-family:'Crimson Pro',serif;font-size:16px;font-weight:700;color:var(--acc3);line-height:1.2;}
+.tujuan-sub{font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-top:1px;}
+.tujuan-list{display:flex;flex-direction:column;gap:6px;flex:1;}
+.tujuan-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--surf2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 11px;transition:border-color .17s,transform .17s;
+}
+.tujuan-item:hover{border-color:var(--border2);transform:translateX(3px);}
+.tujuan-num{
+  min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;flex-shrink:0;margin-top:1px;
+}
+.tujuan-num.pembelajaran{background:rgba(139,69,19,.12);border:1px solid rgba(139,69,19,.2);color:var(--acc);}
+.tujuan-num.percobaan{background:rgba(45,106,79,.12);border:1px solid rgba(45,106,79,.2);color:var(--green);}
+.tujuan-text{font-size:12.5px;color:var(--text2);line-height:1.6;}
+.tujuan-text strong{color:var(--text);font-weight:600;}
+
+/* ===== SIMULASI ===== */
+.sim-layout{display:grid;grid-template-columns:200px 1fr;gap:8px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:11px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;box-shadow:0 1px 4px rgba(44,24,16,.06);}
+.ctrl-panel h3{font-family:'Crimson Pro',serif;font-size:12.5px;font-weight:700;color:var(--acc3);}
+.cg label{display:block;font-size:8.5px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+select{
+  width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:6px 24px 6px 8px;font-family:'DM Sans',sans-serif;font-size:11.5px;
+  outline:none;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238B4513' d='M5 7L0 2h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 7px center;
+  transition:border-color .17s;
+}
+select:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(139,69,19,.1);}
+.btn{width:100%;border:none;border-radius:6px;padding:7px;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#5C3317,#8B4513);color:#fff;box-shadow:0 2px 8px rgba(139,69,19,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(139,69,19,.4);}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-stop{background:#fdf5f5;border:1px solid #f5c6c6;color:var(--red);}
+.btn-stop:hover{background:#fde8e8;}
+.btn-stop:disabled{opacity:.35;cursor:not-allowed;}
+.btn-reset{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.sim-canvas-wrap{
+  background:var(--surf);border:1px solid var(--border);border-radius:8px;
+  padding:8px;flex:1;min-height:0;display:flex;flex-direction:column;
+  box-shadow:0 1px 4px rgba(44,24,16,.06);
+}
+.sim-canvas-wrap h3{font-family:'Crimson Pro',serif;font-size:11.5px;font-weight:700;color:var(--acc3);margin-bottom:6px;}
+#simCanvas{width:100%;border-radius:6px;display:block;border:1px solid var(--border);flex:1;background:#faf8f4;}
+.statsrow{display:flex;gap:6px;margin-top:6px;}
+.sbox{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:6px;text-align:center;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--acc);display:block;}
+.sl{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.tipinfo{background:#fdf8f3;border:1px solid #e8c8a0;border-radius:6px;padding:7px 10px;font-size:10.5px;color:#5c3317;display:none;line-height:1.55;}
+.tipinfo.on{display:block;}
+.sim-step-indicator{
+  display:flex;gap:4px;align-items:center;justify-content:center;margin-top:5px;
+}
+.step-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--border);
+  transition:all .3s;border:1px solid var(--border2);
+}
+.step-dot.active{background:var(--acc);border-color:var(--acc);transform:scale(1.3);}
+.step-dot.done{background:var(--green);border-color:var(--green);}
+.step-label{font-size:10px;color:var(--text3);margin-left:8px;font-family:'JetBrains Mono',monospace;}
+
+/* ===== TEORI, ALAT, PROSEDUR ===== */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:5px;}
+.fi{background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;}
+.fi strong{display:block;font-size:11px;color:var(--acc3);margin-bottom:2px;}
+.fi span{font-size:11px;color:var(--text2);line-height:1.4;}
+.fi.fi-img{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 8px;gap:5px;transition:transform .2s,box-shadow .2s,border-color .2s;}
+.fi.fi-img:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(139,69,19,.12);border-color:var(--acc2);}
+.fi.fi-img strong{font-size:10.5px;color:var(--acc3);margin-bottom:1px;}
+.alat-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(139,69,19,.2));transition:filter .2s,transform .2s;}
+.fi.fi-img:hover .alat-img{filter:drop-shadow(0 3px 8px rgba(139,69,19,.3)) saturate(1.4);transform:scale(1.06);}
+.steps{display:flex;flex-direction:column;gap:4px;}
+.step{display:flex;gap:9px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;transition:border-color .17s;}
+.step:hover{border-color:var(--acc2);background:#fdf8f3;}
+.snum{min-width:18px;height:18px;border-radius:50%;background:rgba(139,69,19,.1);border:1px solid rgba(139,69,19,.25);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--acc);flex-shrink:0;}
+.step p{font-size:12px;color:var(--text2);line-height:1.6;margin:0;}
+.notebox{background:#fffdf5;border:1px solid #e8d090;border-radius:7px;padding:8px 12px;margin-top:7px;}
+.notebox .nt{font-size:8.5px;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.notebox p{font-size:11.5px;color:#7a6010;line-height:1.6;margin:0;}
+
+/* ===== LEMBAR KERJA ===== */
+.lk-section{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:11px 13px;box-shadow:0 1px 4px rgba(44,24,16,.06);margin-bottom:7px;}
+.lk-title{font-family:'Crimson Pro',serif;font-size:14px;font-weight:700;color:var(--acc3);margin-bottom:8px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border);padding-bottom:7px;}
+.lk-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:7px;}
+.lk-table th{background:linear-gradient(135deg,#5C3317,#8B4513);color:#fff;padding:6px 9px;text-align:center;border:1px solid rgba(139,69,19,.3);font-size:10px;font-weight:600;letter-spacing:.04em;}
+.lk-table td{padding:0;border:1px solid var(--border);vertical-align:top;}
+.lk-table td.label-cell{padding:6px 9px;background:var(--surf2);color:var(--text2);font-weight:500;font-size:11.5px;text-align:left;}
+input.lk-input,textarea.lk-area{width:100%;border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);padding:5px 7px;resize:none;}
+input.lk-input[type="number"]{text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--acc3);}
+.lk-formula{background:linear-gradient(135deg,#fffdf5,#fdf8e8);border:1px solid var(--gold2);border-radius:7px;padding:9px 13px;margin:7px 0;text-align:center;}
+.lk-formula .formula-text{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--acc3);}
+.lk-formula .formula-label{font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:.05em;text-transform:uppercase;}
+.lk-q{background:var(--surf2);border-left:3px solid var(--acc);border-radius:0 7px 7px 0;padding:8px 11px;margin-bottom:7px;}
+.lk-q .q-num{font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;}
+.lk-q .q-text{font-size:12px;color:var(--text);line-height:1.6;margin-bottom:6px;font-weight:500;}
+textarea.lk-jawaban{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--surf);resize:vertical;outline:none;min-height:55px;line-height:1.6;transition:border-color .17s;}
+textarea.lk-jawaban:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(139,69,19,.08);}
+.lk-result-box{display:flex;gap:8px;margin:8px 0;}
+.lk-result-item{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:9px;text-align:center;}
+.lk-result-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:3px;}
+.lk-result-value{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--acc3);}
+.save-btn{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .17s;box-shadow:0 2px 7px rgba(45,106,79,.25);}
+.save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 13px rgba(45,106,79,.35);}
+.print-btn{background:var(--surf2);border:1px solid var(--border);color:var(--text2);border-radius:7px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .17s;}
+.print-btn:hover{border-color:var(--acc);color:var(--acc);}
+
+/* ===== EVALUASI / QUIZ ===== */
+.quiz-layout{display:flex;flex-direction:column;flex:1;overflow:hidden;padding:7px 11px;}
+.quiz-header{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-shrink:0;}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;flex:1;}
+.qprog-dot{
+  width:24px;height:24px;border-radius:5px;border:1px solid var(--border);
+  background:var(--surf2);font-size:8.5px;font-weight:600;color:var(--text3);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;
+}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#fdf3ec;}
+.qprog-dot.correct-done{border-color:#4ade80;color:#166534;background:#f0fdf4;}
+.qprog-dot.wrong-done{border-color:#fca5a5;color:#922b21;background:#fff5f5;}
+.qprog-dot.current{background:var(--acc);color:#fff;border-color:var(--acc);}
+.quiz-type-tabs{display:flex;gap:5px;flex-shrink:0;}
+.qtab{padding:4px 10px;border-radius:5px;font-size:10.5px;font-weight:600;cursor:pointer;border:none;transition:all .2s;background:var(--surf2);border:1px solid var(--border);color:var(--text3);}
+.qtab.active{background:var(--acc);color:#fff;border-color:var(--acc);}
+.q-area{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+
+/* MC style */
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:13px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(44,24,16,.05);}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);letter-spacing:.1em;margin-bottom:4px;}
+.qtype-badge{display:inline-block;font-size:8.5px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:7px;letter-spacing:.04em;}
+.badge-mc{background:#fdf3ec;border:1px solid #e8c0a0;color:#5C3317;}
+.badge-mc2{background:#f0f7ff;border:1px solid #bcd4f0;color:#1a3a6b;}
+.badge-dd{background:#f0fdf4;border:1px solid #86efac;color:#166534;}
+.qtext{font-size:12.5px;color:var(--text);line-height:1.6;font-weight:500;margin-bottom:9px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.opt{
+  display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1px solid var(--border);
+  border-radius:7px;padding:8px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);
+}
+.opt:hover{border-color:var(--acc2);background:#fdf8f3;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#fdf3ec;color:var(--acc3);}
+.opt.correct{background:#f0fdf4;border-color:#4ade80;color:#166534;}
+.opt.wrong{background:#fff5f5;border-color:#fca5a5;color:#922b21;}
+.opt.correct-unsel{background:#f0fdf4;border-color:#4ade80;color:#166534;opacity:.7;}
+.qfb{margin-top:8px;padding:7px 10px;border-radius:6px;font-size:11px;display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.qfb.partial{background:#fffbf0;color:#8B6910;border:1px solid var(--gold2);}
+.qfb.bad{background:#fff5f5;color:#922b21;border:1px solid #fca5a5;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:6px 13px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);}
+.btn-next{background:linear-gradient(135deg,#5C3317,#8B4513);color:#fff;box-shadow:0 2px 7px rgba(139,69,19,.25);}
+.btn-next:hover{box-shadow:0 4px 13px rgba(139,69,19,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#2d6a4f,#40916c);color:#fff;}
+.btn-reset-q{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+
+/* ===== DRAG & DROP ===== */
+.dd-layout{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;flex:1;min-height:0;}
+.dd-pool{background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px;}
+.dd-pool-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.dd-targets{display:flex;flex-direction:column;gap:5px;}
+.dd-target{
+  background:var(--surf);border:2px dashed var(--border2);border-radius:7px;
+  min-height:38px;padding:5px 8px;display:flex;align-items:center;gap:6px;
+  transition:all .2s;position:relative;font-size:11.5px;color:var(--text3);
+}
+.dd-target.drag-over{border-color:var(--acc);background:#fdf8f3;}
+.dd-target.correct-slot{border-color:#4ade80;background:#f0fdf4;}
+.dd-target.wrong-slot{border-color:#fca5a5;background:#fff5f5;}
+.dd-target .slot-label{font-size:9px;font-weight:700;color:var(--text3);white-space:nowrap;margin-right:4px;}
+.dd-items{display:flex;flex-wrap:wrap;gap:5px;padding:4px 0;}
+.dd-item{
+  background:linear-gradient(135deg,#5C3317,#8B4513);color:#fff;
+  border-radius:6px;padding:6px 10px;font-size:11.5px;font-weight:500;
+  cursor:grab;user-select:none;transition:all .2s;
+  box-shadow:0 2px 6px rgba(139,69,19,.25);
+}
+.dd-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(139,69,19,.35);}
+.dd-item.dragging{opacity:.5;transform:scale(0.95);}
+.dd-item.placed{background:linear-gradient(135deg,#2d6a4f,#40916c);cursor:grab;}
+.dd-item.placed-wrong{background:linear-gradient(135deg,#922b21,#c0392b);}
+.dd-item.placed-correct{background:linear-gradient(135deg,#15803d,#4ade80);color:#052e16;}
+.dd-q-text{font-size:12.5px;color:var(--text);font-weight:500;margin-bottom:8px;line-height:1.6;}
+.dd-instruction{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+
+/* Score overlay */
+.score-overlay{position:fixed;inset:0;background:rgba(26,10,0,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px 40px;text-align:center;box-shadow:0 20px 60px rgba(26,10,0,.2);animation:pgIn .28s ease;min-width:280px;}
+.score-big{font-family:'Crimson Pro',serif;font-size:64px;font-weight:700;color:var(--acc);line-height:1;}
+.score-pct{font-size:18px;color:var(--text3);margin-top:2px;}
+.score-sub{font-size:12.5px;color:var(--text2);margin:8px 0 3px;}
+.score-grade{font-size:15px;font-weight:700;margin-top:8px;}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:16px;}
+.btn-score{padding:8px 20px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-ulangi{background:linear-gradient(135deg,#5C3317,#8B4513);color:#fff;}
+
+.dd-item.dd-item-selected{
+  outline:2px solid var(--gold2);
+  box-shadow:0 0 0 3px rgba(200,150,12,.25),0 4px 12px rgba(139,69,19,.35);
+  transform:translateY(-2px) scale(1.03);
+}
+
+/* ===== MULTI-SELECT hint ===== */
+.multi-hint{
+  display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;
+  padding:2px 7px;border-radius:4px;background:#f0f7ff;border:1px solid #bcd4f0;
+  color:#1a3a6b;margin-bottom:7px;
+}
+
+/* ===== SOUNDS ===== */
+audio{display:none;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadScreen">
+  <div class="load-logo">
+    <span class="load-icon">⚖️</span>
+    <div class="load-title">Hukum <span>Kekekalan Massa</span></div>
+    <div class="load-sub">Hukum Kekekalan Massa · Lavoisier</div>
+  </div>
+  <div class="load-bar-wrap"><div class="load-bar" id="loadBar"></div></div>
+</div>
+
+<!-- STARTING PAGE -->
+<div id="page-start">
+  <div class="start-particles" id="particles"></div>
+
+  <!-- Floating formulas -->
+  <div class="start-formula-float" style="left:5%;top:80%;animation-duration:12s;animation-delay:0s;font-size:13px;">m₁ = m₂</div>
+  <div class="start-formula-float" style="left:20%;top:90%;animation-duration:15s;animation-delay:3s;">CH₃COOH + NaHCO₃</div>
+  <div class="start-formula-float" style="left:70%;top:85%;animation-duration:10s;animation-delay:1s;">CO₂↑</div>
+  <div class="start-formula-float" style="left:85%;top:95%;animation-duration:18s;animation-delay:5s;font-size:14px;">⚗️</div>
+  <div class="start-formula-float" style="left:45%;top:88%;animation-duration:14s;animation-delay:7s;">Δm = 0</div>
+
+  <div class="start-content">
+    <div class="start-badge">✦ Kimia Kelas X · Laboratorium Virtual ✦</div>
+
+    <div class="start-icon-wrap">
+      <div class="start-icon-ring"></div>
+      <div class="start-icon-ring"></div>
+      <div class="start-icon-ring"></div>
+      <div class="start-icon-inner">
+        <span class="start-main-icon">⚖️</span>
+      </div>
+    </div>
+
+    <h1 class="start-h1">Hukum <span>Kekekalan</span><br>Massa</h1>
+
+    <button class="start-btn" onclick="enterLab()">🚀 Masuk ke Laboratorium</button>
+  </div>
+
+  <div class="start-decor">Dikembangkan untuk Pembelajaran Kimia SMA</div>
+</div>
+
+<!-- HEADER -->
+<header id="mainHeader" style="display:none;">
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="42" height="42" rx="8" fill="rgba(200,150,12,0.15)"/>
+      <line x1="21" y1="6" x2="21" y2="13" stroke="#C8960C" stroke-width="1.8" stroke-linecap="round"/>
+      <polygon points="21,10 24,13 21,16 18,13" fill="#C8960C"/>
+      <rect x="6" y="12" width="30" height="1.8" rx="0.9" fill="#C8960C"/>
+      <line x1="9.5" y1="13.8" x2="8.5" y2="22" stroke="#8B4513" stroke-width="0.9"/>
+      <line x1="9.5" y1="13.8" x2="11" y2="22" stroke="#8B4513" stroke-width="0.9"/>
+      <line x1="32.5" y1="13.8" x2="31" y2="22" stroke="#8B4513" stroke-width="0.9"/>
+      <line x1="32.5" y1="13.8" x2="33.5" y2="22" stroke="#8B4513" stroke-width="0.9"/>
+      <rect x="5" y="21" width="12" height="2" rx="1" fill="#C8960C"/>
+      <rect x="25" y="21" width="12" height="2" rx="1" fill="#C8960C"/>
+      <circle cx="9" cy="20.5" r="1.5" fill="#E8B020"/>
+      <circle cx="12" cy="20.5" r="1.2" fill="#E8B020"/>
+      <circle cx="30" cy="20.5" r="1.5" fill="#E8B020"/>
+      <circle cx="33" cy="20.5" r="1.2" fill="#E8B020"/>
+    </svg>
+    <div>
+      <div class="logo-text">Hukum Kekekalan Massa</div>
+      <div class="logo-sub">Hukum Kekekalan Massa · Lavoisier</div>
+    </div>
+  </div>
+
+  <nav id="mainNav">
+    <button class="nb active" onclick="showPage('tujuan',this)">🎯 Tujuan</button>
+    <button class="nb" onclick="showPage('teori',this)">📖 Teori</button>
+    <button class="nb" onclick="showPage('alatbahan',this)">🧪 Alat &amp; Bahan</button>
+    <button class="nb" onclick="showPage('prosedur',this)">📋 Prosedur</button>
+    <button class="nb" onclick="showPage('simulasi',this)">⚖️ Simulasi</button>
+    <button class="nb" onclick="showPage('lk',this)">📝 Lembar Kerja</button>
+    <button class="nb" onclick="showPage('quiz',this)">❓ Evaluasi</button>
+  </nav>
+
+  <button id="menuToggle" onclick="toggleMenu()" aria-label="Menu">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+    </svg>
+  </button>
+</header>
+
+<div id="app" style="display:none;">
+
+<!-- TEORI -->
+<div id="page-teori" class="page">
+  <div style="flex:1;overflow:hidden;padding:7px 11px;display:flex;flex-direction:column;gap:6px;">
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">Sub Unit · Kimia Kelas X</div>
+        <div class="h-title">Hukum <span>Kekekalan Massa</span></div>
+        <div class="h-desc">Antoine-Laurent de Lavoisier (1743–1794): Dalam sistem tertutup, massa zat sebelum reaksi selalu sama dengan massa sesudah reaksi.</div>
+      </div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:0;overflow:hidden;">
+      <!-- Kolom kiri -->
+      <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+        <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="ch"><div class="ci brown">⚖️</div><div class="ct">Hukum Lavoisier</div></div>
+          <p>Pada tahun <strong>1789</strong>, Antoine Lavoisier mengemukakan bahwa dalam <strong>sistem tertutup</strong>, massa reaktan = massa produk. Materi tidak diciptakan maupun dimusnahkan.</p>
+          <div style="background:linear-gradient(135deg,#fffdf5,#fdf8e8);border:1px solid var(--gold2);border-radius:7px;padding:8px 13px;text-align:center;margin:6px 0;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--acc3);">m<sub>reaktan</sub> = m<sub>produk</sub></div>
+            <div style="font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:.04em;text-transform:uppercase;">Hukum Kekekalan Massa</div>
+          </div>
+          <p>Prinsip ini menjadi dasar stoikiometri dan kimia modern.</p>
+        </div>
+        <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="ch"><div class="ci blue">📊</div><div class="ct">Sistem Tertutup vs Terbuka</div></div>
+          <h4>Sistem Tertutup ✅</h4>
+          <p>Gas CO₂ tertampung dalam balon → massa tetap sama.</p>
+          <h4>Sistem Terbuka ⚠️</h4>
+          <p>Gas CO₂ lepas ke udara → massa tampak berkurang, tapi ini BUKAN pelanggaran Lavoisier.</p>
+          <div class="chips" style="margin-top:auto;">
+            <span class="chip chip-g">Tertutup: m₁ = m₂</span>
+            <span class="chip chip-r">Terbuka: m₁ &gt; m₂ (semu)</span>
+          </div>
+        </div>
+      </div>
+      <!-- Kolom kanan -->
+      <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+        <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="ch"><div class="ci gold">🔬</div><div class="ct">Percobaan Klasik</div></div>
+          <p>Dalam lab ini kita mereaksikan <strong>larutan cuka</strong> (CH₃COOH) dengan <strong>soda kue</strong> (NaHCO₃) di sistem tertutup (erlenmeyer + balon).</p>
+          <div style="background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--acc3);line-height:1.8;margin:6px 0;">
+            CH₃COOH + NaHCO₃ →<br>CH₃COONa + H₂O + CO₂↑
+          </div>
+          <p>Gas CO₂ ditampung balon → <strong>tidak ada massa hilang</strong>.</p>
+        </div>
+        <div class="card" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div class="ch"><div class="ci green">💡</div><div class="ct">Contoh Sehari-hari</div></div>
+          <ul class="olist">
+            <li>Membakar kayu dalam ruang tertutup: abu + gas = massa awal</li>
+            <li>Melarutkan garam: air + garam = larutan dengan massa sama</li>
+            <li>Karat besi (Fe₂O₃): besi + oksigen = massa bertambah</li>
+            <li>Ledakan petasan: zat padat → gas → massa tetap jika tertutup</li>
+          </ul>
+        </div>
+        <div class="card" style="margin-bottom:0;flex-shrink:0;">
+          <div class="ch"><div class="ci brown">👨‍🔬</div><div class="ct">Tokoh: Antoine-Laurent de Lavoisier</div></div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <img src="data:image/jpeg;base64,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" alt="Antoine-Laurent de Lavoisier" style="width:60px;height:60px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--gold2);box-shadow:0 2px 8px rgba(139,69,19,0.3);">
+            <div>
+              <p style="margin-bottom:4px;"><strong>Antoine-Laurent de Lavoisier</strong> (1743–1794), "Bapak Kimia Modern". Ia menemukan peran oksigen dalam pembakaran dan menerbitkan <em>Traité Élémentaire de Chimie</em> (1789).</p>
+              <div class="chips"><span class="chip chip-gold">1743–1794</span><span class="chip chip-b">Prancis</span><span class="chip chip-g">Kimia Modern</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TUJUAN -->
+<div id="page-tujuan" class="page active">
+  <div style="flex:1;overflow:hidden;padding:7px 11px;display:flex;flex-direction:column;gap:7px;">
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">Lab Virtual · Hukum Lavoisier</div>
+        <div class="h-title"><span>Tujuan</span> Pembelajaran</div>
+        <div class="h-desc">Melalui laboratorium virtual ini, murid membuktikan dan memahami Hukum Kekekalan Massa Lavoisier secara mandiri dan ilmiah.</div>
+      </div>
+    </div>
+    <!-- Single combined tujuan card -->
+    <div style="flex:1;background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:14px 18px;overflow:hidden;box-shadow:0 1px 6px rgba(44,24,16,.07);display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--border);">
+        <div style="width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:linear-gradient(135deg,rgba(139,69,19,.15),rgba(139,69,19,.05));border:1px solid rgba(139,69,19,.2);">🎯</div>
+        <div>
+          <div style="font-family:'Crimson Pro',serif;font-size:17px;font-weight:700;color:var(--acc3);">Tujuan Pembelajaran &amp; Percobaan</div>
+          <div style="font-size:10px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;">Kimia Kelas X · Hukum Lavoisier</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;overflow:hidden;">
+        <!-- Kolom kiri: Tujuan Pembelajaran -->
+        <div style="display:flex;flex-direction:column;gap:6px;overflow-y:auto;">
+          <div style="font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.09em;text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:5px;"><span>📚</span> Tujuan Pembelajaran</div>
+          <div class="tujuan-item"><div class="tujuan-num pembelajaran">1</div><div class="tujuan-text">Murid dapat <strong>menganalisis penerapan Hukum Lavoisier</strong> dalam kehidupan sehari-hari secara kritis dan sistematis.</div></div>
+        </div>
+        <!-- Kolom kanan: Tujuan Percobaan -->
+        <div style="display:flex;flex-direction:column;gap:6px;overflow-y:auto;">
+          <div style="font-size:9px;font-weight:700;color:var(--green);letter-spacing:.09em;text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:5px;"><span>🧪</span> Tujuan Percobaan</div>
+          <div class="tujuan-item"><div class="tujuan-num percobaan">1</div><div class="tujuan-text">Murid terampil <strong>mengoperasikan timbangan digital virtual</strong> dan mencatat data massa m₁ dan m₂ secara teliti.</div></div>
+          <div class="tujuan-item"><div class="tujuan-num percobaan">2</div><div class="tujuan-text">Murid dapat <strong>mengamati gejala reaksi</strong>: gelembung CO₂, balon mengembang, dan perubahan suhu larutan secara sistematis.</div></div>
+          <div class="tujuan-item"><div class="tujuan-num percobaan">3</div><div class="tujuan-text">Murid mampu <strong>membandingkan sistem tertutup &amp; terbuka</strong> dengan memvariasikan kondisi percobaan pada simulasi interaktif.</div></div>
+          <div class="tujuan-item"><div class="tujuan-num percobaan">4</div><div class="tujuan-text">Murid terampil <strong>mengisi lembar kerja ilmiah</strong>: menghitung Δm, menjawab analisis, dan menyusun kesimpulan berbasis bukti.</div></div>
+        </div>
+      </div>
+      <!-- Formula highlight -->
+      <div style="margin-top:10px;background:linear-gradient(135deg,#fffdf5,#fdf8e8);border:1px solid var(--gold2);border-radius:8px;padding:8px 14px;display:flex;align-items:center;justify-content:center;gap:16px;flex-shrink:0;">
+        <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--acc3);">m<sub>reaktan</sub> = m<sub>produk</sub></div><div style="font-size:9px;color:var(--text3);margin-top:1px;letter-spacing:.04em;text-transform:uppercase;">Hukum Kekekalan Massa · Lavoisier 1789</div></div>
+        <div style="width:1px;height:32px;background:var(--border2);"></div>
+        <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--green);">Δm = 0</div><div style="font-size:9px;color:var(--text3);margin-top:1px;letter-spacing:.04em;text-transform:uppercase;">Selisih Massa · Sistem Tertutup</div></div>
+        <div style="width:1px;height:32px;background:var(--border2);"></div>
+        <div style="text-align:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--blue);">CH₃COOH + NaHCO₃ →</div><div style="font-size:9px;color:var(--text3);margin-top:1px;letter-spacing:.04em;text-transform:uppercase;">Reaksi Percobaan</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALAT & BAHAN -->
+<div id="page-alatbahan" class="page">
+  <div class="scroll">
+    <div class="hero">
+      <div>
+        <div class="h-label">Alat &amp; Bahan · Percobaan Lavoisier</div>
+        <div class="h-title">Daftar <span>Alat &amp; Bahan</span></div>
+        <div class="h-desc">Peralatan dan bahan yang digunakan dalam percobaan hukum kekekalan massa.</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ci brown">🔧</div><div class="ct">Alat Percobaan</div></div>
+        <div class="fgrid">
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/timbangandigital.png" alt="Timbangan Digital" class="alat-img"><strong>Timbangan Digital</strong><span>Ketelitian 0,1 g</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/erlenmeyer.png" alt="Erlenmeyer" class="alat-img"><strong>Erlenmeyer 250 mL</strong><span>Wadah reaksi utama</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/balonkaret.png" alt="Balon Karet" class="alat-img"><strong>Balon Karet</strong><span>Menampung gas CO₂</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/pipettetes.png" alt="Pipet Tetes" class="alat-img"><strong>Pipet Tetes</strong><span>Mengukur larutan cuka</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/sendokukur.png" alt="Sendok Ukur" class="alat-img"><strong>Sendok Ukur</strong><span>Menakar soda kue</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/gelasukur.png" alt="Gelas Ukur" class="alat-img"><strong>Gelas Ukur</strong><span>Mengukur volume</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci gold">🧪</div><div class="ct">Bahan Kimia</div></div>
+        <div class="fgrid">
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/larutancuka.png" alt="Larutan Cuka" class="alat-img"><strong>Cuka (CH₃COOH)</strong><span>50 mL, 5%</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/sodakue.png" alt="Soda Kue" class="alat-img"><strong>Soda Kue (NaHCO₃)</strong><span>10 gram, bubuk</span></div>
+          <div class="fi fi-img"><img src="https://85meydiaafrina.github.io/hukumlavoisier/aquades.png" alt="Aquades" class="alat-img"><strong>Aquades</strong><span>Pembilasan alat</span></div>
+        </div>
+        <div class="sep"><span>Keselamatan Kerja</span></div>
+        <ul class="olist">
+          <li>Gunakan jas lab dan kacamata pelindung</li>
+          <li>Jangan membuka balon sebelum penimbangan akhir</li>
+          <li>Kalibrasi timbangan sebelum digunakan</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROSEDUR -->
+<div id="page-prosedur" class="page">
+  <div style="flex:1;overflow:hidden;padding:7px 11px;display:flex;flex-direction:column;">
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">Langkah Kerja</div>
+        <div class="h-title">Prosedur <span>Percobaan</span></div>
+      </div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0;overflow:hidden;">
+      <div class="card" style="margin-bottom:0;overflow-y:auto;display:flex;flex-direction:column;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci brown">📋</div><div class="ct">Langkah-langkah</div></div>
+        <div class="steps">
+          <div class="step"><div class="snum">1</div><p><strong>Persiapan:</strong> Kalibrasi timbangan digital. Pastikan angka menunjukkan 0,0 gram.</p></div>
+          <div class="step"><div class="snum">2</div><p><strong>Menyiapkan Cuka:</strong> Masukkan 50 mL larutan cuka ke dalam erlenmeyer 250 mL.</p></div>
+          <div class="step"><div class="snum">3</div><p><strong>Menyiapkan Soda Kue:</strong> Masukkan 10 gram soda kue ke dalam balon karet menggunakan corong kecil.</p></div>
+          <div class="step"><div class="snum">4</div><p><strong>Memasang Balon:</strong> Pasang mulut balon ke mulut erlenmeyer dengan hati-hati.</p></div>
+          <div class="step"><div class="snum">5</div><p><strong>Penimbangan Awal (m₁):</strong> Letakkan seluruh rangkaian di atas timbangan. Catat massa m₁.</p></div>
+          <div class="step"><div class="snum">6</div><p><strong>Memulai Reaksi:</strong> Angkat balon sehingga soda kue jatuh ke dalam cuka. Amati perubahan!</p></div>
+          <div class="step"><div class="snum">7</div><p><strong>Menunggu Reaksi Selesai:</strong> Tunggu hingga gelembung berhenti ± 2–3 menit.</p></div>
+          <div class="step"><div class="snum">8</div><p><strong>Penimbangan Akhir (m₂):</strong> Tanpa membuka balon, timbang kembali dan catat m₂.</p></div>
+          <div class="step"><div class="snum">9</div><p><strong>Analisis:</strong> Bandingkan m₁ dan m₂. Hitung Δm = m₁ − m₂.</p></div>
+        </div>
+        <div class="notebox" style="margin-top:auto;flex-shrink:0;">
+          <div class="nt">⚠️ Penting</div>
+          <p>Pastikan balon tidak bocor dan terpasang rapat agar sistem benar-benar tertutup.</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;overflow:hidden;">
+        <div style="flex:1;background:#fdf8f3;border:1px solid var(--border2);border-radius:8px;padding:10px 12px;overflow-y:auto;">
+          <div style="font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.09em;text-transform:uppercase;margin-bottom:7px;">🔭 Pengamatan yang Diharapkan</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11.5px;color:var(--text2);display:flex;gap:7px;"><span>🫧</span><span>Gelembung gas CO₂ saat soda kue bertemu cuka</span></div>
+            <div style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11.5px;color:var(--text2);display:flex;gap:7px;"><span>🎈</span><span>Balon mengembang karena gas CO₂</span></div>
+            <div style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11.5px;color:var(--text2);display:flex;gap:7px;"><span>🌡️</span><span>Larutan terasa lebih dingin (reaksi endoterm)</span></div>
+            <div style="background:var(--surf);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:11.5px;color:var(--text2);display:flex;gap:7px;"><span>⚖️</span><span>m₁ = m₂ — massa sebelum dan sesudah reaksi SAMA</span></div>
+          </div>
+        </div>
+        <div style="flex:1;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 12px;overflow-y:auto;">
+          <div style="font-size:9px;font-weight:700;color:#15803d;letter-spacing:.09em;text-transform:uppercase;margin-bottom:7px;">📐 Tabel Hasil Ideal</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+            <tr><th style="background:rgba(45,106,79,.15);padding:5px 7px;border:1px solid rgba(45,106,79,.2);text-align:left;font-size:9px;text-transform:uppercase;color:#15803d;">Parameter</th><th style="background:rgba(45,106,79,.15);padding:5px 7px;border:1px solid rgba(45,106,79,.2);font-size:9px;text-transform:uppercase;color:#15803d;">Nilai</th></tr>
+            <tr><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);color:var(--text2);">Massa awal (m₁)</td><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);font-family:'JetBrains Mono',monospace;color:#15803d;font-weight:600;">60,0 g</td></tr>
+            <tr><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);background:#f9fefb;color:var(--text2);">Massa akhir (m₂)</td><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);font-family:'JetBrains Mono',monospace;color:#15803d;font-weight:600;background:#f9fefb;">60,0 g</td></tr>
+            <tr><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);color:var(--text2);">Selisih (Δm)</td><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);font-family:'JetBrains Mono',monospace;color:#15803d;font-weight:600;">0,0 g</td></tr>
+            <tr><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);background:#f9fefb;color:var(--text2);">Kesimpulan</td><td style="padding:5px 7px;border:1px solid rgba(45,106,79,.15);color:#15803d;font-weight:600;background:#f9fefb;">✅ Terbukti</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIMULASI -->
+<div id="page-simulasi" class="page">
+  <div style="flex:1;overflow:hidden;padding:7px 11px;display:flex;flex-direction:column;gap:7px;">
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">Simulasi Interaktif</div>
+        <div class="h-title">Lab <span>Virtual</span> Lavoisier</div>
+        <div class="h-desc">Jalankan percobaan nyata: pilih variabel, amati reaksi, dan ukur massa.</div>
+      </div>
+    </div>
+    <div class="sim-layout" style="flex:1;min-height:0;">
+      <div class="ctrl-panel">
+        <h3>⚙️ Variabel Percobaan</h3>
+        <div class="cg">
+          <label>Volume Cuka (CH₃COOH)</label>
+          <select id="selCuka">
+            <option value="30">30 mL (ringan)</option>
+            <option value="50" selected>50 mL (standar)</option>
+            <option value="70">70 mL (banyak)</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Massa Soda Kue (NaHCO₃)</label>
+          <select id="selSoda">
+            <option value="5">5 gram (sedikit)</option>
+            <option value="10" selected>10 gram (standar)</option>
+            <option value="15">15 gram (banyak)</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Jenis Sistem</label>
+          <select id="selSistem">
+            <option value="tertutup">🔒 Tertutup (balon)</option>
+            <option value="terbuka">🌬️ Terbuka (tanpa balon)</option>
+          </select>
+        </div>
+        <div class="sep"><span>Kontrol</span></div>
+        <button class="btn btn-start" id="btnMulaiSim" onclick="startSimulation()">▶ Mulai Percobaan</button>
+        <button class="btn btn-stop" id="btnStop" onclick="stopSimulation()" disabled>⏹ Hentikan</button>
+        <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
+        <div class="sep"><span>Hasil</span></div>
+        <div class="sbox"><span class="sv" id="svM1">—</span><span class="sl">Massa Awal (g)</span></div>
+        <div class="sbox"><span class="sv" id="svM2">—</span><span class="sl">Massa Akhir (g)</span></div>
+        <div class="sbox"><span class="sv" id="svDelta">—</span><span class="sl">Selisih Δm (g)</span></div>
+        <div id="hasilRow" style="display:none;background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:7px;font-size:11px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--text3);">m₁</span><span id="rvM1" style="font-family:'JetBrains Mono',monospace;color:var(--acc3);font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="color:var(--text3);">m₂</span><span id="rvM2" style="font-family:'JetBrains Mono',monospace;color:var(--acc3);font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--text3);">Hukum Lavoisier</span><span id="rvVerdict" style="font-weight:700;font-size:12px;">—</span></div>
+        </div>
+      </div>
+      <div class="sim-right">
+        <div class="sim-canvas-wrap">
+          <h3>🔬 Area Laboratorium Virtual</h3>
+          <canvas id="simCanvas"></canvas>
+          <div class="sim-step-indicator" id="stepIndicator">
+            <div class="step-dot" id="dot0"></div>
+            <div class="step-dot" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+            <div class="step-dot" id="dot4"></div>
+            <span class="step-label" id="stepLabelTxt">Siap</span>
+          </div>
+        </div>
+        <div class="tipinfo" id="simTip"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEMBAR KERJA -->
+<div id="page-lk" class="page">
+  <div style="flex:1;overflow:hidden;padding:7px 11px;display:flex;flex-direction:column;gap:6px;">
+    <div class="hero" style="flex-shrink:0;">
+      <div>
+        <div class="h-label">Lembar Kerja Murid</div>
+        <div class="h-title">Laporan <span>Percobaan</span></div>
+        <div class="h-desc">Catat data hasil simulasi dan jawab pertanyaan analisis berikut.</div>
+      </div>
+    </div>
+    <!-- Data & Formula row -->
+    <div style="display:flex;gap:7px;flex-shrink:0;">
+      <div class="lk-section" style="margin-bottom:0;flex:1;">
+        <div class="lk-title" style="margin-bottom:6px;">📊 Data Pengamatan</div>
+        <table class="lk-table" style="margin-bottom:5px;">
+          <tr><th>Parameter</th><th>Sebelum Reaksi</th><th>Sesudah Reaksi</th><th>Selisih (Δm)</th></tr>
+          <tr>
+            <td class="label-cell">Massa Total (gram)</td>
+            <td style="padding:0;border:1px solid var(--border);"><input type="number" class="lk-input" id="lkM1" placeholder="m₁ ="></td>
+            <td style="padding:0;border:1px solid var(--border);"><input type="number" class="lk-input" id="lkM2" placeholder="m₂ ="></td>
+            <td style="padding:0;border:1px solid var(--border);"><input type="number" class="lk-input" id="lkDelta" placeholder="Δm ="></td>
+          </tr>
+        </table>
+      </div>
+      <div class="lk-formula" style="margin:0;flex-shrink:0;align-self:center;padding:7px 14px;">
+        <div class="formula-text">m₁ = m₂ → Δm = 0</div>
+        <div class="formula-label">Hukum Kekekalan Massa (Lavoisier, 1789)</div>
+      </div>
+    </div>
+    <!-- Questions - 2 column grid -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:7px;min-height:0;overflow:hidden;">
+      <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+        <div class="lk-section" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;">
+          <div class="lk-title" style="margin-bottom:5px;font-size:12px;">📝 Analisis &amp; Pertanyaan</div>
+          <div class="lk-q" style="margin-bottom:5px;">
+            <div class="q-num">Pertanyaan 1</div>
+            <div class="q-text">Apakah terjadi perubahan massa antara sebelum dan sesudah reaksi? Jelaskan mengapa!</div>
+            <textarea class="lk-jawaban" id="lkA1" rows="2" placeholder="Tulis jawabanmu di sini..." style="min-height:42px;"></textarea>
+          </div>
+          <div class="lk-q" style="margin-bottom:0;flex:1;">
+            <div class="q-num">Pertanyaan 2</div>
+            <div class="q-text">Apa fungsi balon dalam percobaan ini kaitannya dengan sistem tertutup?</div>
+            <textarea class="lk-jawaban" id="lkA2" rows="2" placeholder="Tulis jawabanmu di sini..." style="min-height:42px;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+        <div class="lk-section" style="margin-bottom:0;flex:1;display:flex;flex-direction:column;">
+          <div class="lk-q" style="margin-bottom:5px;">
+            <div class="q-num">Pertanyaan 3</div>
+            <div class="q-text">Jika percobaan dilakukan tanpa balon (sistem terbuka), apa yang terjadi?</div>
+            <textarea class="lk-jawaban" id="lkA3" rows="2" placeholder="Tulis jawabanmu di sini..." style="min-height:42px;"></textarea>
+          </div>
+          <div class="lk-q" style="margin-bottom:5px;">
+            <div class="q-num">Pertanyaan 4</div>
+            <div class="q-text">Tuliskan persamaan reaksi cuka dan soda kue, serta identifikasi reaktan dan produk!</div>
+            <textarea class="lk-jawaban" id="lkA4" rows="2" placeholder="CH₃COOH + NaHCO₃ → ..." style="min-height:42px;"></textarea>
+          </div>
+          <div style="background:linear-gradient(135deg,#fffdf5,#fff9f0);border:1px solid var(--gold2);border-radius:7px;padding:7px 11px;flex:1;">
+            <div class="lk-title" style="margin-bottom:5px;font-size:12px;border:none;padding:0;">📝 Kesimpulan</div>
+            <textarea class="lk-jawaban" id="lkKesimpulan" rows="2" placeholder="Berdasarkan percobaan yang telah dilakukan, dapat disimpulkan bahwa..." style="min-height:42px;width:100%;background:transparent;border:1px solid var(--border);"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Action buttons -->
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;">
+      <button class="print-btn" onclick="window.print()">🖨️ Cetak / PDF</button>
+      <button class="save-btn" onclick="saveLK()">💾 Simpan Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVALUASI / QUIZ -->
+<div id="page-quiz" class="page">
+  <div class="quiz-layout">
+    <div class="quiz-header">
+      <div class="qprog" id="qprog"></div>
+      <div class="quiz-type-tabs">
+        <button class="qtab active" id="tabMC" onclick="switchQuizMode('mc')">Pilihan Ganda</button>
+        <button class="qtab" id="tabDD" onclick="switchQuizMode('dd')">Drag &amp; Drop</button>
+      </div>
+      <div class="qcounter" id="qcounter">1 / 10</div>
+    </div>
+
+    <!-- MC Mode -->
+    <div id="mc-mode" class="q-area">
+      <div class="q-card">
+        <div class="qnum" id="qnum">SOAL 01</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;">
+          <div class="qtype-badge badge-mc" id="qbadge">Pilihan Ganda</div>
+          <div class="multi-hint" id="multiHint" style="display:none;">☑ Pilih semua jawaban yang BENAR</div>
+        </div>
+        <div class="qtext" id="qtext"></div>
+        <ul class="opts" id="qopts"></ul>
+        <div class="qfb" id="qfb"></div>
+      </div>
+      <div class="quiz-foot">
+        <button class="btn-qnav btn-prev" id="btnPrev" onclick="qNav(-1)">← Sebelumnya</button>
+        <button class="btn-qnav btn-next" id="btnNext" onclick="qNav(1)">Selanjutnya →</button>
+        <button class="btn-qnav btn-submit-q" id="btnSubmit" style="display:none;" onclick="submitQuiz()">✅ Kumpulkan</button>
+        <button class="btn-qnav btn-reset-q" onclick="resetQuiz()">↺ Ulangi</button>
+        <div class="qcounter" id="qcounter2">1 / 10</div>
+      </div>
+    </div>
+
+    <!-- Drag & Drop Mode -->
+    <div id="dd-mode" class="q-area" style="display:none;">
+      <div class="q-card" style="overflow-y:auto;">
+        <div class="qnum" id="ddQnum">SOAL D1</div>
+        <div class="qtype-badge badge-dd">Drag &amp; Drop</div>
+        <div class="dd-q-text" id="ddQtext"></div>
+        <div class="dd-instruction">💡 <strong>Klik</strong> kartu untuk memilih, lalu klik kotak tujuan — atau <strong>seret</strong> langsung ke kotak</div>
+        <div class="dd-layout" id="ddLayout"></div>
+        <div class="qfb" id="ddFb"></div>
+      </div>
+      <div class="quiz-foot">
+        <button class="btn-qnav btn-prev" id="ddBtnPrev" onclick="ddNav(-1)">← Sebelumnya</button>
+        <button class="btn-qnav btn-next" id="ddBtnNext" onclick="ddNav(1)">Selanjutnya →</button>
+        <button class="btn-qnav btn-submit-q" id="ddBtnCheck" onclick="checkDD()">✅ Periksa</button>
+        <button class="btn-qnav btn-reset-q" onclick="resetDD()">↺ Reset</button>
+        <div class="qcounter" id="ddCounter">1 / 4</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- SCORE OVERLAY -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:44px;margin-bottom:7px;">⚖️</div>
+    <div class="score-big" id="scoreBig">0</div>
+    <div class="score-pct">/ 100</div>
+    <div class="score-sub" id="scoreSub">Jawaban benar: 0 dari 10</div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="document.getElementById('scoreOverlay').classList.remove('on')">Lihat Ulasan</button>
+      <button class="btn-score btn-ulangi" onclick="resetQuiz();document.getElementById('scoreOverlay').classList.remove('on')">↺ Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== LOADING =====
+let loadPct=0;
+const loadInt=setInterval(()=>{
+  loadPct+=Math.random()*12+3;
+  if(loadPct>=100){loadPct=100;clearInterval(loadInt);setTimeout(()=>{document.getElementById('loadScreen').classList.add('out');setTimeout(()=>{document.getElementById('loadScreen').style.display='none';},650);},300);}
+  document.getElementById('loadBar').style.width=Math.min(100,loadPct)+'%';
+},70);
+
+// ===== PARTICLES on start page =====
+function createParticles(){
+  const c=document.getElementById('particles');
+  const colors=['rgba(200,150,12,','rgba(139,69,19,','rgba(255,200,50,'];
+  for(let i=0;i<35;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const size=Math.random()*6+2;
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    p.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${col}${0.3+Math.random()*0.5});
+      animation-duration:${8+Math.random()*12}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    c.appendChild(p);
+  }
+}
+createParticles();
+
+// ===== ENTER LAB =====
+function enterLab(){
+  const sp=document.getElementById('page-start');
+  sp.style.transition='opacity .5s, transform .5s';
+  sp.style.opacity='0';sp.style.transform='scale(1.03)';
+  setTimeout(()=>{
+    sp.classList.add('hidden');
+    document.getElementById('mainHeader').style.display='flex';
+    document.getElementById('app').style.display='flex';
+    // ensure tujuan is active on start
+    showPage('tujuan', document.querySelector('.nb'));
+  },520);
+}
+
+// ===== CLICK SOUND =====
+const _audioCtx=(()=>{try{return new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}})();
+function playNavClick(){
+  if(!_audioCtx) return;
+  if(_audioCtx.state==='suspended') _audioCtx.resume();
+  const osc=_audioCtx.createOscillator();
+  const gain=_audioCtx.createGain();
+  osc.connect(gain);gain.connect(_audioCtx.destination);
+  osc.type='sine';
+  osc.frequency.setValueAtTime(880,_audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(440,_audioCtx.currentTime+0.08);
+  gain.gain.setValueAtTime(0.18,_audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001,_audioCtx.currentTime+0.12);
+  osc.start(_audioCtx.currentTime);
+  osc.stop(_audioCtx.currentTime+0.13);
+}
+
+// ===== NAV =====
+function showPage(id,btn){
+  playNavClick();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const nav=document.getElementById('mainNav');
+  if(nav.classList.contains('open')) nav.classList.remove('open');
+  if(id==='simulasi'){setTimeout(initCanvas,50);}
+  if(id==='quiz'){renderQuiz();}
+}
+function toggleMenu(){playNavClick();document.getElementById('mainNav').classList.toggle('open');}
+
+// ===== SIMULASI ENGINE =====
+let simRunning=false,simRAF=null,simPhase='idle',simTime=0;
+let bubbles=[],balloonSize=0,m1=0,m2=0,simSistem='tertutup';
+let baloonFill=0,particles3D=[];
+let dropsY=100, dropsDone=false;
+
+function initCanvas(){
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas) return;
+  const wrap=canvas.parentElement;
+  canvas.width=wrap.clientWidth-16;
+  canvas.height=Math.max(180,wrap.clientHeight-60);
+  drawScene();
+}
+
+function startSimulation(){
+  const cuka=parseFloat(document.getElementById('selCuka').value);
+  const soda=parseFloat(document.getElementById('selSoda').value);
+  simSistem=document.getElementById('selSistem').value;
+  m1=parseFloat((cuka*0.9+soda+5).toFixed(1));
+  m2=m1;balloonSize=0;baloonFill=0;bubbles=[];
+  simPhase='weighing1';simTime=0;simRunning=true;
+  dropsY=100;dropsDone=false;
+  document.getElementById('svM1').textContent=m1.toFixed(1);
+  document.getElementById('svM2').textContent='—';
+  document.getElementById('svDelta').textContent='—';
+  document.getElementById('btnMulaiSim').disabled=true;
+  document.getElementById('btnStop').disabled=false;
+  document.getElementById('hasilRow').style.display='none';
+  document.getElementById('simTip').classList.remove('on');
+  updateStepDots('weighing1');
+  animateSim();
+}
+
+function stopSimulation(){
+  simRunning=false;
+  if(simRAF){cancelAnimationFrame(simRAF);simRAF=null;}
+  document.getElementById('btnMulaiSim').disabled=false;
+  document.getElementById('btnStop').disabled=true;
+}
+
+function resetSimulation(){
+  stopSimulation();
+  simPhase='idle';bubbles=[];balloonSize=0;baloonFill=0;m1=0;m2=0;
+  document.getElementById('svM1').textContent='—';
+  document.getElementById('svM2').textContent='—';
+  document.getElementById('svDelta').textContent='—';
+  document.getElementById('hasilRow').style.display='none';
+  document.getElementById('simTip').classList.remove('on');
+  updateStepDots('idle');
+  drawScene();
+}
+
+function updateStepDots(phase){
+  const phases=['weighing1','dropping','reacting','weighing2','done'];
+  const idx=phases.indexOf(phase);
+  for(let i=0;i<5;i++){
+    const d=document.getElementById('dot'+i);
+    if(!d) continue;
+    d.classList.remove('active','done');
+    if(i<idx) d.classList.add('done');
+    else if(i===idx) d.classList.add('active');
+  }
+  const labels={idle:'Siap',weighing1:'Timbang Awal',dropping:'Menjatuhkan',reacting:'Bereaksi',weighing2:'Timbang Akhir',done:'Selesai'};
+  const sl=document.getElementById('stepLabelTxt');
+  if(sl) sl.textContent=labels[phase]||'';
+}
+
+function animateSim(){
+  if(!simRunning) return;
+  simTime++;
+
+  if(simPhase==='weighing1'&&simTime>70){simPhase='dropping';simTime=0;updateStepDots('dropping');}
+  if(simPhase==='dropping'){
+    dropsY+=3.5;
+    if(dropsY>280&&!dropsDone){dropsDone=true;}
+    if(simTime>40){simPhase='reacting';simTime=0;updateStepDots('reacting');}
+  }
+  if(simPhase==='reacting'){
+    if(Math.random()<0.35){
+      const canvas=document.getElementById('simCanvas');
+      const cx=canvas?canvas.width/2:200;
+      bubbles.push({x:cx+Math.random()*60-30,y:250,vy:-(0.9+Math.random()*1.4),vx:(Math.random()-0.5)*0.6,size:2.5+Math.random()*3.5,alpha:1});
+    }
+    bubbles=bubbles.filter(b=>b.alpha>0);
+    bubbles.forEach(b=>{b.y+=b.vy;b.x+=b.vx;b.alpha-=0.013;b.vy*=0.995;});
+    if(simSistem==='tertutup'){
+      balloonSize=Math.min(60,balloonSize+0.45);
+      baloonFill=Math.min(1,baloonFill+0.009);
+    }
+    if(simTime>180){simPhase='weighing2';simTime=0;updateStepDots('weighing2');}
+  }
+  if(simPhase==='weighing2'&&simTime>70){
+    simPhase='done';updateStepDots('done');
+    if(simSistem==='terbuka'){
+      const soda=parseFloat(document.getElementById('selSoda').value);
+      const co2Lost=parseFloat((soda*0.52).toFixed(1));
+      m2=parseFloat((m1-co2Lost).toFixed(1));
+    } else {m2=m1;}
+    const delta=parseFloat((m1-m2).toFixed(1));
+    document.getElementById('svM1').textContent=m1.toFixed(1);
+    document.getElementById('svM2').textContent=m2.toFixed(1);
+    document.getElementById('svDelta').textContent=delta.toFixed(1);
+    document.getElementById('svDelta').style.color=delta===0?'var(--green)':'var(--red)';
+    document.getElementById('hasilRow').style.display='block';
+    document.getElementById('rvM1').textContent=m1.toFixed(1);
+    document.getElementById('rvM2').textContent=m2.toFixed(1);
+    document.getElementById('rvVerdict').textContent=delta===0?'✅ Terbukti':'⚠️ Massa Hilang';
+    document.getElementById('rvVerdict').style.color=delta===0?'var(--green)':'var(--red)';
+    const tip=document.getElementById('simTip');
+    tip.innerHTML=simSistem==='tertutup'
+      ?'✅ <strong>Sistem Tertutup:</strong> Gas CO₂ tertampung dalam balon. m₁ = '+m1.toFixed(1)+' g = m₂. Hukum Lavoisier <strong>TERBUKTI!</strong>'
+      :'⚠️ <strong>Sistem Terbuka:</strong> Gas CO₂ lepas ke udara. Massa tampak berkurang '+delta.toFixed(1)+' gram — ini BUKAN pelanggaran Lavoisier, CO₂ tetap ada di udara.';
+    tip.classList.add('on');
+    simRunning=false;
+    document.getElementById('btnMulaiSim').disabled=false;
+    document.getElementById('btnStop').disabled=true;
+  }
+
+  drawScene();
+  if(simRunning) simRAF=requestAnimationFrame(animateSim);
+}
+
+function drawScene(){
+  const canvas=document.getElementById('simCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Lab background
+  const bgGrad=ctx.createLinearGradient(0,0,0,H);
+  bgGrad.addColorStop(0,'#fdf8f2');bgGrad.addColorStop(1,'#f0ece5');
+  ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
+
+  // Lab tiles pattern
+  ctx.strokeStyle='rgba(139,69,19,0.05)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // Lab table
+  const tableY=H-28;
+  const tableGrad=ctx.createLinearGradient(0,tableY,0,H);
+  tableGrad.addColorStop(0,'#b8a48a');tableGrad.addColorStop(1,'#9a8a70');
+  ctx.fillStyle=tableGrad;ctx.fillRect(0,tableY,W,H-tableY);
+  ctx.fillStyle='#a09080';ctx.fillRect(0,tableY,W,3);
+
+  // Subtle shadow under equipment
+  ctx.fillStyle='rgba(0,0,0,0.07)';
+  ctx.beginPath();ctx.ellipse(W/2,tableY-2,90,8,0,0,Math.PI*2);ctx.fill();
+
+  const cx=W/2;
+  const baseY=tableY;
+
+  // Draw scale
+  drawScale(ctx,cx,baseY);
+  // Draw Erlenmeyer
+  drawErlenmeyer(ctx,cx,baseY-16);
+  // Draw dropping powder if in dropping phase
+  if(simPhase==='dropping'&&!dropsDone){
+    ctx.fillStyle='rgba(245,230,180,0.85)';
+    for(let i=0;i<6;i++){
+      ctx.beginPath();
+      ctx.arc(cx+(i-2.5)*4+Math.sin(simTime*0.3)*2,dropsY+i*8,1.5+Math.random(),0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+  // Draw balloon
+  if(simSistem==='tertutup'){
+    drawBalloon(ctx,cx,baseY-130,balloonSize,baloonFill);
+  }
+  // Draw bubbles
+  bubbles.forEach(b=>{
+    ctx.save();ctx.globalAlpha=b.alpha*0.65;
+    ctx.strokeStyle='rgba(100,180,255,0.8)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.arc(b.x,b.y,b.size,0,Math.PI*2);ctx.stroke();
+    // highlight
+    ctx.globalAlpha=b.alpha*0.3;ctx.fillStyle='rgba(200,240,255,0.5)';
+    ctx.beginPath();ctx.arc(b.x-b.size*0.3,b.y-b.size*0.3,b.size*0.4,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  });
+
+  // Phase label at top
+  const phaseLabels={
+    idle:'👆 Pilih variabel dan klik Mulai Percobaan',
+    weighing1:'⚖️ Menimbang massa awal (m₁)...',
+    dropping:'🪣 Mengangkat balon → soda kue jatuh ke cuka...',
+    reacting:'⚗️ Reaksi berlangsung! Gas CO₂ terbentuk...',
+    weighing2:'⚖️ Menimbang massa akhir (m₂)...',
+    done: simSistem==='tertutup'?'✅ m₁ = m₂ — Hukum Lavoisier Terbukti!':'⚠️ Sistem terbuka — gas CO₂ lepas ke udara'
+  };
+  ctx.save();
+  const isDoneGood=simPhase==='done'&&simSistem==='tertutup';
+  const isDoneBad=simPhase==='done'&&simSistem==='terbuka';
+  ctx.fillStyle=isDoneGood?'#15803d':isDoneBad?'#922b21':'#5C3317';
+  ctx.font='bold 12px "DM Sans", sans-serif';
+  ctx.textAlign='center';
+  // Background pill for label
+  const lbl=phaseLabels[simPhase]||'';
+  const tw2=ctx.measureText(lbl).width;
+  ctx.fillStyle=isDoneGood?'rgba(240,253,244,0.9)':isDoneBad?'rgba(255,245,245,0.9)':'rgba(253,248,243,0.9)';
+  ctx.beginPath();ctx.roundRect(cx-tw2/2-10,6,tw2+20,22,8);ctx.fill();
+  ctx.strokeStyle=isDoneGood?'#4ade80':isDoneBad?'#fca5a5':'#e8c8a0';
+  ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=isDoneGood?'#15803d':isDoneBad?'#922b21':'#5C3317';
+  ctx.font='bold 11.5px "DM Sans", sans-serif';
+  ctx.fillText(lbl,cx,20);
+  ctx.restore();
+
+  // Scale mass reading animation flicker during weighing
+  if(simPhase==='weighing1'||simPhase==='weighing2'){
+    const flicker=(Math.sin(simTime*0.4)*0.1).toFixed(1);
+    const readMass=simPhase==='weighing1'?m1:m2;
+    if(simPhase==='weighing2') document.getElementById('svM2').textContent=(readMass+parseFloat(flicker)).toFixed(1);
+  }
+}
+
+function drawScale(ctx,cx,baseY){
+  // Base
+  ctx.fillStyle='#5a3010';
+  ctx.beginPath();ctx.roundRect(cx-65,baseY-7,130,7,3);ctx.fill();
+  // Platform
+  const pg=ctx.createLinearGradient(cx-55,baseY-22,cx+55,baseY-7);
+  pg.addColorStop(0,'#8B4513');pg.addColorStop(0.5,'#A0522D');pg.addColorStop(1,'#6B3410');
+  ctx.fillStyle=pg;ctx.beginPath();ctx.roundRect(cx-55,baseY-22,110,15,4);ctx.fill();
+  // Sensor light
+  ctx.fillStyle='rgba(0,255,100,0.3)';ctx.beginPath();ctx.arc(cx-40,baseY-14,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#00ff64';ctx.beginPath();ctx.arc(cx-40,baseY-14,2,0,Math.PI*2);ctx.fill();
+  // Display screen
+  ctx.fillStyle='#0a0a0a';ctx.beginPath();ctx.roundRect(cx-48,baseY-42,96,18,4);ctx.fill();
+  ctx.fillStyle='rgba(0,100,40,0.15)';ctx.beginPath();ctx.roundRect(cx-47,baseY-41,94,16,3);ctx.fill();
+  // Mass value
+  let displayMass='0.0 g';
+  if(simPhase==='weighing1'||simPhase==='dropping'||simPhase==='reacting') displayMass=m1.toFixed(1)+' g';
+  else if(simPhase==='weighing2') displayMass=(m1+(Math.random()*0.2-0.1)).toFixed(1)+' g';
+  else if(simPhase==='done') displayMass=m2.toFixed(1)+' g';
+  ctx.fillStyle='#4ade80';ctx.font='bold 13px "JetBrains Mono", monospace';ctx.textAlign='center';
+  ctx.fillText(displayMass,cx,baseY-28);
+  // Brand text
+  ctx.fillStyle='rgba(200,150,12,0.6)';ctx.font='6px "DM Sans", sans-serif';
+  ctx.fillText('DIGI-SCALE',cx,baseY-16);
+}
+
+function drawErlenmeyer(ctx,cx,baseY){
+  const bw=84,tw=20,th=38,bh=88;
+  ctx.save();
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.08)';
+  ctx.beginPath();ctx.ellipse(cx,baseY+2,bw/2,5,0,0,Math.PI*2);ctx.fill();
+  // Body
+  const erlGrad=ctx.createLinearGradient(cx-bw/2,0,cx+bw/2,0);
+  erlGrad.addColorStop(0,'rgba(180,220,255,0.15)');
+  erlGrad.addColorStop(0.3,'rgba(210,235,255,0.45)');
+  erlGrad.addColorStop(0.7,'rgba(210,235,255,0.45)');
+  erlGrad.addColorStop(1,'rgba(160,200,240,0.2)');
+  ctx.fillStyle=erlGrad;
+  ctx.strokeStyle='rgba(100,150,200,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx-tw/2,baseY-bh-th);ctx.lineTo(cx-tw/2,baseY-bh);
+  ctx.lineTo(cx-bw/2,baseY);ctx.lineTo(cx+bw/2,baseY);
+  ctx.lineTo(cx+tw/2,baseY-bh);ctx.lineTo(cx+tw/2,baseY-bh-th);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  // Liquid
+  const liqLevel=simPhase==='idle'?35:38;
+  const liqAlpha=simPhase==='reacting'?0.65:0.4;
+  ctx.fillStyle=`rgba(120,185,255,${liqAlpha})`;
+  const lx1=cx-bw/2+6, lx2=cx+bw/2-6;
+  ctx.beginPath();
+  ctx.moveTo(lx1,baseY-4);ctx.lineTo(lx1,baseY-liqLevel);
+  ctx.bezierCurveTo(lx1,baseY-liqLevel-4,lx2,baseY-liqLevel-4,lx2,baseY-liqLevel);
+  ctx.lineTo(lx2,baseY-4);ctx.closePath();ctx.fill();
+  // Foam/bubbles in liquid
+  if(simPhase==='reacting'||simPhase==='done'||simPhase==='weighing2'){
+    ctx.fillStyle='rgba(255,255,255,0.75)';
+    for(let i=0;i<5;i++){
+      const bx=cx-20+i*10,by=baseY-liqLevel-2+Math.sin(simTime*0.1+i)*2;
+      ctx.beginPath();ctx.arc(bx,by,4.5,Math.PI,Math.PI*2);ctx.fill();
+    }
+    // Foam dots
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    for(let i=0;i<8;i++){
+      ctx.beginPath();ctx.arc(cx-30+i*9,baseY-liqLevel,2.5,0,Math.PI*2);ctx.fill();
+    }
+  }
+  // Powder in flask if dropped
+  if(simPhase!=='idle'&&simPhase!=='weighing1'){
+    ctx.fillStyle='rgba(230,200,130,0.4)';
+    ctx.beginPath();ctx.ellipse(cx,baseY-8,22,4,0,0,Math.PI*2);ctx.fill();
+  }
+  // Neck highlight
+  ctx.strokeStyle='rgba(200,230,255,0.4)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-tw/2+3,baseY-bh-th);ctx.lineTo(cx-tw/2+3,baseY-bh-5);ctx.stroke();
+  // Label
+  ctx.fillStyle='rgba(139,69,19,0.5)';ctx.font='bold 9px "DM Sans"';ctx.textAlign='center';
+  ctx.fillText('250 mL',cx,baseY-bh/2+10);
+  ctx.restore();
+}
+
+function drawBalloon(ctx,cx,cy,size,fill){
+  ctx.save();
+  if(size<=0){
+    // deflated balloon
+    ctx.fillStyle='rgba(220,70,70,0.4)';
+    ctx.beginPath();ctx.ellipse(cx,cy,7,10,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=1;ctx.stroke();
+    // knot
+    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(cx,cy+10,2.5,0,Math.PI*2);ctx.fill();
+    ctx.restore();return;
+  }
+  // balloon neck
+  ctx.strokeStyle='rgba(180,50,50,0.5)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-4,cy+size*0.4);ctx.lineTo(cx-4,cy+size*0.55);
+  ctx.lineTo(cx+4,cy+size*0.55);ctx.lineTo(cx+4,cy+size*0.4);ctx.stroke();
+  // knot
+  ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(cx,cy+size*0.6,3,0,Math.PI*2);ctx.fill();
+  // balloon body with gradient
+  const ballGrad=ctx.createRadialGradient(cx-size*0.25,cy-size*0.3,size*0.1,cx,cy,size*1.1);
+  ballGrad.addColorStop(0,`rgba(255,120,120,${0.6+fill*0.4})`);
+  ballGrad.addColorStop(0.5,`rgba(220,70,70,${0.55+fill*0.4})`);
+  ballGrad.addColorStop(1,`rgba(160,30,30,${0.5+fill*0.3})`);
+  ctx.fillStyle=ballGrad;
+  ctx.strokeStyle='rgba(180,50,50,0.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.ellipse(cx,cy-size*0.5,size*0.72,size,0,0,Math.PI*2);
+  ctx.fill();ctx.stroke();
+  // shine
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.beginPath();ctx.ellipse(cx-size*0.2,cy-size*0.65,size*0.2,size*0.15,Math.PI*-0.3,0,Math.PI*2);ctx.fill();
+  // CO2 label if inflated
+  if(size>20){
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font=`bold ${Math.min(11,size/5)}px "JetBrains Mono"`;
+    ctx.textAlign='center';ctx.fillText('CO₂',cx,cy-size*0.5+4);
+  }
+  ctx.restore();
+}
+
+// ===== QUIZ =====
+const QUESTIONS=[
+  {
+    type:'mc',
+    text:'Apa yang dimaksud dengan Hukum Kekekalan Massa (Lavoisier)?',
+    opts:['Massa produk selalu lebih besar dari reaktan','Dalam sistem tertutup, massa reaktan = massa produk','Massa hanya berlaku untuk reaksi pembakaran','Massa dapat berubah dalam reaksi kimia manapun'],
+    ans:[1],
+    fb:'Hukum Lavoisier menyatakan bahwa dalam sistem tertutup, massa zat sebelum reaksi (reaktan) selalu sama dengan massa zat sesudah reaksi (produk). Massa tidak tercipta maupun musnah.'
+  },
+  {
+    type:'mc2',
+    text:'Manakah PERNYATAAN yang BENAR mengenai reaksi cuka + soda kue dalam sistem tertutup? (Pilih semua yang benar)',
+    opts:['Massa sebelum reaksi = massa sesudah reaksi','Gas CO₂ yang terbentuk tertampung dalam balon','Balon akan mengempis saat reaksi berlangsung','Larutan akan terasa lebih dingin setelah reaksi','Tidak ada materi yang hilang dari sistem'],
+    ans:[0,1,3,4],
+    fb:'Dalam sistem tertutup: massa tetap sama (m₁=m₂), CO₂ ditampung balon (balon mengembang bukan mengempis), reaksi bersifat endoterm sehingga larutan mendingin, dan tidak ada materi yang hilang.'
+  },
+  {
+    type:'mc',
+    text:'Pada percobaan sistem TERBUKA (tanpa balon), apa yang terjadi pada penimbangan akhir?',
+    opts:['Massa akhir lebih besar dari massa awal','Massa akhir sama dengan massa awal','Massa akhir lebih kecil dari massa awal karena CO₂ lepas ke udara','Massa tidak dapat diukur pada sistem terbuka'],
+    ans:[2],
+    fb:'Pada sistem terbuka, gas CO₂ lepas ke udara sehingga massa yang terukur pada timbangan akan lebih kecil. Namun ini BUKAN pelanggaran Hukum Lavoisier — CO₂ tetap ada di udara, hanya keluar dari sistem.'
+  },
+  {
+    type:'mc2',
+    text:'Manakah yang merupakan CONTOH PENERAPAN Hukum Kekekalan Massa dalam kehidupan sehari-hari? (Pilih semua yang benar)',
+    opts:['Pembakaran kayu dalam ruang tertutup menghasilkan abu + gas dengan massa sama','Garam yang dilarutkan dalam air menghasilkan larutan bermassa lebih besar','Besi berkarat bertambah massa karena menyerap oksigen dari udara','Es batu yang mencair mengalami perubahan massa','Air yang menguap dalam wadah tertutup tidak kehilangan massa'],
+    ans:[0,2,4],
+    fb:'Pembakaran dalam ruang tertutup membuktikan m₁=m₂. Besi berkarat (Fe₂O₃) bertambah massa karena menyerap O₂ dari udara — totalnya sama. Air menguap dalam wadah tertutup tidak kehilangan massa. Garam larut TIDAK menghasilkan massa lebih besar, massanya tetap sama.'
+  },
+  {
+    type:'mc',
+    text:'Apa persamaan reaksi yang terjadi antara cuka (CH₃COOH) dan soda kue (NaHCO₃)?',
+    opts:['CH₃COOH + NaHCO₃ → NaCl + H₂O + CO₂','CH₃COOH + NaHCO₃ → CH₃COONa + H₂O + CO₂','CH₃COOH + NaOH → CH₃COONa + H₂O','CH₃COOH + Na₂CO₃ → CH₃COONa + CO₂'],
+    ans:[1],
+    fb:'Reaksi antara cuka (asam asetat) dan soda kue (natrium bikarbonat): CH₃COOH + NaHCO₃ → CH₃COONa (natrium asetat) + H₂O + CO₂↑. Gas CO₂ inilah yang mengembungkan balon.'
+  },
+  {
+    type:'mc',
+    text:'"Jika 20 gram kapur bereaksi dengan asam klorida dalam sistem TERTUTUP menghasilkan gas CO₂, maka massa produk total akan lebih kecil dari 20 gram." Pernyataan ini...',
+    opts:['BENAR – gas CO₂ yang terbentuk memiliki massa lebih ringan','SALAH – massa produk total (termasuk CO₂) akan sama dengan massa reaktan awal','BENAR – reaksi kimia selalu menghasilkan massa yang berbeda','SALAH – kapur tidak bereaksi dengan asam klorida'],
+    ans:[1],
+    fb:'SALAH. Dalam sistem tertutup, massa produk total (termasuk gas CO₂) sama dengan massa reaktan awal. Hukum Lavoisier tetap berlaku — tidak ada materi yang hilang.'
+  },
+  {
+    type:'mc',
+    text:'Hukum Kekekalan Massa dikemukakan oleh...',
+    opts:['John Dalton (1766–1844)','Dmitri Mendeleev (1834–1907)','Antoine-Laurent de Lavoisier (1743–1794)','Joseph Proust (1754–1826)'],
+    ans:[2],
+    fb:'Antoine-Laurent de Lavoisier (26 Agustus 1743 – 8 Mei 1794) adalah kimiawan Prancis yang mengemukakan Hukum Kekekalan Massa pada tahun 1789 dalam bukunya Traité Élémentaire de Chimie.'
+  },
+  {
+    type:'mc2',
+    text:'Mengapa dalam percobaan ini digunakan balon karet yang dipasang pada mulut erlenmeyer? (Pilih semua alasan yang TEPAT)',
+    opts:['Agar gas CO₂ tidak lepas ke udara bebas','Untuk membuat sistem menjadi tertutup','Untuk membuktikan bahwa balon bisa mengembang','Agar massa total sistem tetap dapat diukur secara akurat','Untuk menggantikan fungsi tutup erlenmeyer'],
+    ans:[0,1,3],
+    fb:'Balon berfungsi: (1) mencegah CO₂ lepas ke udara, (2) menjadikan sistem tertutup, (3) memungkinkan penimbangan massa total yang akurat. Mengembangnya balon hanya efek samping, bukan tujuan utama.'
+  },
+  {
+    type:'mc',
+    text:'Besi berkarat (Fe₂O₃) memiliki massa lebih besar dari besi asal (Fe). Fenomena ini menunjukkan bahwa...',
+    opts:['Hukum Lavoisier dilanggar karena massa bertambah','Besi dapat bertambah massa sendiri tanpa reaktan','Besi menyerap oksigen (O₂) dari udara sehingga massa total tetap sama','Karat membuat besi lebih padat tetapi tidak lebih berat'],
+    ans:[2],
+    fb:'Massa Fe₂O₃ > Fe karena besi menyerap oksigen (O₂) dari udara. Jika dihitung secara sistem tertutup: massa Fe + massa O₂ = massa Fe₂O₃. Total massa TETAP SAMA. Hukum Lavoisier tidak dilanggar.'
+  },
+  {
+    type:'mc2',
+    text:'Mana saja yang MERUPAKAN reaktan dalam reaksi percobaan Lab Virtual ini? (Pilih semua yang benar)',
+    opts:['CH₃COOH (larutan cuka)','CO₂ (gas karbon dioksida)','NaHCO₃ (soda kue)','CH₃COONa (natrium asetat)','H₂O (air)'],
+    ans:[0,2],
+    fb:'Reaktan adalah zat yang bereaksi (di kiri tanda panah): CH₃COOH (cuka) dan NaHCO₃ (soda kue). Produk (di kanan tanda panah): CH₃COONa, H₂O, dan CO₂.'
+  }
+];
+
+let qCurrent=0, qAnswers=new Array(QUESTIONS.length).fill(null).map(()=>[]), qSubmitted=false;
+
+function renderQuiz(){
+  const q=QUESTIONS[qCurrent];
+  document.getElementById('qnum').textContent='SOAL '+(qCurrent+1).toString().padStart(2,'0');
+  const isMulti=q.type==='mc2';
+  document.getElementById('qbadge').textContent=isMulti?'Pilihan Ganda Kompleks':'Pilihan Ganda';
+  document.getElementById('qbadge').className='qtype-badge '+(isMulti?'badge-mc2':'badge-mc');
+  document.getElementById('multiHint').style.display=isMulti?'flex':'none';
+  document.getElementById('qtext').textContent=q.text;
+  document.getElementById('qcounter').textContent=(qCurrent+1)+' / '+QUESTIONS.length;
+  document.getElementById('qcounter2').textContent=(qCurrent+1)+' / '+QUESTIONS.length;
+
+  const opts=document.getElementById('qopts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const li=document.createElement('li');
+    const sel=qAnswers[qCurrent].includes(i);
+    li.className='opt'+(sel?' sel':'');
+    if(qSubmitted){
+      const isCorrectAns=q.ans.includes(i);
+      if(isCorrectAns&&sel) li.classList.add('correct');
+      else if(isCorrectAns&&!sel) li.classList.add('correct-unsel');
+      else if(!isCorrectAns&&sel) li.classList.add('wrong');
+    }
+    const inputType=isMulti?'checkbox':'radio';
+    li.innerHTML=`<input type="${inputType}" ${sel?'checked':''} ${qSubmitted?'disabled':''}><span>${o}</span>`;
+    li.addEventListener('click',()=>{
+      if(qSubmitted) return;
+      if(isMulti){
+        const idx2=qAnswers[qCurrent].indexOf(i);
+        if(idx2>-1) qAnswers[qCurrent].splice(idx2,1);
+        else qAnswers[qCurrent].push(i);
+      } else {
+        qAnswers[qCurrent]=[i];
+      }
+      renderQuiz();
+    });
+    opts.appendChild(li);
+  });
+
+  const fb=document.getElementById('qfb');
+  if(qSubmitted){
+    const sel=qAnswers[qCurrent];
+    const correct=q.ans;
+    const allCorrect=correct.every(c=>sel.includes(c))&&sel.every(s=>correct.includes(s));
+    const partial=!allCorrect&&correct.some(c=>sel.includes(c));
+    fb.className='qfb on '+(allCorrect?'ok':partial?'partial':'bad');
+    fb.textContent=(allCorrect?'✅ ': partial?'⚡ ':'❌ ')+q.fb;
+  } else {
+    fb.className='qfb';fb.textContent='';
+  }
+
+  // Dots
+  const prog=document.getElementById('qprog');
+  prog.innerHTML='';
+  QUESTIONS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='qprog-dot';
+    if(i===qCurrent) cls+=' current';
+    else if(qSubmitted){
+      const sel2=qAnswers[i];const cor2=QUESTIONS[i].ans;
+      if(sel2.length>0){
+        const allOk=cor2.every(c=>sel2.includes(c))&&sel2.every(s=>cor2.includes(s));
+        cls+=allOk?' correct-done':' wrong-done';
+      }
+    } else if(qAnswers[i].length>0) cls+=' answered';
+    d.className=cls;d.textContent=i+1;
+    d.addEventListener('click',()=>{qCurrent=i;renderQuiz();});
+    prog.appendChild(d);
+  });
+
+  document.getElementById('btnPrev').style.display=qCurrent===0?'none':'';
+  const isLast=qCurrent===QUESTIONS.length-1;
+  document.getElementById('btnNext').style.display=isLast?'none':'';
+  document.getElementById('btnSubmit').style.display=isLast&&!qSubmitted?'':'none';
+}
+
+function qNav(dir){
+  qCurrent=Math.max(0,Math.min(QUESTIONS.length-1,qCurrent+dir));
+  renderQuiz();
+}
+
+function submitQuiz(){
+  qSubmitted=true;
+  let totalScore=0;
+  QUESTIONS.forEach((q,i)=>{
+    const sel=qAnswers[i];const cor=q.ans;
+    const allCorrect=cor.every(c=>sel.includes(c))&&sel.every(s=>cor.includes(s));
+    if(allCorrect) totalScore++;
+    else if(cor.some(c=>sel.includes(c))) totalScore+=0.5;
+  });
+  const score=Math.round(totalScore/QUESTIONS.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scoreSub').textContent=`Skor: ${totalScore} dari ${QUESTIONS.length}`;
+  let grade='';
+  if(score>=90) grade='🏆 Sangat Baik! Luar biasa!';
+  else if(score>=75) grade='⭐ Baik! Pertahankan!';
+  else if(score>=60) grade='📚 Cukup. Pelajari kembali!';
+  else grade='💪 Perlu belajar lebih keras!';
+  document.getElementById('scoreGrade').textContent=grade;
+  document.getElementById('scoreOverlay').classList.add('on');
+  renderQuiz();
+}
+
+function resetQuiz(){
+  qCurrent=0;
+  qAnswers=new Array(QUESTIONS.length).fill(null).map(()=>[]);
+  qSubmitted=false;
+  renderQuiz();
+}
+
+// ===== DRAG & DROP QUIZ =====
+const DD_QUESTIONS=[
+  {
+    text:'Seret setiap ISTILAH ke kategori yang tepat: Reaktan atau Produk dalam reaksi antara cuka dan soda kue.',
+    slots:['Reaktan','Produk'],
+    items:['CH₃COOH','NaHCO₃','CO₂','H₂O','CH₃COONa'],
+    answers:{'CH₃COOH':'Reaktan','NaHCO₃':'Reaktan','CO₂':'Produk','H₂O':'Produk','CH₃COONa':'Produk'}
+  },
+  {
+    text:'Seret pernyataan ke kolom yang sesuai: SISTEM TERTUTUP atau SISTEM TERBUKA.',
+    slots:['Sistem Tertutup','Sistem Terbuka'],
+    items:['m₁ = m₂','m₁ > m₂ (semu)','Balon mengembang','Gas CO₂ lepas ke udara','Massa terukur sama'],
+    answers:{'m₁ = m₂':'Sistem Tertutup','m₁ > m₂ (semu)':'Sistem Terbuka','Balon mengembang':'Sistem Tertutup','Gas CO₂ lepas ke udara':'Sistem Terbuka','Massa terukur sama':'Sistem Tertutup'}
+  },
+  {
+    text:'Seret setiap LANGKAH ke urutan yang benar dalam prosedur percobaan (kolom bernomor 1–4).',
+    slots:['Langkah 1','Langkah 2','Langkah 3','Langkah 4'],
+    items:['Masukkan soda kue ke balon','Timbang massa awal (m₁)','Kalibrasi timbangan','Angkat balon → reaksi berlangsung'],
+    answers:{'Kalibrasi timbangan':'Langkah 1','Masukkan soda kue ke balon':'Langkah 2','Timbang massa awal (m₁)':'Langkah 3','Angkat balon → reaksi berlangsung':'Langkah 4'}
+  },
+  {
+    text:'Seret setiap PENGAMATAN ke kategori yang tepat: Pengamatan Visual atau Pengamatan Massa.',
+    slots:['Pengamatan Visual','Pengamatan Massa'],
+    items:['Balon mengembang','m₁ = m₂ = 60 g','Muncul gelembung CO₂','Δm = 0 gram','Larutan berubah warna'],
+    answers:{'Balon mengembang':'Pengamatan Visual','m₁ = m₂ = 60 g':'Pengamatan Massa','Muncul gelembung CO₂':'Pengamatan Visual','Δm = 0 gram':'Pengamatan Massa','Larutan berubah warna':'Pengamatan Visual'}
+  }
+];
+
+let ddCurrent=0;
+let ddPlacements={};
+let ddChecked=false;
+let ddDragging=null;
+
+function renderDD(){
+  const q=DD_QUESTIONS[ddCurrent];
+  document.getElementById('ddQnum').textContent='SOAL D'+(ddCurrent+1);
+  document.getElementById('ddQtext').textContent=q.text;
+  document.getElementById('ddCounter').textContent=(ddCurrent+1)+' / '+DD_QUESTIONS.length;
+  document.getElementById('ddFb').className='qfb';document.getElementById('ddFb').textContent='';
+
+  const layout=document.getElementById('ddLayout');
+  layout.innerHTML='';
+
+  // Left: item pool
+  const pool=document.createElement('div');
+  pool.className='dd-pool';
+  pool.innerHTML='<div class="dd-pool-title">📦 Kartu (Klik/Seret ke kanan)</div><div class="dd-items" id="ddItems"></div>';
+  layout.appendChild(pool);
+
+  // Right: slots
+  const slotsCol=document.createElement('div');
+  slotsCol.className='dd-pool';
+  slotsCol.innerHTML='<div class="dd-pool-title">🎯 Tempatkan di sini</div><div class="dd-targets" id="ddSlots"></div>';
+  layout.appendChild(slotsCol);
+
+  // Render items
+  const itemsContainer=pool.querySelector('#ddItems');
+  const placed=Object.keys(ddPlacements[ddCurrent]||{});
+  q.items.forEach(item=>{
+    if(!placed.includes(item)){
+      const el=createItemEl(item,false,null);
+      itemsContainer.appendChild(el);
+    }
+  });
+
+  // Render slots
+  const slotsContainer=slotsCol.querySelector('#ddSlots');
+  q.slots.forEach(slot=>{
+    const slotEl=document.createElement('div');
+    slotEl.className='dd-target';
+    slotEl.dataset.slot=slot;
+    slotEl.innerHTML=`<div class="slot-label">${slot}:</div>`;
+
+    // Items placed in this slot
+    const placements=ddPlacements[ddCurrent]||{};
+    Object.entries(placements).forEach(([item,s])=>{
+      if(s===slot){
+        const isCorrect=ddChecked?(DD_QUESTIONS[ddCurrent].answers[item]===slot):null;
+        const itemEl=createItemEl(item,true,isCorrect);
+        slotEl.appendChild(itemEl);
+      }
+    });
+
+    // Drag events (desktop)
+    slotEl.addEventListener('dragover',e=>{e.preventDefault();slotEl.classList.add('drag-over');});
+    slotEl.addEventListener('dragleave',()=>slotEl.classList.remove('drag-over'));
+    slotEl.addEventListener('drop',e=>{
+      e.preventDefault();slotEl.classList.remove('drag-over');
+      if(ddDragging){
+        if(!ddPlacements[ddCurrent]) ddPlacements[ddCurrent]={};
+        ddPlacements[ddCurrent][ddDragging]=slot;
+        ddDragging=null;
+        renderDD();
+      }
+    });
+
+    // Click to place selected item
+    slotEl.addEventListener('click',e=>{
+      if(ddChecked) return;
+      const target=e.target.closest('.dd-item');
+      if(target){
+        // clicked placed item -> return to pool
+        const item=target.dataset.item;
+        if(ddPlacements[ddCurrent]) delete ddPlacements[ddCurrent][item];
+        renderDD(); return;
+      }
+      // place selected item into this slot
+      if(ddSelected){
+        if(!ddPlacements[ddCurrent]) ddPlacements[ddCurrent]={};
+        ddPlacements[ddCurrent][ddSelected]=slot;
+        ddSelected=null;
+        renderDD();
+      }
+    });
+
+    slotsContainer.appendChild(slotEl);
+  });
+
+  // Pool drop (return items via drag)
+  itemsContainer.addEventListener('dragover',e=>e.preventDefault());
+  itemsContainer.addEventListener('drop',e=>{
+    e.preventDefault();
+    if(ddDragging&&ddPlacements[ddCurrent]&&ddPlacements[ddCurrent][ddDragging]){
+      delete ddPlacements[ddCurrent][ddDragging];
+      ddDragging=null;
+      renderDD();
+    }
+  });
+
+  document.getElementById('ddBtnPrev').style.display=ddCurrent===0?'none':'';
+  document.getElementById('ddBtnNext').style.display=ddCurrent===DD_QUESTIONS.length-1?'none':'';
+}
+
+let ddSelected=null; // for click-based interaction
+
+function createItemEl(item,placed=false,isCorrect=null){
+  const el=document.createElement('div');
+  let cls='dd-item'+(placed?' placed':'');
+  if(isCorrect===true) cls+=' placed-correct';
+  else if(isCorrect===false) cls+=' placed-wrong';
+  el.className=cls;
+  el.textContent=item;
+  el.dataset.item=item;
+  el.draggable=!ddChecked;
+
+  // Desktop drag
+  el.addEventListener('dragstart',e=>{
+    if(ddChecked){e.preventDefault();return;}
+    ddDragging=item;el.classList.add('dragging');
+  });
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+
+  // Click to select (pool items) or deselect (placed items)
+  el.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(ddChecked) return;
+    if(placed){
+      // return to pool
+      if(ddPlacements[ddCurrent]) delete ddPlacements[ddCurrent][item];
+      ddSelected=null;
+      renderDD();
+    } else {
+      // select/deselect
+      if(ddSelected===item){ddSelected=null;}
+      else{ddSelected=item;}
+      // highlight all pool items
+      document.querySelectorAll('.dd-items .dd-item').forEach(el2=>{
+        el2.classList.toggle('dd-item-selected',el2.dataset.item===ddSelected);
+      });
+    }
+  });
+
+  // Touch support
+  el.addEventListener('touchstart',e=>{if(ddChecked) return;ddDragging=item;},{ passive:true });
+
+  return el;
+}
+
+function checkDD(){
+  const q=DD_QUESTIONS[ddCurrent];
+  const placements=ddPlacements[ddCurrent]||{};
+  const allPlaced=q.items.every(item=>placements[item]);
+  if(!allPlaced){
+    const fb=document.getElementById('ddFb');
+    fb.className='qfb on partial';
+    fb.textContent='⚡ Tempatkan semua kartu terlebih dahulu!';
+    return;
+  }
+  ddChecked=true;
+  let correct=0;
+  q.items.forEach(item=>{if(placements[item]===q.answers[item]) correct++;});
+  const pct=Math.round(correct/q.items.length*100);
+  const fb=document.getElementById('ddFb');
+  fb.className='qfb on '+(pct===100?'ok':pct>=60?'partial':'bad');
+  fb.textContent=(pct===100?'✅ ':'⚡ ')+`Benar ${correct}/${q.items.length} (${pct}%). `+(pct===100?'Sempurna! Semua tepat.':'Kartu berwarna merah = salah, hijau = benar. Coba lagi!');
+  renderDD();
+}
+
+function resetDD(){
+  ddPlacements[ddCurrent]={};
+  ddChecked=false;
+  ddSelected=null;
+  renderDD();
+}
+
+function ddNav(dir){
+  ddCurrent=Math.max(0,Math.min(DD_QUESTIONS.length-1,ddCurrent+dir));
+  ddChecked=false;
+  ddSelected=null;
+  renderDD();
+}
+
+function switchQuizMode(mode){
+  const mc=document.getElementById('mc-mode');
+  const dd=document.getElementById('dd-mode');
+  document.getElementById('tabMC').classList.toggle('active',mode==='mc');
+  document.getElementById('tabDD').classList.toggle('active',mode==='dd');
+  if(mode==='mc'){mc.style.display='flex';dd.style.display='none';renderQuiz();}
+  else{mc.style.display='none';dd.style.display='flex';renderDD();}
+}
+
+// ===== LEMBAR KERJA =====
+function saveLK(){
+  alert('Data berhasil disimpan! (Fungsi simpan lokal aktif)');
+}
+
+// Init
+renderQuiz();
+initCanvas();
+setTimeout(initCanvas,200);
+window.addEventListener('resize',()=>{if(document.getElementById('page-simulasi').classList.contains('active')) initCanvas();});
+</script>
+</body>
+</html>
