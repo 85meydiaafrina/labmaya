@@ -636,87 +636,404 @@ function toggleNav(){document.getElementById('mainNav').classList.toggle('open')
 </div>
 
 <!-- ===== TEORI ===== -->
+<style>
+/* ── TEORI FIT-TO-SCREEN ── */
+.teori-fit{flex:1;display:grid;grid-template-rows:auto 1fr auto;gap:5px;padding:6px 12px 8px;overflow:hidden;min-height:0;}
+.teori-header{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fef3c7,#fed7aa,#fecaca);border:1.5px solid rgba(234,88,12,.22);border-radius:10px;padding:7px 14px;position:relative;overflow:hidden;flex-shrink:0;}
+.teori-header::after{content:'⚛️';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:44px;opacity:.15;pointer-events:none;}
+.teori-header .h-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#c2410c;text-transform:uppercase;font-weight:700;margin-bottom:2px;}
+.teori-header .h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,17px);font-weight:800;color:#7c2d12;line-height:1.1;}
+.teori-header .h-title span{color:#c2410c;}
+.teori-header .h-desc{font-size:10.5px;color:#78350f;line-height:1.45;max-width:520px;margin-top:2px;}
+
+/* 3-column main grid */
+.teori-main{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:6px;min-height:0;overflow:hidden;}
+.teori-col{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+
+/* Subatomik visual card */
+.sub-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;box-shadow:0 2px 8px rgba(251,146,60,.08);}
+.sub-card-title{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;color:#0369a1;display:flex;align-items:center;gap:5px;}
+.sub-particles{display:flex;gap:5px;}
+.sub-p{flex:1;border-radius:8px;padding:6px 5px;text-align:center;position:relative;overflow:hidden;}
+.sub-p.pr{background:linear-gradient(135deg,#fee2e2,#fecaca);border:1.5px solid #fca5a5;}
+.sub-p.nt{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #fcd34d;}
+.sub-p.el{background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1.5px solid #6ee7b7;}
+.sub-p .sp-sym{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:900;line-height:1;}
+.sub-p.pr .sp-sym{color:#dc2626;}
+.sub-p.nt .sp-sym{color:#d97706;}
+.sub-p.el .sp-sym{color:#059669;}
+.sub-p .sp-name{font-size:9px;font-weight:800;color:#1e293b;margin:2px 0 1px;}
+.sub-p .sp-info{font-size:8.5px;color:#475569;line-height:1.3;}
+.sub-p .sp-badge{position:absolute;top:3px;right:4px;font-size:7px;font-weight:800;padding:1px 4px;border-radius:3px;}
+.sub-p.pr .sp-badge{background:#fca5a5;color:#991b1b;}
+.sub-p.nt .sp-badge{background:#fcd34d;color:#78350f;}
+.sub-p.el .sp-badge{background:#6ee7b7;color:#065f46;}
+
+/* Rumus box */
+.rumus-box{background:linear-gradient(135deg,#dbeafe,#e0f2fe);border:1.5px solid #7dd3fc;border-radius:8px;padding:7px 10px;flex-shrink:0;}
+.rumus-row{display:flex;align-items:center;gap:6px;padding:2px 0;}
+.rumus-row:not(:last-child){border-bottom:1px solid rgba(125,211,252,.4);}
+.rumus-lbl{font-size:9px;color:#0369a1;font-weight:700;min-width:20px;font-family:'JetBrains Mono',monospace;}
+.rumus-eq{font-size:10.5px;color:#075985;font-weight:600;font-family:'JetBrains Mono',monospace;}
+
+/* Atom visual diagram */
+.atom-diagram{flex:1;background:linear-gradient(135deg,#0f172a,#1e293b);border:1.5px solid #334155;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;min-height:0;}
+.atom-diagram canvas{width:100%;height:100%;display:block;}
+
+/* Jenis partikel */
+.jenis-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;flex:1;display:flex;flex-direction:column;gap:4px;min-height:0;box-shadow:0 2px 8px rgba(251,146,60,.08);}
+.jenis-item{display:flex;align-items:flex-start;gap:7px;padding:4px 7px;border-radius:7px;transition:background .15s;}
+.jenis-item:hover{background:#fff7ed;}
+.jenis-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.jenis-body{}
+.jenis-name{font-size:10px;font-weight:800;color:#1e293b;line-height:1.2;}
+.jenis-ex{font-size:9.5px;color:#64748b;line-height:1.3;}
+.jenis-tag{font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:3px;margin-top:2px;display:inline-block;}
+
+/* Notasi */
+.notasi-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;flex-shrink:0;box-shadow:0 2px 8px rgba(251,146,60,.08);}
+.notasi-big{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #fbbf24;border-radius:8px;padding:8px;text-align:center;margin-bottom:6px;position:relative;}
+.notasi-symbol{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:900;color:#92400e;line-height:1;letter-spacing:2px;}
+.notasi-symbol sup{font-size:14px;vertical-align:super;}
+.notasi-symbol sub{font-size:14px;vertical-align:sub;}
+.notasi-legend{display:flex;justify-content:center;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.n-leg{font-size:8.5px;color:#a16207;font-weight:700;display:flex;align-items:center;gap:3px;}
+.n-leg span{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.notasi-examples{display:flex;flex-direction:column;gap:3px;}
+.notasi-ex-row{display:flex;align-items:center;gap:6px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:4px 8px;}
+.notasi-ex-sym{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;color:#0369a1;min-width:52px;}
+.notasi-ex-info{font-size:9.5px;color:#475569;line-height:1.3;}
+
+/* Sejarah timeline */
+.sejarah-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;flex:1;min-height:0;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(251,146,60,.08);}
+.timeline{display:flex;flex-direction:column;gap:3px;flex:1;justify-content:space-between;}
+.tl-item{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:7px;border:1.5px solid transparent;transition:all .15s;cursor:default;}
+.tl-item:hover{border-color:#fed7aa;background:#fff7ed;}
+.tl-dot{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;position:relative;}
+.tl-dot::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:2px;height:8px;background:#fed7aa;}
+.tl-item:last-child .tl-dot::after{display:none;}
+.tl-year{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;color:#ea580c;min-width:36px;}
+.tl-name{font-size:10px;font-weight:800;color:#1e293b;}
+.tl-desc{font-size:9px;color:#64748b;line-height:1.3;margin-top:1px;}
+
+/* Bottom row */
+.teori-bottom{display:grid;grid-template-columns:1fr auto;gap:6px;flex-shrink:0;}
+.ion-summary{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #fbbf24;border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:12px;}
+.ion-box{text-align:center;}
+.ion-sym{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:900;}
+.ion-sym.kation{color:#dc2626;}
+.ion-sym.anion{color:#059669;}
+.ion-label{font-size:8.5px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;}
+.ion-arrow{font-size:10px;color:#a16207;text-align:center;line-height:1.3;flex:1;}
+.legend-key{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.lk-item{display:flex;align-items:center;gap:4px;font-size:9.5px;color:#475569;font-weight:600;}
+.lk-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+@media(max-width:900px){
+  .teori-main{grid-template-columns:1fr 1fr;}
+  .teori-col:nth-child(3){grid-column:1/-1;flex-direction:row;}
+  .sejarah-card{flex:1;}
+}
+@media(max-width:640px){
+  .teori-main{grid-template-columns:1fr;overflow-y:auto;}
+  .teori-fit{grid-template-rows:auto 1fr auto;}
+}
+</style>
+
 <div id="page-teori" class="page">
-  <div class="scroll">
-    <div class="hero">
+  <div class="teori-fit">
+
+    <!-- Header -->
+    <div class="teori-header">
       <div>
         <div class="h-label">Sub Unit · Kimia Kelas X</div>
         <div class="h-title">Partikel <span>Penyusun Materi</span></div>
-        <div class="h-desc">Materi di alam semesta tidak bersifat kontinu — melainkan tersusun dari partikel-partikel kecil: atom, molekul, dan ion. Memahaminya adalah kunci mengerti seluruh ilmu kimia.</div>
+        <div class="h-desc">Materi tersusun dari partikel-partikel kecil: atom, molekul, dan ion — kunci memahami seluruh ilmu kimia.</div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="ch"><div class="ci b">⚛️</div><div class="ct">Partikel Subatomik</div></div>
-      <p>Atom — unit terkecil materi — tersusun dari tiga partikel subatomik dengan sifat yang berbeda:</p>
-      <div class="partikel-grid">
-        <div class="p-box proton">
-          <div class="p-sym">p⁺</div>
-          <div class="p-name">Proton</div>
-          <div class="p-desc">Muatan +1 · Di inti<br>Menentukan identitas unsur</div>
+    <!-- Main 3-column grid -->
+    <div class="teori-main">
+
+      <!-- COL 1: Subatomik + Diagram Atom -->
+      <div class="teori-col">
+        <div class="sub-card">
+          <div class="sub-card-title">⚛️ Partikel Subatomik</div>
+          <div class="sub-particles">
+            <div class="sub-p pr">
+              <div class="sp-badge">INTI</div>
+              <div class="sp-sym">p⁺</div>
+              <div class="sp-name">Proton</div>
+              <div class="sp-info">Muatan +1<br>Identitas unsur</div>
+            </div>
+            <div class="sub-p nt">
+              <div class="sp-badge">INTI</div>
+              <div class="sp-sym">n⁰</div>
+              <div class="sp-name">Neutron</div>
+              <div class="sp-info">Netral<br>Tentukan isotop</div>
+            </div>
+            <div class="sub-p el">
+              <div class="sp-badge">ORBIT</div>
+              <div class="sp-sym">e⁻</div>
+              <div class="sp-name">Elektron</div>
+              <div class="sp-info">Muatan −1<br>Sifat kimia</div>
+            </div>
+          </div>
+          <div class="rumus-box">
+            <div class="rumus-row"><span class="rumus-lbl">Z</span><span class="rumus-eq">= jumlah proton</span></div>
+            <div class="rumus-row"><span class="rumus-lbl">A</span><span class="rumus-eq">= proton + neutron</span></div>
+            <div class="rumus-row"><span class="rumus-lbl">N</span><span class="rumus-eq">= A − Z</span></div>
+          </div>
         </div>
-        <div class="p-box neutron">
-          <div class="p-sym">n⁰</div>
-          <div class="p-name">Neutron</div>
-          <div class="p-desc">Muatan netral · Di inti<br>Menentukan isotop</div>
-        </div>
-        <div class="p-box elektron">
-          <div class="p-sym">e⁻</div>
-          <div class="p-name">Elektron</div>
-          <div class="p-desc">Muatan −1 · Mengorbit inti<br>Menentukan sifat kimia</div>
+        <!-- Animated atom diagram -->
+        <div class="atom-diagram" id="teoriAtomWrap">
+          <canvas id="teoriAtomCanvas"></canvas>
         </div>
       </div>
-      <div style="background:linear-gradient(135deg,#dbeafe,#e0f2fe);border:1.5px solid #7dd3fc;border-radius:8px;padding:9px 14px;margin-top:7px;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#0369a1;line-height:1.9;font-weight:600;">
-          Nomor Atom (Z) = jumlah proton<br>
-          Nomor Massa (A) = proton + neutron<br>
-          Jumlah Neutron (N) = A − Z
+
+      <!-- COL 2: Jenis Partikel + Notasi -->
+      <div class="teori-col">
+        <div class="jenis-card">
+          <div class="sub-card-title">🔗 Jenis Partikel Materi</div>
+          <div class="jenis-item">
+            <div class="jenis-icon" style="background:#dbeafe;">⚛</div>
+            <div class="jenis-body">
+              <div class="jenis-name">Atom</div>
+              <div class="jenis-ex">Unit terkecil unsur. Contoh: H, O, Na, Fe, C</div>
+              <span class="jenis-tag" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;">Netral · 1 jenis</span>
+            </div>
+          </div>
+          <div class="jenis-item">
+            <div class="jenis-icon" style="background:#d1fae5;">🟢</div>
+            <div class="jenis-body">
+              <div class="jenis-name">Molekul Unsur</div>
+              <div class="jenis-ex">Atom <strong>sejenis</strong>. Contoh: H₂, O₂, N₂, O₃, S₈</div>
+              <span class="jenis-tag" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">Sejenis ≥2</span>
+            </div>
+          </div>
+          <div class="jenis-item">
+            <div class="jenis-icon" style="background:#ede9fe;">🔵</div>
+            <div class="jenis-body">
+              <div class="jenis-name">Molekul Senyawa</div>
+              <div class="jenis-ex">Atom <strong>berbeda</strong>. Contoh: H₂O, CO₂, CH₄, NH₃</div>
+              <span class="jenis-tag" style="background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;">Berbeda ≥2</span>
+            </div>
+          </div>
+          <div class="jenis-item">
+            <div class="jenis-icon" style="background:#ffedd5;">⚡</div>
+            <div class="jenis-body">
+              <div class="jenis-name">Ion</div>
+              <div class="jenis-ex">Atom bermuatan. Contoh: Na⁺, Cl⁻, Ca²⁺, O²⁻</div>
+              <div style="display:flex;gap:4px;margin-top:2px;">
+                <span class="jenis-tag" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">Kation +</span>
+                <span class="jenis-tag" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;">Anion −</span>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div class="notasi-card">
+          <div class="sub-card-title" style="margin-bottom:5px;">📐 Notasi Atom &amp; Ion</div>
+          <div class="notasi-big">
+            <div class="notasi-symbol"><sup>A</sup><sub style="margin-left:-4px">Z</sub>X<sup style="font-size:12px;color:#c2410c;">muatan</sup></div>
+            <div class="notasi-legend">
+              <div class="n-leg"><span style="background:#0369a1;"></span>A = Nomor Massa</div>
+              <div class="n-leg"><span style="background:#dc2626;"></span>Z = Nomor Atom</div>
+              <div class="n-leg"><span style="background:#c2410c;"></span>X = Lambang</div>
+            </div>
+          </div>
+          <div class="notasi-examples">
+            <div class="notasi-ex-row">
+              <div class="notasi-ex-sym">¹²₆C</div>
+              <div class="notasi-ex-info">6p · 6n · 6e → <strong>Atom</strong> Karbon</div>
+            </div>
+            <div class="notasi-ex-row">
+              <div class="notasi-ex-sym">²³₁₁Na⁺</div>
+              <div class="notasi-ex-info">11p · 12n · 10e → <strong>Kation</strong> Na</div>
+            </div>
+            <div class="notasi-ex-row">
+              <div class="notasi-ex-sym">¹⁶₈O²⁻</div>
+              <div class="notasi-ex-info">8p · 8n · 10e → <strong>Anion</strong> Oksida</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COL 3: Timeline Sejarah -->
+      <div class="teori-col">
+        <div class="sejarah-card">
+          <div class="sub-card-title" style="margin-bottom:6px;">📜 Perkembangan Model Atom</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot" style="background:#fef3c7;border:1.5px solid #fbbf24;">🔵</div>
+              <div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div class="tl-year">1803</div>
+                  <div class="tl-name">Dalton</div>
+                </div>
+                <div class="tl-desc">Atom = bola pejal keras, tak dapat dibagi</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:#ede9fe;border:1.5px solid #c4b5fd;">🍞</div>
+              <div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div class="tl-year">1897</div>
+                  <div class="tl-name">Thomson</div>
+                </div>
+                <div class="tl-desc">Model roti kismis: elektron tersebar di muatan positif</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:#fee2e2;border:1.5px solid #fca5a5;">☀️</div>
+              <div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div class="tl-year">1911</div>
+                  <div class="tl-name">Rutherford</div>
+                </div>
+                <div class="tl-desc">Inti bermuatan positif, elektron mengorbit di luar</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:#d1fae5;border:1.5px solid #6ee7b7;">🪐</div>
+              <div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div class="tl-year">1913</div>
+                  <div class="tl-name">Bohr</div>
+                </div>
+                <div class="tl-desc">Elektron di tingkat energi (kulit) tertentu & diskret</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot" style="background:#dbeafe;border:1.5px solid #93c5fd;">🌫️</div>
+              <div>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <div class="tl-year">1926</div>
+                  <div class="tl-name">Modern</div>
+                </div>
+                <div class="tl-desc">Orbital = awan probabilitas menemukan elektron</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end teori-main -->
+
+    <!-- Bottom bar: Ion summary -->
+    <div class="teori-bottom">
+      <div class="ion-summary">
+        <div class="ion-box">
+          <div class="ion-sym kation">Na⁺</div>
+          <div class="ion-label">Kation</div>
+        </div>
+        <div class="ion-arrow">
+          Atom <strong>melepas e⁻</strong> → muatan <strong style="color:#dc2626">+</strong> (Kation)<br>
+          Atom <strong>menerima e⁻</strong> → muatan <strong style="color:#059669">−</strong> (Anion)
+        </div>
+        <div class="ion-box">
+          <div class="ion-sym anion">Cl⁻</div>
+          <div class="ion-label">Anion</div>
+        </div>
+      </div>
+      <div class="legend-key">
+        <div class="lk-item"><div class="lk-dot" style="background:#dc2626;"></div>Proton (p⁺)</div>
+        <div class="lk-item"><div class="lk-dot" style="background:#d97706;"></div>Neutron (n⁰)</div>
+        <div class="lk-item"><div class="lk-dot" style="background:#059669;"></div>Elektron (e⁻)</div>
       </div>
     </div>
 
-    <div class="two-col">
-      <div class="card">
-        <div class="ch"><div class="ci p">🔗</div><div class="ct">Jenis Partikel Materi</div></div>
-        <h4>Atom</h4>
-        <p>Unit terkecil unsur yang masih memiliki sifat unsur tersebut. Contoh: H, O, Na, Fe, C.</p>
-        <h4>Molekul Unsur</h4>
-        <p>Gabungan dua atau lebih atom <strong>sejenis</strong>. Contoh: H₂, O₂, N₂, O₃, P₄, S₈.</p>
-        <h4>Molekul Senyawa</h4>
-        <p>Gabungan dua atau lebih atom <strong>berbeda jenis</strong>. Contoh: H₂O, CO₂, CH₄, NH₃, C₆H₁₂O₆.</p>
-        <h4>Ion</h4>
-        <p>Atom/kelompok atom yang bermuatan karena <strong>melepas</strong> (kation, +) atau <strong>menerima</strong> (anion, −) elektron. Contoh: Na⁺, Cl⁻, Ca²⁺, O²⁻.</p>
-      </div>
-      <div class="card">
-        <div class="ch"><div class="ci g">📐</div><div class="ct">Notasi Atom &amp; Ion</div></div>
-        <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #fbbf24;border-radius:8px;padding:10px;text-align:center;margin-bottom:7px;">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:#92400e;letter-spacing:2px;">ᴬ꜀X</div>
-          <div style="font-size:10px;color:#a16207;margin-top:5px;font-weight:600;">A = Nomor Massa · Z = Nomor Atom · X = Lambang Unsur</div>
-        </div>
-        <ul class="olist">
-          <li>¹²₆C → 6 proton, 6 neutron, 6 elektron → Atom karbon</li>
-          <li>²³₁₁Na⁺ → 11 proton, 12 neutron, 10 elektron → Ion natrium</li>
-          <li>¹⁶₈O²⁻ → 8 proton, 8 neutron, 10 elektron → Ion oksida</li>
-        </ul>
-        <div class="chips" style="margin-top:8px;">
-          <span class="chip chip-r">Kation: melepas e⁻</span>
-          <span class="chip chip-g">Anion: menerima e⁻</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="ch"><div class="ci y">📜</div><div class="ct">Sejarah Model Atom</div></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px;margin-top:4px;">
-        <div class="fi"><strong>Dalton (1803)</strong><span>Atom = bola pejal tidak dapat dibagi</span></div>
-        <div class="fi"><strong>Thomson (1897)</strong><span>Model roti kismis: elektron tersebar dalam muatan positif</span></div>
-        <div class="fi"><strong>Rutherford (1911)</strong><span>Inti atom bermuatan positif, elektron mengorbit</span></div>
-        <div class="fi"><strong>Bohr (1913)</strong><span>Elektron mengorbit di tingkat energi (kulit) tertentu</span></div>
-        <div class="fi"><strong>Modern (1926)</strong><span>Orbital: daerah probabilitas elektron ditemukan</span></div>
-      </div>
-    </div>
-  </div>
+  </div><!-- end teori-fit -->
 </div>
+
+<script>
+// ── Mini animated atom for teori page ──
+(function(){
+  function initTeoriAtom(){
+    const wrap = document.getElementById('teoriAtomWrap');
+    const canvas = document.getElementById('teoriAtomCanvas');
+    if(!wrap || !canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, t = 0;
+
+    function resize(){
+      W = canvas.width = wrap.clientWidth;
+      H = canvas.height = wrap.clientHeight;
+    }
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(wrap);
+
+    // Carbon atom: 6p, 6n, 2+4 electrons on 2 shells
+    function drawTeoriAtom(){
+      ctx.clearRect(0,0,W,H);
+      const cx = W/2, cy = H/2;
+      const maxR = Math.min(W,H)*0.42;
+
+      // Dark bg
+      const bg = ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*1.5);
+      bg.addColorStop(0,'#1e293b'); bg.addColorStop(1,'#0f172a');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+      // Shells
+      const shells = [maxR*0.38, maxR*0.72];
+      shells.forEach((r,i)=>{
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(56,189,248,${0.18-i*0.04})`; ctx.lineWidth=1.2; ctx.stroke();
+      });
+
+      // Nucleus glow
+      const ng = ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*0.22);
+      ng.addColorStop(0,'rgba(251,191,36,0.95)');
+      ng.addColorStop(0.4,'rgba(248,113,113,0.7)');
+      ng.addColorStop(1,'rgba(248,113,113,0)');
+      ctx.beginPath(); ctx.arc(cx,cy,maxR*0.22,0,Math.PI*2);
+      ctx.fillStyle=ng; ctx.fill();
+
+      // Protons & neutrons in nucleus
+      for(let i=0;i<6;i++){
+        const a=i*Math.PI/3+t*0.005;
+        const r2=maxR*0.10;
+        ctx.beginPath(); ctx.arc(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2,maxR*0.04,0,Math.PI*2);
+        ctx.fillStyle='#f87171'; ctx.fill();
+      }
+      for(let i=0;i<6;i++){
+        const a=i*Math.PI/3+Math.PI/6+t*0.005;
+        const r2=maxR*0.06;
+        ctx.beginPath(); ctx.arc(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2,maxR*0.035,0,Math.PI*2);
+        ctx.fillStyle='#fbbf24'; ctx.fill();
+      }
+
+      // Electrons: shell 1 = 2e, shell 2 = 4e
+      const configs=[[2,shells[0],1],[4,shells[1],-0.7]];
+      configs.forEach(([count, r, dir])=>{
+        for(let i=0;i<count;i++){
+          const a = (i/count)*Math.PI*2 + t*0.018*dir;
+          const ex=cx+Math.cos(a)*r, ey=cy+Math.sin(a)*r;
+          const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,maxR*0.06);
+          eg.addColorStop(0,'rgba(52,211,153,1)'); eg.addColorStop(1,'rgba(52,211,153,0)');
+          ctx.beginPath(); ctx.arc(ex,ey,maxR*0.055,0,Math.PI*2);
+          ctx.fillStyle=eg; ctx.fill();
+          ctx.beginPath(); ctx.arc(ex,ey,maxR*0.03,0,Math.PI*2);
+          ctx.fillStyle='#34d399'; ctx.fill();
+        }
+      });
+
+      // Label
+      ctx.font=`bold ${Math.max(9,maxR*0.13)}px 'JetBrains Mono',monospace`;
+      ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,0.55)';
+      ctx.fillText('¹²₆C',cx,cy+maxR*0.88);
+
+      t++;
+      requestAnimationFrame(drawTeoriAtom);
+    }
+    drawTeoriAtom();
+  }
+
+  // Run after DOM ready
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initTeoriAtom);
+  else initTeoriAtom();
+})();
+</script>
 
 <!-- ===== ALAT DAN BAHAN ===== -->
 <div id="page-alatbahan" class="page">
