@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya Kimia – Ikatan Ion</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4ff;--surf:#ffffff;--surf2:#f7f9ff;
+  --border:#dde3f5;--border2:#b8c4e8;
+  --kation:#f5a623;--kation2:#ffca5c;--kation3:#c47d0a;
+  --anion:#9b22c9;--anion2:#c45ef5;--anion3:#6b1095;
+  --acc:#3b6ef5;--acc2:#6a97ff;
+  --gold:#d97706;--green:#059669;--red:#dc2626;
+  --text:#1a1a2e;--text2:#4a4a6a;--text3:#9090b0;
+  --h:52px;--fbase:14px;
+}
+@media(max-width:768px){:root{--fbase:13px;--h:46px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 0%,rgba(245,166,35,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 100% 100%,rgba(155,34,201,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(59,110,245,0.04) 0%,transparent 70%);
+}
+
+/* ── HEADER ── */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#1a0a2e,#2d1060,#0a1a3e);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  display:flex;align-items:center;padding:0 14px;gap:12px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.35);
+}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.logo-text{font-family:'Rajdhani',sans-serif;font-size:clamp(14px,1.8vw,20px);font-weight:700;color:#fff;line-height:1.1;letter-spacing:.02em;}
+.logo-sub{font-size:9px;color:rgba(255,255,255,0.55);letter-spacing:.06em;}
+nav{display:flex;gap:1px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;font-family:'Nunito',sans-serif;font-size:clamp(10.5px,1.1vw,12.5px);font-weight:700;padding:0 10px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:6px;right:6px;height:3px;background:linear-gradient(90deg,var(--kation),var(--anion));transform:scaleX(0);transition:transform .2s;border-radius:3px 3px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.9);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;
+    background:linear-gradient(180deg,#1a0a2e,#0a1a3e);border-bottom:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.4);gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:50px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;display:flex;align-items:center;gap:8px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.07);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .25s ease;}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+/* Fit-to-screen pages: content fills height, internal sections scroll if needed */
+.fit-page{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:8px 12px;gap:7px;}
+.fit-page .card{margin:0;flex-shrink:0;}
+.fit-cols{display:grid;gap:7px;flex:1;min-height:0;overflow:hidden;}
+.fit-cols-2{grid-template-columns:1fr 1fr;}
+.fit-cols-3{grid-template-columns:1fr 1fr 1fr;}
+.fit-scroll{overflow-y:auto;flex:1;}
+.fit-scroll::-webkit-scrollbar{width:3px;}
+.fit-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.fit-card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:10px 13px;box-shadow:0 1px 6px rgba(26,26,46,.05);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.fit-card:hover{border-color:var(--border2);}
+.fit-card .ch{margin-bottom:6px;flex-shrink:0;}
+.fit-card .olist{overflow-y:auto;flex:1;}
+.fit-card p{font-size:clamp(11.5px,1.1vw,13px);line-height:1.65;color:var(--text2);margin-bottom:4px;}
+@media(max-width:640px){
+  .fit-cols-2,.fit-cols-3{grid-template-columns:1fr;}
+}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 6px rgba(26,26,46,.05);}
+.card:hover{border-color:var(--border2);box-shadow:0 4px 16px rgba(26,26,46,.1);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ci{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ci.ka{background:rgba(245,166,35,.12);}
+.ci.an{background:rgba(155,34,201,.12);}
+.ci.ac{background:rgba(59,110,245,.12);}
+.ci.g{background:rgba(5,150,105,.12);}
+.ci.r{background:rgba(220,38,38,.12);}
+.ct{font-family:'Rajdhani',sans-serif;font-size:clamp(13px,1.4vw,16px);font-weight:700;color:var(--text);letter-spacing:.02em;}
+.card p{font-size:clamp(12px,1.2vw,13.5px);line-height:1.75;color:var(--text2);margin-bottom:6px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1vw,11.5px);font-weight:800;color:var(--kation3);letter-spacing:.1em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(12px,1.2vw,13.5px);color:var(--text2);line-height:1.65;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--anion);font-weight:900;font-size:16px;margin-top:-1px;}
+.chips{display:flex;gap:5px;margin:6px 0;flex-wrap:wrap;}
+.chip{border-radius:6px;padding:3px 10px;font-size:clamp(11px,1.1vw,12.5px);font-weight:700;}
+.chip-ka{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:var(--kation3);}
+.chip-an{background:rgba(155,34,201,.1);border:1px solid rgba(155,34,201,.3);color:var(--anion3);}
+.chip-g{background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.25);color:#047857;}
+.chip-b{background:rgba(59,110,245,.08);border:1px solid rgba(59,110,245,.25);color:#1d4ed8;}
+
+/* ── FORMULA BOX ── */
+.formula-box{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:linear-gradient(135deg,#fffbf0,#f5f0ff);border-left:3.5px solid;border-radius:0 8px 8px 0;padding:8px 14px;margin:8px 0;color:var(--text);line-height:1.8;}
+.formula-box.ka{border-color:var(--kation);}
+.formula-box.an{border-color:var(--anion);}
+.formula-box.ac{border-color:var(--acc);}
+
+/* ── GRID ITEM ── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;margin-top:6px;}
+.fi{background:var(--surf2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;}
+.fi strong{display:block;font-size:clamp(11px,1.1vw,12.5px);color:var(--anion3);margin-bottom:3px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.04em;}
+.fi span{font-size:clamp(11px,1.1vw,12.5px);color:var(--text2);line-height:1.5;}
+
+/* ── DRAG & DROP ── */
+.drag-card{
+  background:#fff;border:2px solid var(--border);border-radius:12px;
+  padding:10px 6px;text-align:center;cursor:grab;
+  transition:transform .15s,box-shadow .15s,border-color .15s,opacity .2s;
+  user-select:none;min-height:90px;touch-action:none;
+  -webkit-tap-highlight-color:transparent;position:relative;
+}
+.drag-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(26,26,46,.14);border-color:var(--border2);}
+.drag-card:active{cursor:grabbing;transform:scale(.95);}
+.drag-card.logam{background:linear-gradient(135deg,#fffbf0,#fff5e0);border-color:#f5d08a;}
+.drag-card.logam:hover{border-color:var(--kation);}
+.drag-card.nonlogam{background:linear-gradient(135deg,#f9f0ff,#f0e0ff);border-color:#d0a8f5;}
+.drag-card.nonlogam:hover{border-color:var(--anion);}
+.drag-card.dragging{opacity:.3;transform:scale(.94);filter:grayscale(.4);}
+.drag-card.placed{opacity:.4;cursor:not-allowed;filter:grayscale(.5);}
+.drag-card.touch-grabbing{transform:scale(1.07);box-shadow:0 10px 28px rgba(155,34,201,.25);z-index:10;}
+.drag-icon{height:50px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;overflow:hidden;border-radius:8px;}
+.drag-icon img{width:42px;height:42px;object-fit:contain;pointer-events:none;}
+.drag-name{font-size:11.5px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:1px;font-family:'Rajdhani',sans-serif;letter-spacing:.04em;}
+.drag-sub{font-size:9px;color:var(--text3);}
+.drop-zone{border:2.5px dashed var(--border2);border-radius:11px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;transition:background .2s,border-color .2s;position:relative;touch-action:none;}
+.drop-zone.logam-zone.drag-over-ok{background:#fffbf0;border-color:var(--kation);}
+.drop-zone.nonlogam-zone.drag-over-ok{background:#f9f0ff;border-color:var(--anion);}
+.drop-zone.drag-over-wrong{background:#fff1f2;border-color:#f87171;}
+.drop-hint{width:100%;text-align:center;font-size:11px;color:var(--text3);padding:14px 0;pointer-events:none;}
+.drop-card{background:#fff;border:1.5px solid #f5d08a;border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text);position:relative;font-family:'Rajdhani',sans-serif;}
+.drop-card.nonlogam-card{border-color:#d0a8f5;}
+.drop-card-remove{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px;line-height:1;transition:color .15s;}
+.drop-card-remove:hover{color:#dc2626;}
+
+/* ── SIMULATION ── */
+.sim-wrap{display:grid;grid-template-columns:190px 1fr;gap:8px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;box-shadow:0 1px 4px rgba(26,26,46,.06);}
+.ctrl-panel h3{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--anion3);letter-spacing:.04em;}
+.cg label{display:block;font-size:9.5px;font-weight:800;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+select{width:100%;background:#fff;border:1.5px solid var(--border);border-radius:7px;color:var(--text);padding:6px 26px 6px 9px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:600;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%239b22c9' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .17s;}
+select:focus{border-color:var(--anion);box-shadow:0 0 0 2px rgba(155,34,201,.1);}
+.btn{width:100%;border:none;border-radius:8px;padding:8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;box-shadow:0 3px 10px rgba(155,34,201,.35);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(155,34,201,.45);}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-reset{background:var(--surf2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--anion);color:var(--anion);}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.arena{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:10px;flex:1;min-height:0;box-shadow:0 1px 4px rgba(26,26,46,.06);display:flex;flex-direction:column;}
+.arena h3{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--anion3);margin-bottom:6px;letter-spacing:.04em;}
+#simCanvas{width:100%;border-radius:9px;display:block;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);border:1px solid var(--border);}
+.statsrow{display:flex;gap:6px;margin-top:6px;}
+.sbox{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:6px;text-align:center;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;display:block;}
+.sv.ka{color:var(--kation3);}
+.sv.an{color:var(--anion3);}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── SIM TABS ── */
+.sim-tabs{display:flex;gap:4px;background:linear-gradient(135deg,#1a0a2e,#0a1a3e);border-radius:10px;padding:5px 8px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1);}
+.sim-tab{background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-family:'Nunito',sans-serif;font-size:clamp(10px,1.05vw,12px);font-weight:700;padding:5px 13px;border-radius:7px;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.sim-tab:hover{color:#fff;background:rgba(255,255,255,.08);}
+.sim-tab.active{background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;box-shadow:0 2px 10px rgba(155,34,201,.4);}
+.sim-panel{display:none;flex:1;min-height:0;overflow:hidden;}
+.sim-panel.active{display:flex;flex-direction:column;gap:6px;}
+/* canvas panels */
+.sim-canvas-wrap{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:10px;flex:1;min-height:0;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(26,26,46,.06);}
+.sim-canvas-wrap h3{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--anion3);margin-bottom:6px;letter-spacing:.04em;flex-shrink:0;}
+/* info bar bottom */
+.sim-infobar{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;flex-shrink:0;}
+/* properties grid for Sim 3 */
+.prop-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.prop-card{border-radius:10px;padding:9px 10px;text-align:center;border:1.5px solid;transition:transform .2s,box-shadow .2s;cursor:pointer;}
+.prop-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.12);}
+.prop-card .pc-icon{font-size:22px;margin-bottom:4px;}
+.prop-card .pc-name{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:3px;}
+.prop-card .pc-val{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;margin-bottom:2px;}
+.prop-card .pc-desc{font-size:10px;line-height:1.4;color:var(--text2);}
+/* bond strength gauge for Sim 4 */
+.gauge-row{display:flex;gap:5px;align-items:center;}
+.gauge-bar{flex:1;height:18px;border-radius:9px;background:var(--surf2);border:1px solid var(--border);overflow:hidden;position:relative;}
+.gauge-fill{height:100%;border-radius:9px;transition:width .6s ease;}
+.gauge-label{font-size:10px;font-weight:800;width:80px;text-align:right;color:var(--text2);}
+.gauge-val{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;width:70px;color:var(--anion3);}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:6px;}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:8px 11px;transition:border-color .17s;}
+.step:hover{border-color:var(--anion2);background:#fdf5ff;}
+.snum{min-width:24px;height:24px;border-radius:50%;background:rgba(155,34,201,.1);border:1px solid rgba(155,34,201,.28);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--anion);flex-shrink:0;font-weight:700;}
+.step p{font-size:clamp(12px,1.2vw,13.5px);color:var(--text2);line-height:1.6;margin:0;}
+
+/* ── WORKSHEET ── */
+.ws-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.ws-table th{background:linear-gradient(135deg,#2d1060,#0a1a3e);color:#fff;padding:8px 10px;text-align:center;border:1px solid var(--border2);font-size:10.5px;letter-spacing:.04em;font-weight:800;}
+.ws-table td{padding:5px 8px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.ws-table tr:nth-child(even) td{background:#faf8ff;}
+.ws-table tr:hover td{background:#f5f0ff;}
+.ws-table input[type=text],.ws-table select.ws-sel{
+  width:100%;border:1.5px solid var(--border);border-radius:6px;padding:4px 7px;
+  font-family:'Nunito',sans-serif;font-size:11px;color:var(--text);background:#fff;outline:none;
+  transition:border-color .17s;
+}
+.ws-table input[type=text]:focus,.ws-table select.ws-sel:focus{border-color:var(--anion);box-shadow:0 0 0 2px rgba(155,34,201,.08);}
+.ws-radio-group{display:flex;gap:10px;justify-content:center;}
+.ws-radio-group label{font-size:11px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:3px;}
+.ws-radio-group input[type=radio]{accent-color:var(--anion);cursor:pointer;}
+.disc-area{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;font-family:'Nunito',sans-serif;font-size:12px;color:var(--text);background:var(--surf2);resize:vertical;outline:none;transition:border-color .17s;line-height:1.7;margin-top:5px;}
+.disc-area:focus{border-color:var(--anion);box-shadow:0 0 0 2px rgba(155,34,201,.08);}
+
+/* ── QUIZ ── */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1px solid var(--border);border-radius:12px;margin-bottom:7px;flex-shrink:0;}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--border);background:var(--surf2);font-size:9.5px;font-weight:800;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;font-family:'JetBrains Mono',monospace;}
+.qprog-dot.answered{border-color:var(--anion);color:var(--anion3);background:#f9f0ff;}
+.qprog-dot.current{background:var(--anion);color:#fff;border-color:var(--anion);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(26,26,46,.05);}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--anion);letter-spacing:.12em;margin-bottom:5px;font-weight:600;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 8px;border-radius:5px;margin-bottom:8px;letter-spacing:.04em;}
+.badge-mc{background:#f9f0ff;border:1px solid #d0a8f5;color:var(--anion3);}
+.badge-tf{background:#fffbf0;border:1px solid #f5d08a;color:var(--kation3);}
+.qtext{font-size:13.5px;color:var(--text);line-height:1.55;font-weight:700;margin-bottom:10px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);}
+.opt:hover{border-color:var(--anion2);background:#f9f0ff;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--anion);cursor:pointer;}
+.opt.sel{border-color:var(--anion);background:#f9f0ff;color:var(--anion3);}
+.opt.correct{background:#f0fdf4;border-color:#4ade80;color:#166534;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:8px;padding:8px 12px;border-radius:7px;font-size:11.5px;display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:7px 18px;border-radius:8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--anion);color:var(--anion);}
+.btn-next{background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;}
+.btn-next:hover{box-shadow:0 4px 16px rgba(155,34,201,.4);}
+.btn-submit-q{background:linear-gradient(135deg,var(--kation3),var(--kation));color:#fff;}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text3);}
+
+/* ── SCORE OVERLAY ── */
+.score-overlay{position:fixed;inset:0;background:rgba(10,5,30,.65);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(10px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:20px;padding:36px 50px;text-align:center;box-shadow:0 24px 70px rgba(26,26,46,.22);animation:fu .3s ease;min-width:290px;}
+.score-big{font-family:'Rajdhani',sans-serif;font-size:78px;font-weight:700;background:linear-gradient(135deg,var(--kation),var(--anion));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.score-pct{font-size:20px;color:var(--text3);margin-top:2px;}
+.score-sub{font-size:13px;color:var(--text2);margin:8px 0 4px;}
+.score-grade{font-size:16px;font-weight:800;margin-top:8px;}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:20px;}
+.btn-score{padding:10px 24px;border-radius:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:var(--surf2);border:1.5px solid var(--border);color:var(--text2);}
+.btn-review:hover{border-color:var(--anion);color:var(--anion);}
+.btn-ulangi{background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;}
+.btn-ulangi:hover{box-shadow:0 5px 18px rgba(155,34,201,.4);}
+
+/* ── POPUP ── */
+#dragPopup{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(10,5,30,.5);backdrop-filter:blur(4px);}
+#dragPopup.on{display:flex;}
+#dragPopupBox{background:#fff;border-radius:20px;padding:32px 40px;text-align:center;max-width:320px;width:90%;box-shadow:0 24px 70px rgba(0,0,0,.28);transform:scale(.7);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .28s;}
+
+/* ── LOADING SCREEN ── */
+#loadScreen{
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#0d0320 0%,#1a0a2e 40%,#0a1a3e 80%,#050a20 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  transition:opacity .7s ease;
+}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-logo-wrap{margin-bottom:22px;position:relative;}
+.load-title{font-family:'Rajdhani',sans-serif;font-size:clamp(22px,3.5vw,36px);font-weight:700;color:#fff;text-align:center;margin-bottom:5px;letter-spacing:.05em;}
+.load-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1.1vw,12px);color:#c45ef5;letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:26px;}
+.load-bar-wrap{width:clamp(220px,28vw,320px);height:5px;background:rgba(255,255,255,.12);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,var(--kation),#ff6b9d,var(--anion),#6b9dff);border-radius:5px;transition:width .1s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.5vw,16px);color:#fff;font-weight:700;margin-bottom:10px;text-align:center;letter-spacing:.05em;}
+.load-status{font-size:clamp(11px,1.1vw,12.5px);color:rgba(255,255,255,.6);font-family:'Nunito',sans-serif;margin-bottom:28px;min-height:18px;text-align:center;}
+#btnMulai{
+  display:none;background:linear-gradient(135deg,var(--kation3),var(--kation));color:#fff;border:none;border-radius:14px;
+  padding:13px 42px;font-family:'Nunito',sans-serif;font-size:clamp(13px,1.5vw,16px);font-weight:900;
+  cursor:pointer;letter-spacing:.04em;box-shadow:0 5px 24px rgba(245,166,35,.5);
+  animation:btnPop .45s cubic-bezier(.34,1.56,.64,1) forwards;transition:transform .18s,box-shadow .18s;
+}
+#btnMulai:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 10px 32px rgba(245,166,35,.6);}
+@keyframes btnPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── LEWIS SIM EXTRAS ── */
+.lewis-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.lewis-badge.before{background:rgba(59,110,245,.12);border:1px solid rgba(59,110,245,.3);color:#1d4ed8;}
+.lewis-badge.after{background:rgba(155,34,201,.12);border:1px solid rgba(155,34,201,.3);color:var(--anion3);}
+@keyframes lewisGlow{0%,100%{box-shadow:0 0 0 0 rgba(155,34,201,0);}50%{box-shadow:0 0 18px 4px rgba(155,34,201,0.25);}}
+#lewisAnimBtn:not(:disabled){animation:lewisGlow 2s infinite;}
+@keyframes electronPop{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+
+/* ── PERCOBAAN LABEL CHIP ── */
+.perc-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:9px;font-weight:900;margin-right:3px;}
+.perc-num.new{background:linear-gradient(135deg,#059669,#34d399);color:#fff;}
+
+/* Prosedur flowchart */
+.flow-node{display:flex;align-items:center;gap:10px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;padding:8px 11px;position:relative;transition:border-color .17s;}
+.flow-node:hover{border-color:var(--anion2);background:#fdf5ff;}
+.flow-arrow{display:flex;justify-content:center;padding:2px 0;color:var(--anion);font-size:18px;line-height:1;}
+
+/* ── ALAT BAHAN GRID ── */
+.ab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;}
+.ab-card{background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center;transition:all .2s;}
+.ab-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(26,26,46,.12);border-color:var(--border2);}
+.ab-card.logam{border-top:3px solid var(--kation);}
+.ab-card.nonlogam{border-top:3px solid var(--anion);}
+.ab-img{width:60px;height:60px;object-fit:contain;margin:0 auto 6px;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.12));}
+.ab-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--text);letter-spacing:.03em;}
+.ab-sym{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+.ab-cat{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:3px;display:inline-block;}
+.ab-cat.logam{background:rgba(245,166,35,.12);color:var(--kation3);border:1px solid rgba(245,166,35,.25);}
+.ab-cat.nonlogam{background:rgba(155,34,201,.12);color:var(--anion3);border:1px solid rgba(155,34,201,.25);}
+
+@media(max-width:640px){
+  .sim-wrap{grid-template-columns:1fr;overflow-y:auto;}
+  .two-col{grid-template-columns:1fr;}
+  .three-col{grid-template-columns:1fr 1fr;}
+  .ab-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
+}
+
+/* ── HALAMAN AWAL ── */
+#page-home{background:#fff;align-items:center;justify-content:center;}
+.home-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;max-width:600px;width:100%;}
+.home-svg-wrap{width:clamp(180px,32vw,260px);height:clamp(130px,22vw,200px);flex-shrink:0;}
+.home-title{font-family:'Rajdhani',sans-serif;font-size:clamp(16px,2.5vw,24px);font-weight:700;color:var(--text);text-align:center;letter-spacing:.03em;line-height:1.2;}
+.home-subtitle{font-size:clamp(11px,1.2vw,13px);color:var(--text2);text-align:center;line-height:1.6;max-width:420px;}
+.home-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.home-badge{background:linear-gradient(135deg,#f9f0ff,#fff5e0);border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--text2);font-family:'Rajdhani',sans-serif;letter-spacing:.04em;}
+.home-btn{background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;border:none;border-radius:12px;padding:11px 32px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 18px rgba(155,34,201,.4);transition:all .18s;letter-spacing:.03em;}
+.home-btn:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(155,34,201,.5);}
+
+/* ── TUJUAN PAGE ── */
+.tujuan-hero{background:linear-gradient(135deg,#1a0a2e,#2d1060,#0a1a3e);border-radius:12px;padding:16px 20px;margin-bottom:8px;color:#fff;display:flex;align-items:center;gap:16px;}
+.tujuan-hero-icon{font-size:36px;flex-shrink:0;}
+.tujuan-hero h2{font-family:'Rajdhani',sans-serif;font-size:clamp(16px,2vw,20px);font-weight:700;letter-spacing:.04em;margin-bottom:4px;}
+.tujuan-hero p{font-size:11.5px;color:rgba(255,255,255,.72);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ LOADING SCREEN ══════════════════════════ -->
+<div id="loadScreen">
+  <div class="load-logo-wrap">
+    <!-- 3D Glossy Atom Logo -->
+    <svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 28px rgba(155,34,201,0.55));">
+      <defs>
+        <radialGradient id="lgKa3d" cx="35%" cy="27%" r="65%">
+          <stop offset="0%" stop-color="#fff7c0"/>
+          <stop offset="22%" stop-color="#ffe066"/>
+          <stop offset="58%" stop-color="#f5a623"/>
+          <stop offset="100%" stop-color="#7a4200"/>
+        </radialGradient>
+        <radialGradient id="lgAn3d" cx="35%" cy="27%" r="65%">
+          <stop offset="0%" stop-color="#fce8ff"/>
+          <stop offset="22%" stop-color="#e080ff"/>
+          <stop offset="58%" stop-color="#9b22c9"/>
+          <stop offset="100%" stop-color="#2d0060"/>
+        </radialGradient>
+        <radialGradient id="lgSp1" cx="35%" cy="25%" r="45%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.75)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+        <radialGradient id="lgSp2" cx="35%" cy="25%" r="45%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.65)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </radialGradient>
+        <filter id="lgShadow1"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(200,120,0,0.45)"/></filter>
+        <filter id="lgShadow2"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(80,0,150,0.55)"/></filter>
+      </defs>
+      <!-- Force arcs -->
+      <path d="M42,65 Q65,32 88,65" stroke="rgba(255,200,60,0.55)" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+      <path d="M42,65 Q65,98 88,65" stroke="rgba(180,60,255,0.55)" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+      <path d="M42,65 Q65,48 88,65" stroke="rgba(100,200,255,0.3)" stroke-width="1.5" fill="none"/>
+      <path d="M42,65 Q65,82 88,65" stroke="rgba(100,200,255,0.3)" stroke-width="1.5" fill="none"/>
+      <!-- Bond center glow -->
+      <circle cx="65" cy="65" r="5" fill="#fff" opacity="0.85">
+        <animate attributeName="r" values="3.5;6;3.5" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Kation 3D glossy ball -->
+      <circle cx="35" cy="65" r="30" fill="url(#lgKa3d)" filter="url(#lgShadow1)"/>
+      <circle cx="35" cy="65" r="30" fill="url(#lgSp1)"/>
+      <circle cx="35" cy="65" r="30" fill="none" stroke="rgba(255,220,100,0.35)" stroke-width="1.5"/>
+      <text x="35" y="60" font-family="Rajdhani,sans-serif" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">+</text>
+      <text x="35" y="76" font-family="Nunito,sans-serif" font-size="8" fill="rgba(255,255,255,0.88)" text-anchor="middle">Kation</text>
+      <!-- Anion 3D glossy ball (slightly larger) -->
+      <circle cx="95" cy="65" r="34" fill="url(#lgAn3d)" filter="url(#lgShadow2)"/>
+      <circle cx="95" cy="65" r="34" fill="url(#lgSp2)"/>
+      <circle cx="95" cy="65" r="34" fill="none" stroke="rgba(200,100,255,0.35)" stroke-width="1.5"/>
+      <text x="95" y="60" font-family="Rajdhani,sans-serif" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">−</text>
+      <text x="95" y="76" font-family="Nunito,sans-serif" font-size="8" fill="rgba(255,255,255,0.88)" text-anchor="middle">Anion</text>
+    </svg>
+  </div>
+  <div class="load-title">Lab Maya Kimia</div>
+  <div class="load-sub">Ikatan Ion · Daya Tarik Elektrostatis</div>
+  <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+  <div class="load-percent" id="loadPercent">0%</div>
+  <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+  <button id="btnMulai" onclick="startLab()">⚡ Mulai Praktikum</button>
+</div>
+
+<script>
+(function(){
+  const bar=document.getElementById('loadBar');
+  const pct=document.getElementById('loadPercent');
+  const status=document.getElementById('loadStatus');
+  const msgs=['Memuat laboratorium virtual…','Menyiapkan atom simulator…','Memuat tabel periodik…','Mengkonfigurasi kisi kristal…','Menginisialisasi gaya elektrostatis…','Laboratorium siap!'];
+  let current=0;const total=3000,step=20,inc=100/(total/step);
+  let mi=0;
+  const iv=setInterval(()=>{
+    current=Math.min(100,current+inc);
+    const v=Math.floor(current);
+    bar.style.width=v+'%';pct.textContent=v+'%';
+    const mi2=Math.floor(v/100*msgs.length);
+    if(mi2>mi&&mi2<msgs.length){mi=mi2;status.textContent=msgs[mi];}
+    if(current>=100){
+      clearInterval(iv);pct.textContent='100%';
+      status.textContent='✅ Laboratorium siap digunakan!';
+      document.getElementById('btnMulai').style.display='block';
+    }
+  },step);
+})();
+function startLab(){
+  playClick();
+  const ls=document.getElementById('loadScreen');
+  ls.classList.add('hide');
+  setTimeout(()=>{ls.style.display='none';show('tujuan',document.querySelector('.nb'));},700);
+}
+</script>
+
+<!-- Audio SFX -->
+<audio id="clickSfx" preload="auto"><source src="https://denicendrianto41.github.io/jump.wav" type="audio/wav"></audio>
+<audio id="sndBenar" preload="auto"><source src="https://denicendrianto41.github.io/benar.wav" type="audio/wav"></audio>
+<audio id="sndSalah" preload="auto"><source src="https://denicendrianto41.github.io/salah.wav" type="audio/wav"></audio>
+<audio id="sndBerhasil" preload="auto"><source src="https://denicendrianto41.github.io/berhasil.wav" type="audio/wav"></audio>
+<audio id="tring" preload="auto"><source src="https://denicendrianto41.github.io/tring.wav" type="audio/wav"></audio>
+<script>
+function playClick(){try{const a=document.getElementById('clickSfx');if(a){a.currentTime=0;a.play().catch(()=>{});}}catch(e){}}
+function playSound(id){try{const a=document.getElementById(id);if(a){a.currentTime=0;a.play().catch(()=>{});}}catch(e){}}
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.nb,.btn,select,input[type="range"]');
+  if(!el)return;if(el.id==='btnMulai')return;
+  playClick();
+});
+</script>
+
+<!-- ══════════════════════════ HEADER ══════════════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="32" height="32" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hKa" cx="45%" cy="38%" r="55%"><stop offset="0%" stop-color="#ffca5c"/><stop offset="100%" stop-color="#c47d0a"/></radialGradient>
+          <radialGradient id="hAn" cx="45%" cy="38%" r="55%"><stop offset="0%" stop-color="#e080ff"/><stop offset="100%" stop-color="#6b1095"/></radialGradient>
+        </defs>
+        <circle cx="35" cy="55" r="26" fill="url(#hKa)"/>
+        <circle cx="75" cy="55" r="30" fill="url(#hAn)"/>
+        <text x="35" y="52" font-family="sans-serif" font-size="18" font-weight="900" fill="#fff" text-anchor="middle">+</text>
+        <text x="75" y="52" font-family="sans-serif" font-size="18" font-weight="900" fill="#fff" text-anchor="middle">−</text>
+        <circle cx="55" cy="55" r="5" fill="#fff" opacity="0.95"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Ikatan Ion · Daya Tarik Elektrostatis</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="toggleNav()" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <nav id="mainNav">
+    <button class="nb active" onclick="show('tujuan',this);closeNav()">🎯 Tujuan</button>
+    <button class="nb" onclick="show('teori',this);closeNav()">📚 Teori</button>
+    <button class="nb" onclick="show('alatbahan',this);closeNav()">🧪 Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('prosedur',this);closeNav()">📋 Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this);closeNav()">⚗️ Simulasi</button>
+    <button class="nb" onclick="show('lkm',this);closeNav()">📝 Lembar Kerja</button>
+    <button class="nb" onclick="show('diskusi',this);closeNav()">💬 Diskusi</button>
+    <button class="nb" onclick="show('kuis',this);closeNav()">🏆 Kuis</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ═══════════════════════ TUJUAN ═══════════════════════ (DEFAULT ACTIVE) -->
+<div id="page-tujuan" class="page active">
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;padding:10px 14px;gap:8px;">
+    <!-- Hero Banner with 3D Glossy Atoms -->
+    <div style="background:linear-gradient(135deg,#0d0320,#1a0a2e,#0a1a3e);border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:16px;flex-shrink:0;">
+      <!-- 3D Glossy Atom SVG -->
+      <svg viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg" style="width:clamp(160px,25vw,220px);height:clamp(65px,10vw,90px);flex-shrink:0;">
+        <defs>
+          <!-- Kation 3D glossy gradient -->
+          <radialGradient id="tKa3d" cx="35%" cy="28%" r="65%">
+            <stop offset="0%" stop-color="#fff7c0"/>
+            <stop offset="22%" stop-color="#ffe066"/>
+            <stop offset="58%" stop-color="#f5a623"/>
+            <stop offset="100%" stop-color="#7a4200"/>
+          </radialGradient>
+          <!-- Anion 3D glossy gradient -->
+          <radialGradient id="tAn3d" cx="35%" cy="28%" r="65%">
+            <stop offset="0%" stop-color="#fce8ff"/>
+            <stop offset="22%" stop-color="#e080ff"/>
+            <stop offset="58%" stop-color="#9b22c9"/>
+            <stop offset="100%" stop-color="#2d0060"/>
+          </radialGradient>
+          <!-- Specular highlight -->
+          <radialGradient id="tSpec" cx="38%" cy="26%" r="45%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.75)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </radialGradient>
+          <radialGradient id="tSpec2" cx="38%" cy="26%" r="45%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.65)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </radialGradient>
+          <filter id="tShadow"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/></filter>
+          <filter id="tGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Force arcs -->
+        <path d="M72,45 Q110,15 148,45" stroke="rgba(255,200,80,0.5)" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+        <path d="M72,45 Q110,75 148,45" stroke="rgba(180,80,255,0.5)" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+        <path d="M72,45 Q110,30 148,45" stroke="rgba(100,200,255,0.35)" stroke-width="1.2" fill="none"/>
+        <path d="M72,45 Q110,60 148,45" stroke="rgba(100,200,255,0.35)" stroke-width="1.2" fill="none"/>
+        <!-- Bond dot -->
+        <circle cx="110" cy="45" r="4" fill="#fff" opacity="0.9">
+          <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Kation sphere 3D glossy -->
+        <circle cx="55" cy="45" r="38" fill="url(#tKa3d)" filter="url(#tShadow)"/>
+        <circle cx="55" cy="45" r="38" fill="url(#tSpec)" />
+        <ellipse cx="55" cy="45" rx="38" ry="38" fill="none" stroke="rgba(255,220,100,0.4)" stroke-width="1.5"/>
+        <text x="55" y="41" font-family="Rajdhani,sans-serif" font-size="18" font-weight="700" fill="#fff" text-anchor="middle" filter="url(#tGlow)">Na⁺</text>
+        <text x="55" y="57" font-family="Nunito,sans-serif" font-size="7.5" fill="rgba(255,255,255,0.85)" text-anchor="middle">Kation</text>
+        <!-- Anion sphere 3D glossy -->
+        <circle cx="165" cy="45" r="42" fill="url(#tAn3d)" filter="url(#tShadow)"/>
+        <circle cx="165" cy="45" r="42" fill="url(#tSpec2)"/>
+        <ellipse cx="165" cy="45" rx="42" ry="42" fill="none" stroke="rgba(200,100,255,0.4)" stroke-width="1.5"/>
+        <text x="165" y="41" font-family="Rajdhani,sans-serif" font-size="18" font-weight="700" fill="#fff" text-anchor="middle" filter="url(#tGlow)">Cl⁻</text>
+        <text x="165" y="57" font-family="Nunito,sans-serif" font-size="7.5" fill="rgba(255,255,255,0.85)" text-anchor="middle">Anion</text>
+      </svg>
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:clamp(13px,2vw,19px);font-weight:700;color:#fff;letter-spacing:.04em;margin-bottom:3px;">Tujuan Pembelajaran</div>
+        <div style="font-size:clamp(10px,1.1vw,12px);color:rgba(255,255,255,0.72);line-height:1.5;">Membandingkan jenis ikatan kimia serta kaitannya dengan bentuk molekul dan interaksi antar partikel dalam memprediksi sifat fisik materi.</div>
+      </div>
+    </div>
+    <!-- Two columns: Tujuan Percobaan + Hasil Belajar -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;overflow:hidden;">
+      <div class="card" style="margin:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch"><div class="ci an">🔬</div><div class="ct">Tujuan Percobaan</div></div>
+        <ul class="olist" style="overflow:auto;flex:1;">
+          <li>Menjelaskan proses pembentukan ikatan ion melalui serah-terima elektron antara unsur logam dan non-logam</li>
+          <li>Menggambarkan konfigurasi elektron dan struktur Lewis ion sebelum dan sesudah transfer elektron</li>
+          <li>Menganalisis hubungan muatan ion dengan rumus kimia senyawa ion yang terbentuk</li>
+          <li>Menyimpulkan sifat-sifat fisis senyawa ion: titik leleh, daya hantar, kekerasan, dan kelarutan</li>
+          <li>Membandingkan kekuatan ikatan ion berdasarkan muatan dan ukuran ion yang terbentuk</li>
+        </ul>
+      </div>
+      <div class="card" style="margin:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch"><div class="ci g">🏆</div><div class="ct">Hasil Belajar yang Diharapkan</div></div>
+        <ul class="olist" style="overflow:auto;flex:1;">
+          <li>Memahami konsep kestabilan oktet dan duplet yang mendorong pembentukan ikatan kimia</li>
+          <li>Menjelaskan mekanisme transfer elektron dari atom logam ke atom non-logam secara sistematis</li>
+          <li>Menentukan rumus kimia senyawa ion berdasarkan prinsip keseimbangan muatan</li>
+          <li>Menghubungkan struktur kisi kristal ion dengan sifat fisis senyawa yang dapat diamati</li>
+          <li>Memprediksi sifat fisik materi berdasarkan jenis ikatan dan interaksi antar partikel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TEORI ═══════════════════════ -->
+<div id="page-teori" class="page">
+  <div class="fit-page">
+    <!-- Top row: Pengertian (full width) -->
+    <div class="fit-card" style="flex-shrink:0;">
+      <div class="ch"><div class="ci an">📚</div><div class="ct">A. Pengertian Ikatan Ion</div></div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="width:clamp(70px,9vw,100px);height:clamp(70px,9vw,100px);flex-shrink:0;border-radius:8px;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);">
+          <defs>
+            <radialGradient id="tNa2" cx="38%" cy="30%" r="62%"><stop offset="0%" stop-color="#fff7c0"/><stop offset="35%" stop-color="#f5a623"/><stop offset="100%" stop-color="#7a4200"/></radialGradient>
+            <radialGradient id="tCl2" cx="38%" cy="30%" r="62%"><stop offset="0%" stop-color="#fce8ff"/><stop offset="35%" stop-color="#9b22c9"/><stop offset="100%" stop-color="#2d0060"/></radialGradient>
+            <radialGradient id="tSpec3" cx="35%" cy="26%" r="42%"><stop offset="0%" stop-color="rgba(255,255,255,0.65)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
+          </defs>
+          <line x1="30" y1="30" x2="60" y2="30" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="60" y1="30" x2="90" y2="30" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="30" y1="60" x2="60" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="60" y1="60" x2="90" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="30" y1="90" x2="60" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="60" y1="90" x2="90" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <line x1="30" y1="30" x2="30" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="60" y1="30" x2="60" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1"/><line x1="90" y1="30" x2="90" y2="90" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <circle cx="30" cy="30" r="12" fill="url(#tNa2)"/><circle cx="30" cy="30" r="12" fill="url(#tSpec3)"/><text x="30" y="34" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Na⁺</text>
+          <circle cx="60" cy="30" r="14" fill="url(#tCl2)"/><circle cx="60" cy="30" r="14" fill="url(#tSpec3)"/><text x="60" y="34" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Cl⁻</text>
+          <circle cx="90" cy="30" r="12" fill="url(#tNa2)"/><circle cx="90" cy="30" r="12" fill="url(#tSpec3)"/><text x="90" y="34" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Na⁺</text>
+          <circle cx="30" cy="60" r="14" fill="url(#tCl2)"/><circle cx="30" cy="60" r="14" fill="url(#tSpec3)"/><text x="30" y="64" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Cl⁻</text>
+          <circle cx="60" cy="60" r="12" fill="url(#tNa2)"/><circle cx="60" cy="60" r="12" fill="url(#tSpec3)"/><text x="60" y="64" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Na⁺</text>
+          <circle cx="90" cy="60" r="14" fill="url(#tCl2)"/><circle cx="90" cy="60" r="14" fill="url(#tSpec3)"/><text x="90" y="64" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Cl⁻</text>
+          <circle cx="30" cy="90" r="12" fill="url(#tNa2)"/><circle cx="30" cy="90" r="12" fill="url(#tSpec3)"/><text x="30" y="94" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Na⁺</text>
+          <circle cx="60" cy="90" r="14" fill="url(#tCl2)"/><circle cx="60" cy="90" r="14" fill="url(#tSpec3)"/><text x="60" y="94" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Cl⁻</text>
+          <circle cx="90" cy="90" r="12" fill="url(#tNa2)"/><circle cx="90" cy="90" r="12" fill="url(#tSpec3)"/><text x="90" y="94" font-family="sans-serif" font-size="7" fill="#fff" text-anchor="middle">Na⁺</text>
+          <text x="60" y="113" font-family="sans-serif" font-size="7" fill="#a78bfa" text-anchor="middle">Kisi Kristal NaCl</text>
+        </svg>
+        <div style="flex:1;min-width:0;">
+          <p style="margin-bottom:5px;"><strong style="color:var(--anion3)">Ikatan ion</strong> terbentuk akibat <strong style="color:var(--kation3)">gaya tarik elektrostatis (Coulomb)</strong> antara kation dan anion. Terjadi antara logam (Gol. IA/IIA) dan non-logam (Gol. VIA/VIIA).</p>
+          <div class="formula-box ka" style="font-size:10.5px;padding:6px 10px;margin:0;">
+            Na(2,8,1) → Na⁺(2,8) + e⁻ &nbsp; Cl(2,8,7) + e⁻ → Cl⁻(2,8,8) &nbsp; Na⁺ + Cl⁻ → NaCl
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Bottom 3 cards -->
+    <div class="fit-cols fit-cols-3" style="flex:1;">
+      <div class="fit-card">
+        <div class="ch"><div class="ci ka">⚖️</div><div class="ct">B. Aturan Oktet &amp; Duplet</div></div>
+        <p>Atom mencapai konfigurasi gas mulia:</p>
+        <ul class="olist fit-scroll">
+          <li><strong>Oktet:</strong> 8 elektron di kulit terluar (Ne, Ar, Kr)</li>
+          <li><strong>Duplet:</strong> 2 elektron (He) — untuk H, Li</li>
+        </ul>
+        <div class="formula-box an" style="font-size:10.5px;padding:5px 9px;margin-top:5px;flex-shrink:0;">
+          Mg(2,8,2)→Mg²⁺(2,8)+2e⁻<br>O(2,6)+2e⁻→O²⁻(2,8)
+        </div>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci ac">🔢</div><div class="ct">C. Rumus Kimia Senyawa Ion</div></div>
+        <p>Rumus ditentukan oleh keseimbangan muatan (total = 0):</p>
+        <div class="formula-box ac" style="font-size:10.5px;padding:5px 9px;margin:5px 0;flex-shrink:0;">
+          Al³⁺ + O²⁻ → Al₂O₃<br>[2×(+3)+3×(−2)=0 ✓]
+        </div>
+        <ul class="olist fit-scroll">
+          <li>Gol. IA: +1 (Na⁺, K⁺)</li>
+          <li>Gol. IIA: +2 (Mg²⁺, Ca²⁺)</li>
+          <li>Gol. VIIA: −1 (F⁻, Cl⁻, Br⁻)</li>
+          <li>Gol. VIA: −2 (O²⁻, S²⁻)</li>
+        </ul>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci g">🏗️</div><div class="ct">D. Sifat-sifat Senyawa Ion</div></div>
+        <div class="fit-scroll">
+          <div class="fgrid" style="grid-template-columns:1fr 1fr;gap:5px;">
+            <div class="fi"><strong>Titik Leleh</strong><span>Tinggi — kisi kristal kuat</span></div>
+            <div class="fi"><strong>Daya Hantar</strong><span>Padat✗ Lelehan/larutan✓</span></div>
+            <div class="fi"><strong>Keras &amp; Rapuh</strong><span>Kisi kuat; rapuh saat dipukul</span></div>
+            <div class="fi"><strong>Kelarutan</strong><span>Larut dalam pelarut polar</span></div>
+            <div class="fi" style="grid-column:1/-1;"><strong>Contoh:</strong><span>NaCl, MgO, CaF₂, Al₂O₃, KBr</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ALAT & BAHAN ═══════════════════════ -->
+<div id="page-alatbahan" class="page">
+  <div class="fit-page">
+    <div class="fit-cols fit-cols-2" style="flex:1;">
+      <!-- Logam -->
+      <div class="fit-card">
+        <div class="ch"><div class="ci ka">⚗️</div><div class="ct">Unsur Logam (Kation — Melepas e⁻)</div></div>
+        <p style="flex-shrink:0;font-size:11px;margin-bottom:6px;">Logam <strong style="color:var(--kation3)">melepaskan elektron valensi</strong> → ion positif (kation) berkonfigurasi gas mulia.</p>
+        <div class="ab-grid fit-scroll" style="grid-template-columns:repeat(5,1fr);align-content:start;">
+          <div class="ab-card logam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Na" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#fff7c0"/><stop offset="30%" stop-color="#ffe066"/><stop offset="65%" stop-color="#f5a623"/><stop offset="100%" stop-color="#7a4200"/></radialGradient><radialGradient id="g3Sp" cx="36%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(255,255,255,0.7)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Na)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.4))"/><circle cx="30" cy="30" r="27" fill="url(#g3Sp)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Na</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=11</text></svg>
+            <div class="ab-name" style="font-size:10px;">Natrium</div><div class="ab-cat logam" style="font-size:8.5px;">Na⁺ | IA</div>
+          </div>
+          <div class="ab-card logam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Mg" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#fff0a0"/><stop offset="30%" stop-color="#e8d060"/><stop offset="65%" stop-color="#d4a020"/><stop offset="100%" stop-color="#7a5a00"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Mg)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.4))"/><circle cx="30" cy="30" r="27" fill="url(#g3Sp)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">Mg</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=12</text></svg>
+            <div class="ab-name" style="font-size:10px;">Magnesium</div><div class="ab-cat logam" style="font-size:8.5px;">Mg²⁺ | IIA</div>
+          </div>
+          <div class="ab-card logam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Ca" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe8a0"/><stop offset="30%" stop-color="#e0b840"/><stop offset="65%" stop-color="#c09010"/><stop offset="100%" stop-color="#705000"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Ca)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.4))"/><circle cx="30" cy="30" r="27" fill="url(#g3Sp)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Ca</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=20</text></svg>
+            <div class="ab-name" style="font-size:10px;">Kalsium</div><div class="ab-cat logam" style="font-size:8.5px;">Ca²⁺ | IIA</div>
+          </div>
+          <div class="ab-card logam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3K" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffd890"/><stop offset="30%" stop-color="#d4a030"/><stop offset="65%" stop-color="#b07810"/><stop offset="100%" stop-color="#603800"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3K)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.4))"/><circle cx="30" cy="30" r="27" fill="url(#g3Sp)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">K</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=19</text></svg>
+            <div class="ab-name" style="font-size:10px;">Kalium</div><div class="ab-cat logam" style="font-size:8.5px;">K⁺ | IA</div>
+          </div>
+          <div class="ab-card logam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Al" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe0a0"/><stop offset="30%" stop-color="#d09040"/><stop offset="65%" stop-color="#a06020"/><stop offset="100%" stop-color="#503000"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Al)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.4))"/><circle cx="30" cy="30" r="27" fill="url(#g3Sp)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Al</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=13</text></svg>
+            <div class="ab-name" style="font-size:10px;">Aluminium</div><div class="ab-cat logam" style="font-size:8.5px;">Al³⁺ | IIIA</div>
+          </div>
+        </div>
+      </div>
+      <!-- Non-Logam -->
+      <div class="fit-card">
+        <div class="ch"><div class="ci an">⚗️</div><div class="ct">Unsur Non-Logam (Anion — Menangkap e⁻)</div></div>
+        <p style="flex-shrink:0;font-size:11px;margin-bottom:6px;">Non-logam <strong style="color:var(--anion3)">menangkap elektron</strong> → ion negatif (anion) berkonfigurasi gas mulia.</p>
+        <div class="ab-grid fit-scroll" style="grid-template-columns:repeat(5,1fr);align-content:start;">
+          <div class="ab-card nonlogam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Cl" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#fce8ff"/><stop offset="28%" stop-color="#e080ff"/><stop offset="62%" stop-color="#9b22c9"/><stop offset="100%" stop-color="#2d0060"/></radialGradient><radialGradient id="g3SpA" cx="36%" cy="25%" r="45%"><stop offset="0%" stop-color="rgba(255,255,255,0.65)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Cl)" filter="drop-shadow(0 3px 5px rgba(80,0,120,0.5))"/><circle cx="30" cy="30" r="27" fill="url(#g3SpA)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Cl</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=17</text></svg>
+            <div class="ab-name" style="font-size:10px;">Klorin</div><div class="ab-cat nonlogam" style="font-size:8.5px;">Cl⁻ | VIIA</div>
+          </div>
+          <div class="ab-card nonlogam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3O" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#f8e0ff"/><stop offset="28%" stop-color="#c060f0"/><stop offset="62%" stop-color="#7010b0"/><stop offset="100%" stop-color="#200040"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3O)" filter="drop-shadow(0 3px 5px rgba(80,0,120,0.5))"/><circle cx="30" cy="30" r="27" fill="url(#g3SpA)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">O</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=8</text></svg>
+            <div class="ab-name" style="font-size:10px;">Oksigen</div><div class="ab-cat nonlogam" style="font-size:8.5px;">O²⁻ | VIA</div>
+          </div>
+          <div class="ab-card nonlogam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3F" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#f0d8ff"/><stop offset="28%" stop-color="#a040e0"/><stop offset="62%" stop-color="#6020a0"/><stop offset="100%" stop-color="#180030"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3F)" filter="drop-shadow(0 3px 5px rgba(80,0,120,0.5))"/><circle cx="30" cy="30" r="27" fill="url(#g3SpA)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">F</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=9</text></svg>
+            <div class="ab-name" style="font-size:10px;">Fluor</div><div class="ab-cat nonlogam" style="font-size:8.5px;">F⁻ | VIIA</div>
+          </div>
+          <div class="ab-card nonlogam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3Br" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#e8d0ff"/><stop offset="28%" stop-color="#8830c8"/><stop offset="62%" stop-color="#5010a0"/><stop offset="100%" stop-color="#200048"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3Br)" filter="drop-shadow(0 3px 5px rgba(80,0,120,0.5))"/><circle cx="30" cy="30" r="27" fill="url(#g3SpA)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">Br</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=35</text></svg>
+            <div class="ab-name" style="font-size:10px;">Bromin</div><div class="ab-cat nonlogam" style="font-size:8.5px;">Br⁻ | VIIA</div>
+          </div>
+          <div class="ab-card nonlogam" style="padding:7px 5px;">
+            <svg viewBox="0 0 60 60" style="width:42px;height:42px;margin:0 auto 4px;display:block;"><defs><radialGradient id="g3S" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#e0c8ff"/><stop offset="28%" stop-color="#7040b8"/><stop offset="62%" stop-color="#4010a0"/><stop offset="100%" stop-color="#180040"/></radialGradient></defs><circle cx="30" cy="30" r="27" fill="url(#g3S)" filter="drop-shadow(0 3px 5px rgba(80,0,120,0.5))"/><circle cx="30" cy="30" r="27" fill="url(#g3SpA)"/><text x="30" y="26" font-family="Rajdhani,sans-serif" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">S</text><text x="30" y="39" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.9)" text-anchor="middle">Z=16</text></svg>
+            <div class="ab-name" style="font-size:10px;">Sulfur</div><div class="ab-cat nonlogam" style="font-size:8.5px;">S²⁻ | VIA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PROSEDUR ═══════════════════════ -->
+<div id="page-prosedur" class="page">
+  <div class="fit-page">
+    <div class="fit-cols fit-cols-2" style="flex:1;">
+      <div class="fit-card">
+        <div class="ch"><div class="ci an">📋</div><div class="ct">Langkah Praktikum</div></div>
+        <div class="fit-scroll">
+          <div class="steps" style="gap:4px;">
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">1</div><p style="font-size:11.5px;">Buka <strong>Alat &amp; Bahan</strong> — amati unsur logam dan non-logam beserta simbol dan nomor atomnya.</p></div>
+            <div class="flow-arrow" style="padding:1px 0;font-size:14px;">↓</div>
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">2</div><p style="font-size:11.5px;">Buka <strong>Teori</strong> — pelajari konfigurasi elektron, aturan oktet, dan mekanisme transfer elektron.</p></div>
+            <div class="flow-arrow" style="padding:1px 0;font-size:14px;">↓</div>
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">3</div><p style="font-size:11.5px;">Buka <strong>Simulasi</strong> — pilih pasangan logam &amp; non-logam, klik <em>Mulai Simulasi</em> untuk melihat animasi transfer elektron.</p></div>
+            <div class="flow-arrow" style="padding:1px 0;font-size:14px;">↓</div>
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">4</div><p style="font-size:11.5px;">Amati konfigurasi elektron sebelum/sesudah transfer, muatan ion, rumus kimia, dan energi kisi yang ditampilkan.</p></div>
+            <div class="flow-arrow" style="padding:1px 0;font-size:14px;">↓</div>
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">5</div><p style="font-size:11.5px;">Ulangi dengan minimal 3 pasangan berbeda. Catat hasil di <strong>Lembar Kerja</strong>.</p></div>
+            <div class="flow-arrow" style="padding:1px 0;font-size:14px;">↓</div>
+            <div class="flow-node" style="padding:6px 10px;"><div class="snum">6</div><p style="font-size:11.5px;">Kerjakan pertanyaan di <strong>Diskusi</strong>, lalu uji pemahaman di <strong>Kuis</strong>.</p></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+        <div class="fit-card" style="flex:1;">
+          <div class="ch"><div class="ci ka">⚡</div><div class="ct">Cara Baca Simulasi</div></div>
+          <ul class="olist fit-scroll">
+            <li><strong style="color:var(--kation3)">Bola Kuning</strong> = Kation (logam, melepas e⁻)</li>
+            <li><strong style="color:var(--anion3)">Bola Ungu</strong> = Anion (non-logam, menangkap e⁻)</li>
+            <li><strong>Titik bergerak</strong> = Elektron yang berpindah</li>
+            <li><strong>Garis lengkung</strong> = Gaya elektrostatis</li>
+            <li><strong>Rumus merah</strong> = Senyawa ion terbentuk</li>
+          </ul>
+        </div>
+        <div class="fit-card" style="flex:1;">
+          <div class="ch"><div class="ci g">✅</div><div class="ct">Keselamatan Lab Maya</div></div>
+          <ul class="olist fit-scroll">
+            <li>Pastikan layar cerah agar animasi terlihat jelas</li>
+            <li>Baca instruksi di setiap panel sebelum memulai</li>
+            <li>Catat hasil pengamatan secara sistematis</li>
+            <li>Diskusikan hasil dengan teman atau guru</li>
+          </ul>
+        </div>
+        <div class="fit-card" style="flex-shrink:0;">
+          <div class="ch"><div class="ci r">📊</div><div class="ct">Parameter Diamati</div></div>
+          <div class="chips" style="margin:0;">
+            <span class="chip chip-ka">Konfigurasi e⁻</span>
+            <span class="chip chip-an">e⁻ dilepas/tangkap</span>
+            <span class="chip chip-g">Muatan ion</span>
+            <span class="chip chip-b">Rumus kimia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SIMULASI ═══════════════════════ -->
+<div id="page-simulasi" class="page">
+  <div class="fit-page" style="gap:6px;">
+
+    <!-- Tab Header -->
+    <div class="sim-tabs">
+      <button class="sim-tab active" id="simtab1" onclick="showSimTab(1)">⚡ Percobaan 1<span style="font-size:9px;opacity:.8;margin-left:2px;">Transfer e⁻</span></button>
+      <button class="sim-tab" id="simtab2" onclick="showSimTab(2)">🧬 Percobaan 2<span style="font-size:9px;opacity:.8;margin-left:2px;">Konfig &amp; Lewis</span></button>
+      <button class="sim-tab" id="simtab3" onclick="showSimTab(3)">🔬 Percobaan 3<span style="font-size:9px;opacity:.8;margin-left:2px;">Rumus Kimia</span></button>
+      <button class="sim-tab" id="simtab4" onclick="showSimTab(4)">🧊 Percobaan 4<span style="font-size:9px;opacity:.8;margin-left:2px;">Sifat Fisis</span></button>
+      <button class="sim-tab" id="simtab5" onclick="showSimTab(5)">⚖️ Percobaan 5<span style="font-size:9px;opacity:.8;margin-left:2px;">Kekuatan Ikatan</span></button>
+    </div>
+
+    <!-- ══ PANEL 1: Transfer Elektron & Konfigurasi ══ -->
+    <div id="simpanel1" class="sim-panel active">
+      <div style="font-size:10.5px;color:var(--text3);flex-shrink:0;padding:0 2px;">Amati konfigurasi elektron sebelum &amp; sesudah transfer, serta struktur Lewis ion yang terbentuk.</div>
+      <div class="sim-wrap" style="flex:1;min-height:0;">
+        <div class="ctrl-panel">
+          <h3>⚙️ KONTROL</h3>
+          <div class="cg"><label>UNSUR LOGAM (KATION)</label>
+            <select id="selLogam" onchange="resetSim()">
+              <option value="Na">Natrium (Na, Z=11)</option>
+              <option value="Mg">Magnesium (Mg, Z=12)</option>
+              <option value="Ca">Kalsium (Ca, Z=20)</option>
+              <option value="K">Kalium (K, Z=19)</option>
+              <option value="Al">Aluminium (Al, Z=13)</option>
+            </select>
+          </div>
+          <div class="cg"><label>UNSUR NON-LOGAM (ANION)</label>
+            <select id="selNonlogam" onchange="resetSim()">
+              <option value="Cl">Klorin (Cl, Z=17)</option>
+              <option value="F">Fluor (F, Z=9)</option>
+              <option value="Br">Bromin (Br, Z=35)</option>
+              <option value="O">Oksigen (O, Z=8)</option>
+              <option value="S">Sulfur (S, Z=16)</option>
+            </select>
+          </div>
+          <div id="simInfoBox" style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:10px;color:var(--text2);line-height:1.7;font-family:'JetBrains Mono',monospace;min-height:70px;"></div>
+          <button class="btn btn-start" id="btnSim" onclick="startSim()">▶ Mulai Simulasi</button>
+          <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+          <div class="statsrow" style="flex-direction:column;gap:5px;margin-top:0;">
+            <div class="sbox"><span class="sv ka" id="statFormula">—</span><span class="sl">Rumus Kimia</span></div>
+            <div class="sbox"><span class="sv" id="statEnergy" style="font-size:12px;color:var(--acc);">— kJ/mol</span><span class="sl">Energi Kisi (±)</span></div>
+          </div>
+        </div>
+        <div class="sim-right">
+          <div class="arena" style="flex:1;">
+            <h3>🔬 ANIMASI TRANSFER ELEKTRON — KONFIGURASI &amp; STRUKTUR LEWIS</h3>
+            <canvas id="simCanvas"></canvas>
+          </div>
+          <div id="simStepBox" class="sim-infobar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL 2: Konfigurasi Elektron & Struktur Lewis ══ -->
+    <div id="simpanel2" class="sim-panel">
+      <div style="font-size:10.5px;color:var(--text3);flex-shrink:0;padding:0 2px;">
+        🎯 Gambarkan <b style="color:var(--acc)">konfigurasi elektron</b> dan <b style="color:var(--anion3)">struktur Lewis</b> atom
+        <span class="lewis-badge before">Sebelum Transfer</span> dan 
+        <span class="lewis-badge after">Sesudah Transfer</span>. Pilih unsur lalu animasikan!
+      </div>
+      <div style="display:grid;grid-template-columns:185px 1fr;gap:8px;flex:1;min-height:0;">
+        <!-- Control -->
+        <div class="ctrl-panel" style="gap:7px;">
+          <h3>⚙️ KONTROL</h3>
+          <div class="cg"><label>LOGAM (KATION)</label>
+            <select id="s_lewis_logam" onchange="lewisUpdate()">
+              <option value="Na">Natrium (Na, Z=11)</option>
+              <option value="Mg">Magnesium (Mg, Z=12)</option>
+              <option value="Ca">Kalsium (Ca, Z=20)</option>
+              <option value="K">Kalium (K, Z=19)</option>
+              <option value="Al">Aluminium (Al, Z=13)</option>
+            </select>
+          </div>
+          <div class="cg"><label>NON-LOGAM (ANION)</label>
+            <select id="s_lewis_nl" onchange="lewisUpdate()">
+              <option value="Cl">Klorin (Cl, Z=17)</option>
+              <option value="F">Fluor (F, Z=9)</option>
+              <option value="O">Oksigen (O, Z=8)</option>
+              <option value="S">Sulfur (S, Z=16)</option>
+              <option value="Br">Bromin (Br, Z=35)</option>
+            </select>
+          </div>
+          <button class="btn btn-start" id="lewisAnimBtn" onclick="lewisAnimate()">▶ Animasi Transfer e⁻</button>
+          <button class="btn btn-reset" onclick="lewisReset()">↺ Reset</button>
+          <div id="lewisInfoBox" style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:10px;color:var(--text2);line-height:1.8;font-family:'JetBrains Mono',monospace;white-space:pre-line;min-height:70px;"></div>
+          <div class="sbox"><span class="sv ka" id="lewisFormulaBox" style="font-size:19px;">—</span><span class="sl">Senyawa Ion</span></div>
+          <!-- Legend -->
+          <div style="background:linear-gradient(135deg,#1a0a2e,#0a1a3e);border-radius:9px;padding:9px 10px;">
+            <div style="font-size:9px;font-weight:800;color:rgba(255,255,255,0.5);letter-spacing:.1em;margin-bottom:5px;">LEGENDA TITIK LEWIS</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.75);">
+                <span style="width:10px;height:10px;border-radius:50%;background:#ffca5c;display:inline-block;box-shadow:0 0 5px #f5a623;flex-shrink:0;"></span>e⁻ valensi logam (kation)
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.75);">
+                <span style="width:10px;height:10px;border-radius:50%;background:#c45ef5;display:inline-block;box-shadow:0 0 5px #9b22c9;flex-shrink:0;"></span>e⁻ valensi non-logam
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.75);">
+                <span style="width:18px;height:10px;border-radius:3px;border:1.5px solid rgba(245,166,35,0.8);display:inline-block;flex-shrink:0;"></span>kurung Lewis ion
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,0.75);">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#ffca5c;">⁺/⁻</span>&nbsp;muatan formal ion
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Canvas Area -->
+        <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <div class="sim-canvas-wrap" style="flex:1;min-height:0;">
+            <h3 id="lewisCanvasTitle">🧬 KONFIGURASI ELEKTRON &amp; STRUKTUR LEWIS — SEBELUM DAN SESUDAH TRANSFER e⁻</h3>
+            <canvas id="lewisCanvas" style="flex:1;width:100%;border-radius:9px;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);border:1px solid var(--border);display:block;min-height:0;"></canvas>
+          </div>
+          <div id="lewisStepBox" class="sim-infobar" style="flex-shrink:0;min-height:36px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL 3: Rumus Kimia & Muatan Ion ══ -->
+    <div id="simpanel3" class="sim-panel">
+      <div style="font-size:10.5px;color:var(--text3);flex-shrink:0;padding:0 2px;">Analisis hubungan muatan ion dengan rumus kimia senyawa ion yang terbentuk berdasarkan prinsip keseimbangan muatan.</div>
+      <div style="display:grid;grid-template-columns:210px 1fr;gap:8px;flex:1;min-height:0;">
+        <div class="ctrl-panel">
+          <h3>⚙️ KONTROL</h3>
+          <div class="cg"><label>KATION</label>
+            <select id="s3Kation" onchange="updateSim3()">
+              <option value="Na+">Na⁺ (muatan +1)</option>
+              <option value="Mg2+">Mg²⁺ (muatan +2)</option>
+              <option value="Ca2+">Ca²⁺ (muatan +2)</option>
+              <option value="K+">K⁺ (muatan +1)</option>
+              <option value="Al3+">Al³⁺ (muatan +3)</option>
+              <option value="Fe2+">Fe²⁺ (muatan +2)</option>
+              <option value="Fe3+">Fe³⁺ (muatan +3)</option>
+            </select>
+          </div>
+          <div class="cg"><label>ANION</label>
+            <select id="s3Anion" onchange="updateSim3()">
+              <option value="Cl-">Cl⁻ (muatan −1)</option>
+              <option value="F-">F⁻ (muatan −1)</option>
+              <option value="Br-">Br⁻ (muatan −1)</option>
+              <option value="O2-">O²⁻ (muatan −2)</option>
+              <option value="S2-">S²⁻ (muatan −2)</option>
+              <option value="N3-">N³⁻ (muatan −3)</option>
+            </select>
+          </div>
+          <div id="s3InfoBox" style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:10.5px;color:var(--text2);line-height:1.75;min-height:80px;"></div>
+          <div class="sbox" style="margin-top:4px;"><span class="sv ka" id="s3Formula" style="font-size:20px;">—</span><span class="sl">Rumus Kimia</span></div>
+          <div class="sbox"><span class="sv" id="s3Nama" style="font-size:11px;color:var(--text);">—</span><span class="sl">Nama Senyawa</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <div class="sim-canvas-wrap" style="flex:1;">
+            <h3>⚖️ KESEIMBANGAN MUATAN → RUMUS KIMIA</h3>
+            <canvas id="simCanvas3" style="flex:1;width:100%;border-radius:8px;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);border:1px solid var(--border);display:block;"></canvas>
+          </div>
+          <div id="s3StepBox" class="sim-infobar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL 4: Sifat Fisis Senyawa Ion ══ -->
+    <div id="simpanel4" class="sim-panel">
+      <div style="font-size:10.5px;color:var(--text3);flex-shrink:0;padding:0 2px;">Jelajahi sifat-sifat fisis senyawa ion: titik leleh, daya hantar listrik, kekerasan, dan kelarutan.</div>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:8px;flex:1;min-height:0;">
+        <div class="ctrl-panel">
+          <h3>🧪 PILIH SENYAWA</h3>
+          <div class="cg"><label>SENYAWA ION</label>
+            <select id="s4Senyawa" onchange="updateSim4()">
+              <option value="NaCl">NaCl — Natrium Klorida</option>
+              <option value="MgO">MgO — Magnesium Oksida</option>
+              <option value="CaO">CaO — Kalsium Oksida</option>
+              <option value="KCl">KCl — Kalium Klorida</option>
+              <option value="AlF3">AlF₃ — Aluminium Fluorida</option>
+              <option value="CaF2">CaF₂ — Kalsium Fluorida</option>
+              <option value="MgCl2">MgCl₂ — Magnesium Klorida</option>
+            </select>
+          </div>
+          <div id="s4CompInfo" style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px;font-size:10.5px;line-height:1.75;min-height:80px;"></div>
+          <div style="margin-top:6px;">
+            <div style="font-size:9px;font-weight:800;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">WUJUD</div>
+            <div style="display:flex;gap:5px;">
+              <button class="btn" id="s4BtnPadat" onclick="setWujud('padat')" style="flex:1;padding:6px;font-size:10.5px;background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;">🧱 Padat</button>
+              <button class="btn btn-reset" id="s4BtnLeleh" onclick="setWujud('leleh')" style="flex:1;padding:6px;font-size:10.5px;">🌡️ Lelehan</button>
+              <button class="btn btn-reset" id="s4BtnLarut" onclick="setWujud('larutan')" style="flex:1;padding:6px;font-size:10.5px;">💧 Larutan</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <div class="prop-grid" style="flex-shrink:0;">
+            <div class="prop-card" id="pc-leleh" style="background:#fff9f0;border-color:#f5d08a;">
+              <div class="pc-icon">🌡️</div>
+              <div class="pc-name" style="color:var(--kation3);">TITIK LELEH</div>
+              <div class="pc-val" id="pcv-leleh" style="color:var(--kation3);">—°C</div>
+              <div class="pc-desc" id="pcd-leleh">Kisi kristal kuat → titik leleh tinggi</div>
+            </div>
+            <div class="prop-card" id="pc-hantar" style="background:#f5f0ff;border-color:#d0a8f5;">
+              <div class="pc-icon">⚡</div>
+              <div class="pc-name" style="color:var(--anion3);">DAYA HANTAR</div>
+              <div class="pc-val" id="pcv-hantar" style="color:var(--anion3);">—</div>
+              <div class="pc-desc" id="pcd-hantar">Tergantung wujud/kondisi</div>
+            </div>
+            <div class="prop-card" id="pc-keras" style="background:#f0fff4;border-color:#6ee7b7;">
+              <div class="pc-icon">🔨</div>
+              <div class="pc-name" style="color:#065f46;">KEKERASAN</div>
+              <div class="pc-val" id="pcv-keras" style="color:#065f46;">—</div>
+              <div class="pc-desc" id="pcd-keras">Kisi kuat = keras tapi rapuh</div>
+            </div>
+            <div class="prop-card" id="pc-larut" style="background:#eff6ff;border-color:#93c5fd;">
+              <div class="pc-icon">💧</div>
+              <div class="pc-name" style="color:#1d4ed8;">KELARUTAN</div>
+              <div class="pc-val" id="pcv-larut" style="color:#1d4ed8;">—</div>
+              <div class="pc-desc" id="pcd-larut">Pelarut polar (air)</div>
+            </div>
+          </div>
+          <div class="sim-canvas-wrap" style="flex:1;">
+            <h3 id="s4CanvasTitle">🧱 MODEL KISI KRISTAL — WUJUD PADAT (Ion Tidak Bergerak)</h3>
+            <canvas id="simCanvas4" style="flex:1;width:100%;border-radius:8px;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);border:1px solid var(--border);display:block;"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PANEL 5: Kekuatan Ikatan Ion ══ -->
+    <div id="simpanel5" class="sim-panel">
+      <div style="font-size:10.5px;color:var(--text3);flex-shrink:0;padding:0 2px;">Bandingkan kekuatan ikatan ion berdasarkan muatan dan ukuran ion. Semakin besar muatan &amp; semakin kecil ion → ikatan makin kuat.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0;">
+        <!-- Left: Comparison canvas -->
+        <div class="sim-canvas-wrap">
+          <h3>📊 PERBANDINGAN KEKUATAN IKATAN ION</h3>
+          <canvas id="simCanvas5" style="flex:1;width:100%;border-radius:8px;background:linear-gradient(135deg,#0d0d1e,#1a0a2e);border:1px solid var(--border);display:block;"></canvas>
+        </div>
+        <!-- Right: Controls + gauge bars -->
+        <div style="display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <div class="ctrl-panel" style="flex-shrink:0;overflow:visible;">
+            <h3>⚙️ PILIH DUA SENYAWA</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div class="cg"><label>SENYAWA A</label>
+                <select id="s5A" onchange="updateSim4()">
+                  <option value="NaCl">NaCl</option>
+                  <option value="MgO">MgO</option>
+                  <option value="CaO">CaO</option>
+                  <option value="KCl">KCl</option>
+                  <option value="AlF3">AlF₃</option>
+                  <option value="CaF2">CaF₂</option>
+                  <option value="MgCl2">MgCl₂</option>
+                  <option value="Al2O3">Al₂O₃</option>
+                </select>
+              </div>
+              <div class="cg"><label>SENYAWA B</label>
+                <select id="s5B" onchange="updateSim4()">
+                  <option value="NaCl">NaCl</option>
+                  <option value="MgO" selected>MgO</option>
+                  <option value="CaO">CaO</option>
+                  <option value="KCl">KCl</option>
+                  <option value="AlF3">AlF₃</option>
+                  <option value="CaF2">CaF₂</option>
+                  <option value="MgCl2">MgCl₂</option>
+                  <option value="Al2O3">Al₂O₃</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="fit-card" style="flex:1;overflow-y:auto;">
+            <div class="ch"><div class="ci an">📈</div><div class="ct">Parameter Kekuatan Ikatan</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px;" id="s5Gauges"></div>
+            <div id="s5Kesimpulan" style="margin-top:8px;background:linear-gradient(135deg,#f9f0ff,#ffe8d6);border:1px solid #d0a8f5;border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--text);line-height:1.65;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════ LEMBAR KERJA ═══════════════════════ -->
+<div id="page-lkm" class="page">
+  <div class="fit-page">
+    <div class="fit-card" style="flex-shrink:0;">
+      <div class="ch"><div class="ci an">📝</div><div class="ct">Lembar Kerja Siswa — Ikatan Ion</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="flex:2;min-width:150px;"><label style="font-size:9.5px;font-weight:800;color:var(--text3);display:block;margin-bottom:2px;letter-spacing:.08em;">NAMA SISWA</label><input type="text" id="lkmNama" placeholder="Tulis nama..." style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:11.5px;outline:none;" oninput="saveLKM()"></div>
+        <div style="flex:1;min-width:110px;"><label style="font-size:9.5px;font-weight:800;color:var(--text3);display:block;margin-bottom:2px;letter-spacing:.08em;">KELAS</label><input type="text" id="lkmKelas" placeholder="X IPA 1" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:11.5px;outline:none;" oninput="saveLKM()"></div>
+        <div style="flex:1;min-width:110px;"><label style="font-size:9.5px;font-weight:800;color:var(--text3);display:block;margin-bottom:2px;letter-spacing:.08em;">TANGGAL</label><input type="text" id="lkmTgl" placeholder="dd/mm/yyyy" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-family:'Nunito',sans-serif;font-size:11.5px;outline:none;" oninput="saveLKM()"></div>
+      </div>
+    </div>
+    <div class="fit-cols fit-cols-2" style="flex:1;">
+      <div style="display:flex;flex-direction:column;gap:7px;min-height:0;overflow:hidden;">
+        <div class="fit-card" style="flex:1;min-height:0;">
+          <div class="ch"><div class="ci ka">📊</div><div class="ct">Tabel 1: Konfigurasi Elektron &amp; Ion</div></div>
+          <div class="fit-scroll">
+            <table class="ws-table" id="tabel1" style="font-size:10.5px;">
+              <thead><tr><th>No</th><th>Unsur</th><th>Z</th><th>Konfig. Atom</th><th>e⁻ Lepas/Tangkap</th><th>Ion</th><th>Konfig. Ion</th></tr></thead>
+              <tbody id="tbody1"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="fit-card" style="flex:1;min-height:0;">
+          <div class="ch"><div class="ci an">🧪</div><div class="ct">Tabel 2: Rumus Kimia Senyawa Ion</div></div>
+          <div class="fit-scroll">
+            <table class="ws-table" style="font-size:10.5px;">
+              <thead><tr><th>No</th><th>Kation</th><th>Anion</th><th>Perbandingan</th><th>Rumus</th><th>Nama Senyawa</th></tr></thead>
+              <tbody>
+                <tr><td style="text-align:center;font-weight:700;">1</td><td>Na⁺</td><td>Cl⁻</td><td>1:1</td><td><input type="text" id="t2r1f" placeholder="..." style="width:60px;" oninput="saveLKM()"></td><td><input type="text" id="t2r1g" placeholder="..." oninput="saveLKM()"></td></tr>
+                <tr><td style="text-align:center;font-weight:700;">2</td><td>Mg²⁺</td><td>Cl⁻</td><td><input type="text" id="t2r2e" placeholder="..." style="width:50px;" oninput="saveLKM()"></td><td><input type="text" id="t2r2f" placeholder="..." style="width:60px;" oninput="saveLKM()"></td><td><input type="text" id="t2r2g" placeholder="..." oninput="saveLKM()"></td></tr>
+                <tr><td style="text-align:center;font-weight:700;">3</td><td>Ca²⁺</td><td>O²⁻</td><td><input type="text" id="t2r3e" placeholder="..." style="width:50px;" oninput="saveLKM()"></td><td><input type="text" id="t2r3f" placeholder="..." style="width:60px;" oninput="saveLKM()"></td><td><input type="text" id="t2r3g" placeholder="..." oninput="saveLKM()"></td></tr>
+                <tr><td style="text-align:center;font-weight:700;">4</td><td>Al³⁺</td><td>O²⁻</td><td><input type="text" id="t2r4e" placeholder="..." style="width:50px;" oninput="saveLKM()"></td><td><input type="text" id="t2r4f" placeholder="..." style="width:60px;" oninput="saveLKM()"></td><td><input type="text" id="t2r4g" placeholder="..." oninput="saveLKM()"></td></tr>
+                <tr><td style="text-align:center;font-weight:700;">5</td><td>K⁺</td><td>Br⁻</td><td><input type="text" id="t2r5e" placeholder="..." style="width:50px;" oninput="saveLKM()"></td><td><input type="text" id="t2r5f" placeholder="..." style="width:60px;" oninput="saveLKM()"></td><td><input type="text" id="t2r5g" placeholder="..." oninput="saveLKM()"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci g">🔍</div><div class="ct">Pertanyaan Analisis</div></div>
+        <div class="fit-scroll" style="display:flex;flex-direction:column;gap:7px;">
+          <div><p style="font-weight:700;font-size:11px;margin-bottom:3px;color:var(--text);">1. Mengapa atom logam cenderung melepaskan elektron, bukan menangkap?</p><textarea class="disc-area" rows="2" id="q1" oninput="saveLKM()" placeholder="Tulis jawaban..." style="min-height:46px;"></textarea></div>
+          <div><p style="font-weight:700;font-size:11px;margin-bottom:3px;color:var(--text);">2. Apa yang dimaksud kisi kristal? Mengapa senyawa ion membentuknya?</p><textarea class="disc-area" rows="2" id="q2" oninput="saveLKM()" placeholder="Tulis jawaban..." style="min-height:46px;"></textarea></div>
+          <div><p style="font-weight:700;font-size:11px;margin-bottom:3px;color:var(--text);">3. Mengapa senyawa ion padat tidak menghantarkan listrik?</p><textarea class="disc-area" rows="2" id="q3" oninput="saveLKM()" placeholder="Tulis jawaban..." style="min-height:46px;"></textarea></div>
+          <div style="display:flex;gap:7px;padding-top:4px;flex-shrink:0;">
+            <button class="btn btn-start" style="width:auto;padding:6px 14px;font-size:11px;" onclick="printLKM()">🖨️ Cetak</button>
+            <button class="btn btn-reset" style="width:auto;padding:6px 14px;font-size:11px;" onclick="clearLKM()">🗑️ Hapus</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DISKUSI ═══════════════════════ -->
+<div id="page-diskusi" class="page">
+  <div class="fit-page">
+    <div style="background:linear-gradient(135deg,#1a0a2e,#0a1a3e);border-radius:10px;padding:9px 14px;flex-shrink:0;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:22px;">💬</span>
+      <div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:clamp(12px,1.6vw,16px);font-weight:700;color:#fff;letter-spacing:.03em;">Diskusi &amp; Refleksi</div>
+        <div style="font-size:10.5px;color:rgba(255,255,255,0.65);">Jawab bersama kelompok atau secara mandiri setelah menyelesaikan simulasi dan lembar kerja.</div>
+      </div>
+      <button class="btn btn-reset" style="width:auto;padding:5px 12px;font-size:11px;margin-left:auto;flex-shrink:0;" onclick="clearDiskusi()">🗑️ Hapus</button>
+    </div>
+    <div class="fit-cols fit-cols-2" style="flex:1;">
+      <div class="fit-card">
+        <div class="ch"><div class="ci ka">❓</div><div class="ct">Diskusi 1 — Kekuatan Ikatan Ion</div></div>
+        <p style="flex-shrink:0;font-size:11.5px;margin-bottom:5px;">Mengapa titik leleh MgO (2852°C) jauh lebih tinggi daripada NaCl (801°C)? Hubungkan dengan muatan ion dan ukuran ion!</p>
+        <textarea class="disc-area fit-scroll" id="d1" placeholder="Tulis diskusi Anda di sini..." style="flex:1;resize:none;min-height:0;"></textarea>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci an">❓</div><div class="ct">Diskusi 2 — Kekerasan &amp; Kerapuhan</div></div>
+        <p style="flex-shrink:0;font-size:11.5px;margin-bottom:5px;">Senyawa ion bersifat keras tetapi rapuh. Jelaskan mengapa kedua sifat ini dapat dimiliki secara bersamaan!</p>
+        <textarea class="disc-area fit-scroll" id="d2" placeholder="Tulis diskusi Anda di sini..." style="flex:1;resize:none;min-height:0;"></textarea>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci g">❓</div><div class="ct">Diskusi 3 — Daya Hantar Listrik</div></div>
+        <p style="flex-shrink:0;font-size:11.5px;margin-bottom:5px;">Bandingkan daya hantar listrik senyawa ion dalam tiga kondisi: (a) padatan, (b) lelehan, (c) larutan. Jelaskan perbedaannya!</p>
+        <textarea class="disc-area fit-scroll" id="d3" placeholder="Tulis diskusi Anda di sini..." style="flex:1;resize:none;min-height:0;"></textarea>
+      </div>
+      <div class="fit-card">
+        <div class="ch"><div class="ci ac">❓</div><div class="ct">Diskusi 4 — Penerapan dalam Kehidupan</div></div>
+        <p style="flex-shrink:0;font-size:11.5px;margin-bottom:5px;">Sebutkan ≥3 contoh senyawa ion dalam kehidupan sehari-hari dan manfaatnya. Kaitkan dengan sifat-sifat senyawa ion!</p>
+        <textarea class="disc-area fit-scroll" id="d4" placeholder="Tulis diskusi Anda di sini..." style="flex:1;resize:none;min-height:0;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ KUIS ═══════════════════════ -->
+<div id="page-kuis" class="page">
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;padding:8px 10px;gap:7px;">
+    <div class="quiz-nav-header">
+      <div class="qprog" id="qprog"></div>
+      <button class="btn-qnav btn-reset" style="width:auto;padding:5px 14px;font-size:11px;" onclick="resetQuiz()">↺ Ulang Kuis</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;" id="qcontent"></div>
+  </div>
+</div>
+
+<!-- Score Overlay -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:28px;margin-bottom:6px;">🏆</div>
+    <div class="score-big" id="scoreBig">0</div>
+    <div class="score-pct">/ 100</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="reviewQuiz()">🔍 Review</button>
+      <button class="btn-score btn-ulangi" onclick="resetQuiz()">↺ Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Drag Drop Popup -->
+<div id="dragPopup">
+  <div id="dragPopupBox">
+    <div id="dragPopupEmoji" style="font-size:40px;margin-bottom:8px;"></div>
+    <div id="dragPopupTitle" style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:5px;"></div>
+    <div id="dragPopupMsg" style="font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:16px;"></div>
+    <button onclick="closeDragPopup()" style="background:linear-gradient(135deg,var(--anion3),var(--anion));color:#fff;border:none;border-radius:9px;padding:8px 24px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">OK</button>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ── NAVIGATION ──
+function show(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const page=document.getElementById('page-'+id);
+  if(page){page.classList.add('active');}
+  if(btn)btn.classList.add('active');
+  else {const nb=document.querySelector('.nb');if(nb)nb.classList.add('active');}
+  if(id==='kuis')initQuiz();
+  if(id==='simulasi'){setTimeout(()=>{initSimCanvas();initLewis();initSim3();initSim4_sifat();initSim4();},60);}
+}
+function toggleNav(){document.getElementById('mainNav').classList.toggle('open');}
+function closeNav(){document.getElementById('mainNav').classList.remove('open');}
+
+function showSimTab(n){
+  for(let i=1;i<=5;i++){
+    const t=document.getElementById('simtab'+i);
+    const p=document.getElementById('simpanel'+i);
+    if(t)t.classList.toggle('active',i===n);
+    if(p)p.classList.toggle('active',i===n);
+  }
+  if(n===1)setTimeout(()=>{initSimCanvas();},60);
+  if(n===2)setTimeout(()=>{initLewis();},60);
+  if(n===3)setTimeout(()=>{initSim3();},60);
+  if(n===4)setTimeout(()=>{initSim4_sifat();},60);
+  if(n===5)setTimeout(()=>{initSim4();},60);
+}
+
+// ── SIMULATION DATA ──
+const ATOM_DATA={
+  Na:{z:11,konfig:'2,8,1',valence:1,release:1,color:'#f5a623',colorLight:'#ffca5c',name:'Natrium',ion:'Na⁺',ionMuatan:1},
+  Mg:{z:12,konfig:'2,8,2',valence:2,release:2,color:'#e8890a',colorLight:'#f5c05a',name:'Magnesium',ion:'Mg²⁺',ionMuatan:2},
+  Ca:{z:20,konfig:'2,8,8,2',valence:2,release:2,color:'#d97706',colorLight:'#f0b840',name:'Kalsium',ion:'Ca²⁺',ionMuatan:2},
+  K:{z:19,konfig:'2,8,8,1',valence:1,release:1,color:'#b45309',colorLight:'#e8a030',name:'Kalium',ion:'K⁺',ionMuatan:1},
+  Al:{z:13,konfig:'2,8,3',valence:3,release:3,color:'#92400e',colorLight:'#d4870a',name:'Aluminium',ion:'Al³⁺',ionMuatan:3}
+};
+const NONLOGAM_DATA={
+  Cl:{z:17,konfig:'2,8,7',valence:7,catch:1,color:'#9b22c9',colorLight:'#c45ef5',name:'Klorin',ion:'Cl⁻',ionMuatan:-1},
+  F:{z:9,konfig:'2,7',valence:7,catch:1,color:'#7c3aed',colorLight:'#a78bfa',name:'Fluor',ion:'F⁻',ionMuatan:-1},
+  Br:{z:35,konfig:'2,8,18,7',valence:7,catch:1,color:'#6d28d9',colorLight:'#9d6fe8',name:'Bromin',ion:'Br⁻',ionMuatan:-1},
+  O:{z:8,konfig:'2,6',valence:6,catch:2,color:'#4f1090',colorLight:'#8b30d0',name:'Oksigen',ion:'O²⁻',ionMuatan:-2},
+  S:{z:16,konfig:'2,8,6',valence:6,catch:2,color:'#5b21b6',colorLight:'#7c50d8',name:'Sulfur',ion:'S²⁻',ionMuatan:-2}
+};
+
+// Compound energy lattice (approximate, kJ/mol)
+const LATTICE={
+  NaCl:787,NaF:910,NaBr:732,Na2O:2481,Na2S:2203,
+  MgCl2:2523,MgF2:2957,MgBr2:2440,MgO:3791,MgS:3300,
+  CaCl2:2258,CaF2:2630,CaBr2:2170,CaO:3401,CaS:3013,
+  KCl:715,KF:808,KBr:682,K2O:2238,K2S:1979,
+  AlCl3:5492,AlF3:6252,AlBr3:5360,Al2O3:15916,Al2S3:9433
+};
+
+let simRunning=false,simFrameId=null,simState=0,simEls=[];
+let simCanvas,simCtx,simW,simH;
+
+function initSimCanvas(){
+  simCanvas=document.getElementById('simCanvas');
+  if(!simCanvas)return;
+  const arena=simCanvas.parentElement;
+  const h=Math.max(160, arena.clientHeight-60);
+  simCanvas.width=simCanvas.clientWidth||400;
+  simCanvas.height=h;
+  simW=simCanvas.width;simH=simCanvas.height;
+  simCtx=simCanvas.getContext('2d');
+  updateSimInfo();
+  drawSimIdle();
+}
+
+function updateSimInfo(){
+  const logam=ATOM_DATA[document.getElementById('selLogam').value];
+  const nonlogam=NONLOGAM_DATA[document.getElementById('selNonlogam').value];
+  const lNeed=logam.release;const nlNeed=nonlogam.catch;
+  let lo=lNeed,nl=nlNeed;
+  // LCM
+  const gcd=(a,b)=>b?gcd(b,a%b):a;
+  const lcm=lNeed*nlNeed/gcd(lNeed,nlNeed);
+  lo=lcm/lNeed;nl=lcm/nlNeed;
+  const formula=(lo===1?logam.ion.replace(/[⁺⁻²³]/g,''):logam.ion.replace(/[⁺⁻²³]/g,'')+lo)+(nl===1?nonlogam.ion.replace(/[⁺⁻²³]/g,''):nonlogam.ion.replace(/[⁺⁻²³]/g,'')+nl);
+  const formulaKey=formula;
+  const energy=Object.entries(LATTICE).find(([k])=>k===formulaKey);
+  document.getElementById('statFormula').textContent=toSubscript(formula)||'—';
+  document.getElementById('statEnergy').textContent=energy?energy[1]+' kJ/mol':'— kJ/mol';
+  document.getElementById('simInfoBox').innerHTML=
+    `<b style="color:var(--kation3)">${logam.name} (${logam.ion.replace(/[⁺²³]/g,n=>n)})</b><br>Konfig: ${logam.konfig}<br>Lepas: ${logam.release} e⁻<br><br>`+
+    `<b style="color:var(--anion3)">${nonlogam.name} (${nonlogam.ion.replace(/[⁻²]/g,n=>n)})</b><br>Konfig: ${nonlogam.konfig}<br>Tangkap: ${nonlogam.catch} e⁻`;
+}
+
+function toSubscript(s){
+  return s.replace(/(\d)/g,n=>'₀₁₂₃₄₅₆₇₈₉'[+n]);
+}
+
+function drawSimIdle(){
+  if(!simCtx)return;
+  const ctx=simCtx,w=simW,h=simH;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='linear-gradient(135deg,#0d0d1e,#1a0a2e)';
+  // Background gradient
+  const bg=ctx.createLinearGradient(0,0,w,h);
+  bg.addColorStop(0,'#0d0d1e');bg.addColorStop(1,'#1a0a2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  // Grid dots
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  for(let x=20;x<w;x+=30)for(let y=20;y<h;y+=30){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+  // Hint text
+  ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='bold 13px Nunito,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Pilih unsur dan klik ▶ Mulai Simulasi',w/2,h/2);
+}
+
+// Simulation
+let simPhase=0,simTick=0,simParticles=[];
+let simLogam,simNonlogam,simLoRatio,simNlRatio;
+
+function resetSim(){
+  simRunning=false;if(simFrameId){cancelAnimationFrame(simFrameId);simFrameId=null;}
+  simPhase=0;simTick=0;simParticles=[];
+  document.getElementById('btnSim').disabled=false;
+  updateSimInfo();
+  document.getElementById('simStepBox').textContent='';
+  setTimeout(()=>{initSimCanvas();drawSimIdle();},50);
+}
+
+function startSim(){
+  if(simRunning)return;
+  simRunning=true;
+  document.getElementById('btnSim').disabled=true;
+  simLogam=ATOM_DATA[document.getElementById('selLogam').value];
+  simNonlogam=NONLOGAM_DATA[document.getElementById('selNonlogam').value];
+  const lo=simLogam.release,nl=simNonlogam.catch;
+  const gcd=(a,b)=>b?gcd(b,a%b):a;
+  const lcm=lo*nl/gcd(lo,nl);
+  simLoRatio=lcm/lo;simNlRatio=lcm/nl;
+  simPhase=0;simTick=0;simParticles=[];
+  runSimFrame();
+}
+
+function runSimFrame(){
+  if(!simRunning){return;}
+  simTick++;
+  const ctx=simCtx,w=simW,h=simH;
+  ctx.clearRect(0,0,w,h);
+  // BG
+  const bg=ctx.createLinearGradient(0,0,w,h);
+  bg.addColorStop(0,'#0d0d1e');bg.addColorStop(1,'#1a0a2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  // Grid
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  for(let x=20;x<w;x+=30)for(let y=20;y<h;y+=30){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+
+  const totalLogam=simLoRatio,totalNonlogam=simNlRatio;
+  const spacing=w/(totalLogam+totalNonlogam+1);
+  const cx=w/2,cy=h/2;
+
+  // Phase 0: Show atoms
+  // Phase 1: Animate electrons transfer (simTick 0-120)
+  // Phase 2: Show ions formed (simTick 120-240)
+  // Phase 3: Show crystal / compound (simTick 240+)
+
+  const phase1End=100,phase2End=200,phase3End=320;
+
+  if(simPhase===0&&simTick>30)simPhase=1;
+  if(simPhase===1&&simTick>phase1End)simPhase=2;
+  if(simPhase===2&&simTick>phase2End)simPhase=3;
+
+  // Positions: logam on left, nonlogam on right
+  const loPositions=[];const nlPositions=[];
+  for(let i=0;i<totalLogam;i++){
+    const x=spacing*(i+1);const y=cy;
+    loPositions.push({x,y});
+  }
+  for(let i=0;i<totalNonlogam;i++){
+    const x=w-spacing*(i+1);const y=cy;
+    nlPositions.push({x,y});
+  }
+
+  const lr=Math.min(28,h/6),nr=Math.min(32,h/5.5);
+
+  // Draw force lines in phase 2+
+  if(simPhase>=2){
+    loPositions.forEach(lp=>{
+      nlPositions.forEach(np=>{
+        const grad=ctx.createLinearGradient(lp.x,lp.y,np.x,np.y);
+        grad.addColorStop(0,'rgba(245,166,35,0.3)');grad.addColorStop(1,'rgba(155,34,201,0.3)');
+        ctx.beginPath();ctx.moveTo(lp.x,lp.y);
+        ctx.quadraticCurveTo((lp.x+np.x)/2,(lp.y+np.y)/2-30*Math.sin(simTick/50),np.x,np.y);
+        ctx.strokeStyle=grad;ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+      });
+    });
+  }
+
+  // Draw logam atoms/ions
+  loPositions.forEach((pos,i)=>{
+    const isIon=simPhase>=2;
+    const r=lr+(isIon?-4:0);
+    // Glow
+    const glow=ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,r*2.5);
+    glow.addColorStop(0,isIon?'rgba(245,166,35,0.25)':'rgba(245,166,35,0.15)');glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(pos.x,pos.y,r*2.5,0,Math.PI*2);ctx.fill();
+    // Ball
+    const grad=ctx.createRadialGradient(pos.x-r*.3,pos.y-r*.3,r*.1,pos.x,pos.y,r);
+    grad.addColorStop(0,simLogam.colorLight);grad.addColorStop(1,simLogam.color);
+    ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();
+    ctx.strokeStyle='rgba(255,220,100,0.5)';ctx.lineWidth=1.5;ctx.stroke();
+    // Label
+    ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r*.55)}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(isIon?simLogam.ion:simLogam.ion.replace(/[⁺²³]/g,''),pos.x,pos.y);
+    ctx.font=`bold 10px Nunito,sans-serif`;ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.fillText(isIon?simLogam.name+'[ion]':simLogam.name,pos.x,pos.y+r+10);
+  });
+
+  // Draw nonlogam atoms/ions
+  nlPositions.forEach((pos,i)=>{
+    const isIon=simPhase>=2;
+    const r=nr+(isIon?+3:0);
+    const glow=ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,r*2.5);
+    glow.addColorStop(0,isIon?'rgba(155,34,201,0.3)':'rgba(155,34,201,0.18)');glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(pos.x,pos.y,r*2.5,0,Math.PI*2);ctx.fill();
+    const grad=ctx.createRadialGradient(pos.x-r*.3,pos.y-r*.3,r*.1,pos.x,pos.y,r);
+    grad.addColorStop(0,simNonlogam.colorLight);grad.addColorStop(1,simNonlogam.color);
+    ctx.beginPath();ctx.arc(pos.x,pos.y,r,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();
+    ctx.strokeStyle='rgba(200,100,255,0.5)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r*.55)}px JetBrains Mono,monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(isIon?simNonlogam.ion:simNonlogam.ion.replace(/[⁻²]/g,''),pos.x,pos.y);
+    ctx.font=`bold 10px Nunito,sans-serif`;ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.fillText(isIon?simNonlogam.name+'[ion]':simNonlogam.name,pos.x,pos.y+r+10);
+  });
+
+  // Animate electrons phase 1
+  if(simPhase===1){
+    const prog=Math.min(1,(simTick-30)/70);
+    const totalE=simLogam.release*totalLogam;
+    for(let e=0;e<totalE;e++){
+      const delay=e/totalE;
+      const t=Math.max(0,Math.min(1,(prog-delay*0.4)/0.6));
+      const li=Math.floor(e/simLogam.release);
+      const sp=loPositions[Math.min(li,loPositions.length-1)];
+      const ep=nlPositions[e%totalNonlogam];
+      const ex=sp.x+(ep.x-sp.x)*t;
+      const ey=sp.y+(ep.y-sp.y)*t-40*Math.sin(t*Math.PI);
+      // Electron dot
+      const eGlow=ctx.createRadialGradient(ex,ey,0,ex,ey,8);
+      eGlow.addColorStop(0,'rgba(255,255,180,0.7)');eGlow.addColorStop(1,'transparent');
+      ctx.fillStyle=eGlow;ctx.beginPath();ctx.arc(ex,ey,8,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);
+      ctx.fillStyle='#fffbe0';ctx.fill();
+      ctx.strokeStyle='rgba(255,220,50,0.8)';ctx.lineWidth=1;ctx.stroke();
+      // Trail
+      if(t>0.05){
+        const bx=sp.x+(ep.x-sp.x)*(t-0.05);
+        const by=sp.y+(ep.y-sp.y)*(t-0.05)-40*Math.sin((t-0.05)*Math.PI);
+        ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(ex,ey);
+        ctx.strokeStyle='rgba(255,220,50,0.3)';ctx.lineWidth=2;ctx.stroke();
+      }
+    }
+  }
+
+  // Phase 3: Show compound formula centered
+  if(simPhase>=3){
+    const formula=document.getElementById('statFormula').textContent;
+    ctx.save();
+    ctx.shadowColor='rgba(245,166,35,0.4)';ctx.shadowBlur=14;
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.font=`bold ${Math.round(h/6)}px Rajdhani,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const alpha=Math.min(1,(simTick-phase2End)/30);
+    ctx.globalAlpha=alpha;
+    ctx.fillText(formula,cx,h-34);
+    ctx.globalAlpha=1;ctx.restore();
+    // Compound label
+    ctx.fillStyle='rgba(200,180,255,0.7)';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='center';
+    ctx.fillText('Senyawa Ion Terbentuk',cx,h-14);
+  }
+
+  // Step description
+  const steps=['⚙️ Siap… mempersiapkan atom.',
+    '⚡ Elektron valensi berpindah dari '+simLogam.name+' → '+simNonlogam.name+'!',
+    '✨ Ion terbentuk: '+simLogam.ion+' dan '+simNonlogam.ion+'. Gaya elektrostatis menarik mereka!',
+    '🏆 Senyawa ion '+document.getElementById('statFormula').textContent+' terbentuk! Kisi kristal stabil.'];
+  document.getElementById('simStepBox').innerHTML=`<span style="font-weight:700;color:var(--anion3)">${steps[simPhase]||''}</span>`;
+
+  if(simTick<phase3End+60){
+    simFrameId=requestAnimationFrame(runSimFrame);
+  } else {
+    simRunning=false;
+    document.getElementById('btnSim').disabled=false;
+    playSound('sndBerhasil');
+  }
+}
+
+// ══════════════════════════════════════════════════
+// ── PERCOBAAN 2: KONFIGURASI ELEKTRON & STRUKTUR LEWIS ──
+// ══════════════════════════════════════════════════
+const LEWIS_ATOM_DATA = {
+  Na:{z:11,name:'Natrium',sym:'Na',konfig:[2,8,1],valence:1,release:1,colorA:'#f5a623',colorB:'#ffca5c',ion:'Na⁺',konfig_ion:[2,8]},
+  Mg:{z:12,name:'Magnesium',sym:'Mg',konfig:[2,8,2],valence:2,release:2,colorA:'#e8890a',colorB:'#f5c05a',ion:'Mg²⁺',konfig_ion:[2,8]},
+  Ca:{z:20,name:'Kalsium',sym:'Ca',konfig:[2,8,8,2],valence:2,release:2,colorA:'#d97706',colorB:'#f0b840',ion:'Ca²⁺',konfig_ion:[2,8,8]},
+  K:{z:19,name:'Kalium',sym:'K',konfig:[2,8,8,1],valence:1,release:1,colorA:'#b45309',colorB:'#e8a030',ion:'K⁺',konfig_ion:[2,8,8]},
+  Al:{z:13,name:'Aluminium',sym:'Al',konfig:[2,8,3],valence:3,release:3,colorA:'#92400e',colorB:'#d4870a',ion:'Al³⁺',konfig_ion:[2,8]}
+};
+const LEWIS_NL_DATA = {
+  Cl:{z:17,name:'Klorin',sym:'Cl',konfig:[2,8,7],valence:7,catch:1,colorA:'#9b22c9',colorB:'#c45ef5',ion:'Cl⁻',konfig_ion:[2,8,8]},
+  F:{z:9,name:'Fluor',sym:'F',konfig:[2,7],valence:7,catch:1,colorA:'#7c3aed',colorB:'#a78bfa',ion:'F⁻',konfig_ion:[2,8]},
+  O:{z:8,name:'Oksigen',sym:'O',konfig:[2,6],valence:6,catch:2,colorA:'#4f1090',colorB:'#8b30d0',ion:'O²⁻',konfig_ion:[2,8]},
+  S:{z:16,name:'Sulfur',sym:'S',konfig:[2,8,6],valence:6,catch:2,colorA:'#5b21b6',colorB:'#7c50d8',ion:'S²⁻',konfig_ion:[2,8,8]},
+  Br:{z:35,name:'Bromin',sym:'Br',konfig:[2,8,18,7],valence:7,catch:1,colorA:'#6d28d9',colorB:'#9d6fe8',ion:'Br⁻',konfig_ion:[2,8,18,8]}
+};
+
+let lewisAnimId=null, lewisPhase=0, lewisTick=0, lewisRunning=false;
+let lewisLogam=null, lewisNL=null, lewisLo=1, lewisNl=1;
+
+function initLewis(){
+  lewisUpdate();
+}
+
+function lewisReset(){
+  lewisRunning=false;
+  if(lewisAnimId){cancelAnimationFrame(lewisAnimId);lewisAnimId=null;}
+  lewisPhase=0; lewisTick=0;
+  document.getElementById('lewisAnimBtn').disabled=false;
+  document.getElementById('lewisStepBox').innerHTML='';
+  lewisUpdate();
+}
+
+function lewisUpdate(){
+  const lKey=document.getElementById('s_lewis_logam').value;
+  const nlKey=document.getElementById('s_lewis_nl').value;
+  lewisLogam=LEWIS_ATOM_DATA[lKey];
+  lewisNL=LEWIS_NL_DATA[nlKey];
+  const lo=lewisLogam.release,nl=lewisNL.catch;
+  const gcdFn=(a,b)=>b?gcdFn(b,a%b):a;
+  const lcm=lo*nl/gcdFn(lo,nl);
+  lewisLo=lcm/lo; lewisNl=lcm/nl;
+  const symK=lKey; const symA=nlKey;
+  const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[c]||c).join('');
+  const formulaTxt=(lewisLo===1?symK:symK+sub(lewisLo))+(lewisNl===1?symA:symA+sub(lewisNl));
+  document.getElementById('lewisFormulaBox').textContent=formulaTxt;
+  document.getElementById('lewisInfoBox').innerHTML=
+    `<b style="color:var(--kation3)">${lewisLogam.name} (${lewisLogam.sym})</b>\nZ=${lewisLogam.z} | Konfig: ${lewisLogam.konfig.join(',')}\nValensi: ${lewisLogam.valence} e⁻ | Lepas: ${lewisLogam.release} e⁻\nIon → ${lewisLogam.ion}\n\n<b style="color:var(--anion3)">${lewisNL.name} (${lewisNL.sym})</b>\nZ=${lewisNL.z} | Konfig: ${lewisNL.konfig.join(',')}\nValensi: ${lewisNL.valence} e⁻ | Tangkap: ${lewisNL.catch} e⁻\nIon → ${lewisNL.ion}`;
+  if(!lewisRunning) drawLewisStatic(0);
+}
+
+function lewisAnimate(){
+  if(lewisRunning)return;
+  lewisRunning=true;
+  lewisPhase=0; lewisTick=0;
+  document.getElementById('lewisAnimBtn').disabled=true;
+  lewisFrame();
+}
+
+function lewisFrame(){
+  if(!lewisRunning)return;
+  lewisTick++;
+  const cv=document.getElementById('lewisCanvas');
+  if(!cv){lewisRunning=false;return;}
+  const par=cv.parentElement;
+  cv.width=par.clientWidth-2;
+  cv.height=Math.max(200,par.clientHeight-52);
+  const W=cv.width,H=cv.height;
+  const ctx=cv.getContext('2d');
+
+  // Phases: 0=before (static), 1=transfer anim (tick 0-120), 2=after(tick 120-240), 3=Lewis diagram(tick 240+)
+  const p1end=110, p2end=220, p3end=340;
+  if(lewisPhase===0&&lewisTick>30) lewisPhase=1;
+  if(lewisPhase===1&&lewisTick>p1end) lewisPhase=2;
+  if(lewisPhase===2&&lewisTick>p2end) lewisPhase=3;
+
+  const stepTexts=[
+    '🔍 <b>Sebelum transfer:</b> Amati konfigurasi elektron dan titik-titik Lewis pada atom netral.',
+    '⚡ <b>Transfer berlangsung:</b> Elektron valensi '+lewisLogam.name+' berpindah ke '+lewisNL.name+'!',
+    '✨ <b>Ion terbentuk!</b> '+lewisLogam.ion+' dan '+lewisNL.ion+' — konfigurasi gas mulia tercapai.',
+    '🏆 <b>Struktur Lewis ion:</b> Tampak pasangan elektron bebas dan muatan formal setiap ion.'
+  ];
+  document.getElementById('lewisStepBox').innerHTML=`<span style="font-weight:700;color:var(--anion3)">${stepTexts[lewisPhase]||''}</span>`;
+
+  drawLewisStatic(lewisPhase, lewisTick, p1end, ctx, W, H);
+
+  if(lewisTick<p3end+80){
+    lewisAnimId=requestAnimationFrame(lewisFrame);
+  } else {
+    lewisRunning=false;
+    document.getElementById('lewisAnimBtn').disabled=false;
+    playSound('sndBerhasil');
+  }
+}
+
+function drawLewisStatic(phase, tick, p1end, ctxIn, Win, Hin){
+  const cv=document.getElementById('lewisCanvas');
+  if(!cv)return;
+  let ctx=ctxIn, W=Win, H=Hin;
+  if(!ctx){
+    const par=cv.parentElement;
+    cv.width=par.clientWidth-2;
+    cv.height=Math.max(200,par.clientHeight-52);
+    W=cv.width; H=cv.height;
+    ctx=cv.getContext('2d');
+  }
+  tick=tick||0; phase=phase||0;
+
+  // BG
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0a0618');bg.addColorStop(1,'#0d1030');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // Starfield bg
+  ctx.fillStyle='rgba(255,255,255,0.055)';
+  for(let x=15;x<W;x+=24)for(let y=15;y<H;y+=24){ctx.beginPath();ctx.arc(x,y,0.7,0,Math.PI*2);ctx.fill();}
+
+  const lo=lewisLogam, nl=lewisNL;
+  if(!lo||!nl) return;
+  const nLo=lewisLo, nNl=lewisNl;
+  const showAfter=(phase>=2);
+  const showLewis=(phase>=3);
+  const p1e=p1end||110;
+  const afterAlpha=showAfter?Math.min(1,(tick-p1e)/35):0;
+  const totalCols=nLo+nNl;
+  const colW=W/(totalCols+1);
+  const topZoneY=H*0.26, botZoneY=H*0.74;
+
+  // ── ZONE BOXES ──
+  // Before zone
+  ctx.save();
+  const bfGrad=ctx.createLinearGradient(0,2,0,H*0.48);
+  bfGrad.addColorStop(0,'rgba(59,110,245,0.10)');bfGrad.addColorStop(1,'rgba(59,110,245,0.02)');
+  ctx.fillStyle=bfGrad;ctx.beginPath();ctx.roundRect(4,2,W-8,H*0.48,11);ctx.fill();
+  ctx.strokeStyle='rgba(59,110,245,0.22)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.roundRect(4,2,W-8,H*0.48,11);ctx.stroke();ctx.setLineDash([]);
+  ctx.restore();
+  // Before labels
+  ctx.fillStyle='rgba(120,190,255,0.9)';ctx.font='bold 10px Nunito,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('▲ SEBELUM TRANSFER e⁻  ·  ATOM NETRAL',14,9);
+  ctx.fillStyle='rgba(255,255,255,0.32)';ctx.font='8.5px Nunito,sans-serif';
+  ctx.fillText('Konfigurasi elektron (kulit-kulit) + Titik Lewis valensi',14,22);
+
+  // After zone
+  if(afterAlpha>0){
+    ctx.save();ctx.globalAlpha=afterAlpha;
+    const afGrad=ctx.createLinearGradient(0,H*0.52,0,H-2);
+    afGrad.addColorStop(0,'rgba(155,34,201,0.10)');afGrad.addColorStop(1,'rgba(155,34,201,0.02)');
+    ctx.fillStyle=afGrad;ctx.beginPath();ctx.roundRect(4,H*0.52,W-8,H*0.46,11);ctx.fill();
+    ctx.strokeStyle='rgba(155,34,201,0.25)';ctx.lineWidth=1;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.roundRect(4,H*0.52,W-8,H*0.46,11);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(200,120,255,0.9)';ctx.font='bold 10px Nunito,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText('▼ SESUDAH TRANSFER e⁻  ·  ION TERBENTUK',14,H*0.52+8);
+    ctx.fillStyle='rgba(255,255,255,0.32)';ctx.font='8.5px Nunito,sans-serif';
+    ctx.fillText(showLewis?'Struktur Lewis Ion: kurung [ ]ⁿ + pasangan bebas + muatan formal':'Konfigurasi elektron ion (konfigurasi gas mulia)',14,H*0.52+21);
+    ctx.restore();
+  }
+
+  // ── ATOMS BEFORE (top) ──
+  for(let i=0;i<nLo;i++) drawRingAtom(ctx,colW*(i+1),topZoneY,lo,false,false,tick);
+  for(let j=0;j<nNl;j++) drawRingAtom(ctx,colW*(nLo+j+1),topZoneY,nl,false,false,tick);
+
+  // ── ELECTRON TRANSFER PARTICLES ──
+  if(phase===1){
+    const prog=Math.min(1,Math.max(0,(tick-30)/75));
+    const totalE=lo.release*nLo;
+    for(let e=0;e<totalE;e++){
+      const delay=e/totalE*0.45;
+      const t=Math.max(0,Math.min(1,(prog-delay)/0.55));
+      if(t<=0)continue;
+      const li=Math.floor(e/lo.release);
+      const sx=colW*(li+1),sy=topZoneY;
+      const tx2=colW*(nLo+(e%nNl)+1),ty2=topZoneY;
+      const ex=sx+(tx2-sx)*t, ey=sy+(ty2-sy)*t-65*Math.sin(t*Math.PI);
+      if(t>0.06){
+        const t0=Math.max(0,t-0.1);
+        ctx.beginPath();ctx.moveTo(sx+(tx2-sx)*t0,sy-65*Math.sin(t0*Math.PI));ctx.lineTo(ex,ey);
+        ctx.strokeStyle=`rgba(255,220,50,${0.3*t})`;ctx.lineWidth=3;ctx.stroke();
+      }
+      const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,14);
+      eg.addColorStop(0,'rgba(255,240,80,0.9)');eg.addColorStop(0.45,'rgba(255,200,0,0.5)');eg.addColorStop(1,'transparent');
+      ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,14,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(ex,ey,5,0,Math.PI*2);ctx.fillStyle='#fffbe0';ctx.fill();
+      ctx.strokeStyle='rgba(255,200,0,0.9)';ctx.lineWidth=1.5;ctx.stroke();
+    }
+  }
+
+  // ── IONS AFTER (bottom) ──
+  if(showAfter){
+    ctx.save();ctx.globalAlpha=afterAlpha;
+    for(let i=0;i<nLo;i++) drawRingAtom(ctx,colW*(i+1),botZoneY,lo,true,showLewis,tick,'kation');
+    for(let j=0;j<nNl;j++) drawRingAtom(ctx,colW*(nLo+j+1),botZoneY,nl,true,showLewis,tick,'anion');
+    ctx.restore();
+
+    // Connector arrows
+    ctx.save();ctx.globalAlpha=afterAlpha*0.55;
+    for(let i=0;i<totalCols;i++){
+      const cx=colW*(i+1);
+      ctx.strokeStyle='rgba(255,255,255,0.28)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+      ctx.beginPath();ctx.moveTo(cx,topZoneY+46);ctx.lineTo(cx,botZoneY-46);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(255,255,255,0.45)';
+      ctx.beginPath();ctx.moveTo(cx-5,botZoneY-49);ctx.lineTo(cx+5,botZoneY-49);ctx.lineTo(cx,botZoneY-42);ctx.closePath();ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ── IDLE HINT ──
+  if(phase===0 && tick<4){
+    ctx.save();ctx.globalAlpha=0.45;
+    ctx.fillStyle='rgba(255,255,255,0.85)';ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('▶  Klik "Animasi Transfer e⁻" untuk memulai',W/2,H*0.5);
+    ctx.restore();
+  }
+}
+
+// Draw one atom/ion with concentric electron-shell rings + Lewis dots
+function drawRingAtom(ctx, cx, cy, data, isIon, showLewis, tick, role){
+  const isLogam=(data.release!==undefined);
+  role=role||(isLogam?'kation':'anion');
+  const konfig=isIon?data.konfig_ion:data.konfig;
+  const r0=18; // nucleus radius
+  const gap=13; // ring spacing
+
+  // Draw shell rings + electrons
+  const spinDir=[1,-1,1,-1];
+  for(let s=0;s<konfig.length;s++){
+    const rr=r0+(s+1)*gap;
+    const n=konfig[s];
+    const isVal=(s===konfig.length-1);
+    // Ring
+    ctx.save();
+    ctx.strokeStyle=isLogam?`rgba(245,166,35,${0.10+s*0.05})`:`rgba(155,34,201,${0.10+s*0.05})`;
+    ctx.lineWidth=isVal?1.2:0.8;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.arc(cx,cy,rr,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+    ctx.restore();
+    // Electrons on ring
+    const baseAngle=-Math.PI/2 + (tick?tick*0.004*spinDir[s%4]:0);
+    for(let e=0;e<n;e++){
+      const ang=baseAngle+(2*Math.PI*e/n);
+      const ex=cx+rr*Math.cos(ang), ey=cy+rr*Math.sin(ang);
+      if(isVal){
+        const gv=ctx.createRadialGradient(ex,ey,0,ex,ey,5.5);
+        gv.addColorStop(0,isLogam?'rgba(255,210,80,0.7)':'rgba(195,100,255,0.7)');
+        gv.addColorStop(1,'transparent');
+        ctx.fillStyle=gv;ctx.beginPath();ctx.arc(ex,ey,5.5,0,Math.PI*2);ctx.fill();
+      }
+      ctx.beginPath();ctx.arc(ex,ey,isVal?3.2:2.0,0,Math.PI*2);
+      ctx.fillStyle=isVal?(isLogam?'#ffca5c':'#c45ef5'):'rgba(160,200,255,0.65)';
+      ctx.fill();
+    }
+  }
+
+  // Nucleus sphere
+  const totalR=r0+konfig.length*gap;
+  const nGrad=ctx.createRadialGradient(cx-r0*.32,cy-r0*.32,r0*.07,cx,cy,r0);
+  nGrad.addColorStop(0,data.colorB);nGrad.addColorStop(0.55,data.colorA);nGrad.addColorStop(1,data.colorA+'88');
+  ctx.beginPath();ctx.arc(cx,cy,r0,0,Math.PI*2);ctx.fillStyle=nGrad;ctx.fill();
+  const spec=ctx.createRadialGradient(cx-r0*.3,cy-r0*.38,r0*.04,cx-r0*.1,cy-r0*.1,r0*.62);
+  spec.addColorStop(0,'rgba(255,255,255,0.52)');spec.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=spec;ctx.beginPath();ctx.arc(cx,cy,r0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=isIon?'rgba(255,255,255,0.72)':'rgba(255,255,255,0.30)';
+  ctx.lineWidth=isIon?1.8:1;ctx.beginPath();ctx.arc(cx,cy,r0,0,Math.PI*2);ctx.stroke();
+
+  // Symbol
+  ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r0*.62)}px Rajdhani,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(isIon?data.ion:data.sym,cx,cy-1);
+
+  // Konfig label below
+  const labelY=cy+totalR+3;
+  ctx.font='bold 9px JetBrains Mono,monospace';ctx.fillStyle='rgba(255,255,255,0.7)';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(konfig.join(','),cx,labelY);
+  ctx.font='7.5px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.38)';
+  ctx.fillText(konfig.map((n,i)=>`K${i+1}:${n}`).join(' '),cx,labelY+11);
+
+  // Lewis brackets + charge + lone-pair dots for ions
+  if(showLewis && isIon){
+    const bPad=10;
+    const bxOuter=totalR+bPad;
+    const bh=r0+10;
+    const chStr=isLogam?
+      (data.release===1?'⁺':data.release===2?'²⁺':'³⁺'):
+      (data.catch===1?'⁻':data.catch===2?'²⁻':'³⁻');
+    const bColor=isLogam?'rgba(245,166,35,0.88)':'rgba(196,94,245,0.88)';
+
+    ctx.strokeStyle=bColor;ctx.lineWidth=2.2;
+    ctx.beginPath();ctx.moveTo(cx-bxOuter+5,cy-bh);ctx.lineTo(cx-bxOuter,cy-bh);ctx.lineTo(cx-bxOuter,cy+bh);ctx.lineTo(cx-bxOuter+5,cy+bh);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+bxOuter-5,cy-bh);ctx.lineTo(cx+bxOuter,cy-bh);ctx.lineTo(cx+bxOuter,cy+bh);ctx.lineTo(cx+bxOuter-5,cy+bh);ctx.stroke();
+
+    ctx.font='bold 13px Rajdhani,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillStyle=isLogam?'#ffca5c':'#d87ef5';
+    ctx.fillText(chStr,cx+bxOuter+2,cy-bh+2);
+
+    // Lone pair dots arranged around nucleus at outer ring distance
+    const vE=konfig[konfig.length-1];
+    const dotRad=totalR+2;
+    const ang8=[-Math.PI/2,Math.PI/2,0,Math.PI,-Math.PI/4,Math.PI/4,-3*Math.PI/4,3*Math.PI/4];
+    for(let d=0;d<Math.min(vE,8);d++){
+      const dx=cx+dotRad*Math.cos(ang8[d]), dy=cy+dotRad*Math.sin(ang8[d]);
+      const dc=isLogam?'#ffca5c':'#c45ef5';
+      const dg=ctx.createRadialGradient(dx,dy,0,dx,dy,5.5);
+      dg.addColorStop(0,dc);dg.addColorStop(0.6,dc+'88');dg.addColorStop(1,'transparent');
+      ctx.fillStyle=dg;ctx.beginPath();ctx.arc(dx,dy,3.8,0,Math.PI*2);ctx.fill();
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════
+// ── PERCOBAAN 3: RUMUS KIMIA & MUATAN ION ──
+// ══════════════════════════════════════════════════
+const S2_ION_DATA={
+  'Na+':{sym:'Na⁺',muatan:1,r:14,color:'#f5a623',name:'Natrium'},
+  'Mg2+':{sym:'Mg²⁺',muatan:2,r:13,color:'#e8890a',name:'Magnesium'},
+  'Ca2+':{sym:'Ca²⁺',muatan:2,r:16,color:'#d97706',name:'Kalsium'},
+  'K+':{sym:'K⁺',muatan:1,r:17,color:'#b45309',name:'Kalium'},
+  'Al3+':{sym:'Al³⁺',muatan:3,r:11,color:'#92400e',name:'Aluminium'},
+  'Fe2+':{sym:'Fe²⁺',muatan:2,r:13,color:'#c2410c',name:'Besi(II)'},
+  'Fe3+':{sym:'Fe³⁺',muatan:3,r:11,color:'#9a3412',name:'Besi(III)'},
+  'Cl-':{sym:'Cl⁻',muatan:-1,r:18,color:'#9b22c9',name:'Klorida'},
+  'F-':{sym:'F⁻',muatan:-1,r:14,color:'#7c3aed',name:'Fluorida'},
+  'Br-':{sym:'Br⁻',muatan:-1,r:20,color:'#6d28d9',name:'Bromida'},
+  'O2-':{sym:'O²⁻',muatan:-2,r:16,color:'#4f1090',name:'Oksida'},
+  'S2-':{sym:'S²⁻',muatan:-2,r:20,color:'#5b21b6',name:'Sulfida'},
+  'N3-':{sym:'N³⁻',muatan:-3,r:17,color:'#3b0764',name:'Nitrida'}
+};
+const S2_NAMES={
+  'Na+Cl-':'Natrium Klorida','Na+F-':'Natrium Fluorida','Na+Br-':'Natrium Bromida','Na+O2-':'Natrium Oksida','Na+S2-':'Natrium Sulfida','Na+N3-':'Natrium Nitrida',
+  'Mg2+Cl-':'Magnesium Klorida','Mg2+F-':'Magnesium Fluorida','Mg2+O2-':'Magnesium Oksida','Mg2+S2-':'Magnesium Sulfida',
+  'Ca2+Cl-':'Kalsium Klorida','Ca2+F-':'Kalsium Fluorida','Ca2+O2-':'Kalsium Oksida','Ca2+S2-':'Kalsium Sulfida',
+  'K+Cl-':'Kalium Klorida','K+F-':'Kalium Fluorida','K+Br-':'Kalium Bromida','K+O2-':'Kalium Oksida',
+  'Al3+Cl-':'Aluminium Klorida','Al3+F-':'Aluminium Fluorida','Al3+O2-':'Aluminium Oksida','Al3+N3-':'Aluminium Nitrida',
+  'Fe2+Cl-':'Besi(II) Klorida','Fe2+O2-':'Besi(II) Oksida','Fe3+Cl-':'Besi(III) Klorida','Fe3+O2-':'Besi(III) Oksida'
+};
+let sim3AnimX=null,sim3TickX=0;
+function gcd2(a,b){return b?gcd2(b,a%b):a;}
+function initSim3(){
+  updateSim3();
+}
+function updateSim3(){
+  const kKey=document.getElementById('s3Kation').value;
+  const aKey=document.getElementById('s3Anion').value;
+  const k=S2_ION_DATA[kKey],a=S2_ION_DATA[aKey];
+  const mk=k.muatan,ma=Math.abs(a.muatan);
+  const g=gcd2(mk,ma);
+  const nk=ma/g,na=mk/g;
+  // Build formula
+  const symK=k.sym.replace(/[⁺⁻²³]/g,s=>({' ⁺':'+','⁺':'+','²⁺':'2+','³⁺':'3+','⁻':'-','²⁻':'2-','³⁻':'3-'}[s]||s));
+  const symKbase=kKey.replace(/[0-9+\-]/g,'');
+  const symAbase=aKey.replace(/[0-9+\-]/g,'');
+  const formulaTxt=(nk===1?symKbase:symKbase+toSub(nk))+(na===1?symAbase:symAbase+toSub(na));
+  const nameKey=kKey+aKey;
+  const senyawaName=S2_NAMES[nameKey]||'—';
+  document.getElementById('s3Formula').textContent=formulaTxt;
+  document.getElementById('s3Nama').textContent=senyawaName;
+  document.getElementById('s3InfoBox').innerHTML=
+    `<b style="color:var(--kation3)">${k.name}: ${k.sym}</b><br>Muatan: +${mk}<br>Dibutuhkan: ${nk} ion<br><hr style="border:none;border-top:1px solid var(--border);margin:4px 0;"><b style="color:var(--anion3)">${a.name}: ${a.sym}</b><br>Muatan: ${a.muatan}<br>Dibutuhkan: ${na} ion<br><b style="color:var(--acc);">Total muatan: ${nk}×(+${mk}) + ${na}×(${a.muatan}) = ${nk*mk + na*a.muatan}</b>`;
+  document.getElementById('s3StepBox').innerHTML=
+    `<b>Prinsip keseimbangan muatan:</b> Kation <b style="color:var(--kation3)">${k.sym}</b> (muatan +${mk}) × ${nk} = <b>+${nk*mk}</b> &nbsp;|&nbsp; Anion <b style="color:var(--anion3)">${a.sym}</b> (muatan ${a.muatan}) × ${na} = <b>${na*a.muatan}</b> &nbsp;→&nbsp; Total = <b style="color:var(--acc);">${nk*mk+na*a.muatan} (netral ✓)</b> &nbsp;→&nbsp; Rumus: <b style="color:var(--kation3);font-size:14px;">${formulaTxt}</b>`;
+  renderSim3(kKey,aKey,nk,na,k,a,formulaTxt);
+}
+function toSub(n){return String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[c]||c).join('');}
+function renderSim3(kKey,aKey,nk,na,k,a,formula){
+  const cv=document.getElementById('simCanvas3');
+  if(!cv)return;
+  const par=cv.parentElement;
+  cv.width=par.clientWidth-2;cv.height=Math.max(120,par.clientHeight-56);
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0d0d1e');bg.addColorStop(1,'#1a0a2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  // grid dots
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  for(let x=20;x<W;x+=28)for(let y=20;y<H;y+=28){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+  const total=nk+na;
+  const spacing=Math.min(W/(total+1),80);
+  const cy=H/2;
+  // Draw ions: kations left group, anions right group
+  let positions=[];
+  for(let i=0;i<nk;i++) positions.push({x:W/2-(total/2-i)*spacing,y:cy,type:'k',d:k,key:kKey});
+  for(let i=0;i<na;i++) positions.push({x:W/2-(total/2-(nk+i))*spacing,y:cy,type:'a',d:a,key:aKey});
+  // attraction lines between each kation-anion pair
+  for(let i=0;i<nk;i++) for(let j=0;j<na;j++){
+    const p1=positions[i],p2=positions[nk+j];
+    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);
+    ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+  }
+  positions.forEach(p=>{
+    const r=p.d.r+4;
+    const grad=ctx.createRadialGradient(p.x-r*.3,p.y-r*.3,r*.1,p.x,p.y,r);
+    grad.addColorStop(0,'#ffffff55');grad.addColorStop(.4,p.d.color+'dd');grad.addColorStop(1,p.d.color+'66');
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();
+    ctx.strokeStyle=p.d.color+'cc';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${r>15?10:9}px Rajdhani,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(p.d.sym.replace(/[⁺⁻²³]/g,''),p.x,p.y-2);
+    ctx.font='bold 8px sans-serif';ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.fillText(p.type==='k'?'+'+k.muatan:a.muatan,p.x,p.y+r-3);
+  });
+  // Formula label center top
+  ctx.fillStyle='rgba(255,220,100,0.95)';ctx.font='bold 22px Rajdhani,sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(formula,W/2,12);
+  // Charge balance bar
+  const barW=Math.min(260,W-40);const barX=(W-barW)/2;const barY=H-26;
+  ctx.fillStyle='rgba(255,255,255,0.07)';ctx.beginPath();ctx.roundRect(barX,barY,barW,16,8);ctx.fill();
+  ctx.fillStyle='rgba(245,166,35,0.85)';ctx.beginPath();ctx.roundRect(barX,barY,barW/2,16,8);ctx.fill();
+  ctx.fillStyle='rgba(155,34,201,0.85)';ctx.beginPath();ctx.roundRect(barX+barW/2,barY,barW/2,16,[0,8,8,0]);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(`Kation: +${nk*k.muatan}`,barX+barW/4,barY+8);
+  ctx.fillText(`Anion: ${na*a.muatan}`,barX+barW*3/4,barY+8);
+}
+
+// ══════════════════════════════════════════════════
+// ── PERCOBAAN 4: SIFAT FISIS ──
+// ══════════════════════════════════════════════════
+const S3_DATA={
+  NaCl:{name:'NaCl',leleh:801,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Menghantarkan'},keras:'Keras, rapuh (Mohs 2.5)',larut:'Larut baik (360 g/L)',muatan:1,r_ka:14,r_an:18,c_ka:'#f5a623',c_an:'#9b22c9',desc:'Muatan ±1, ukuran sedang → ikatan moderat'},
+  MgO:{name:'MgO',leleh:2852,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Sedikit larut'},keras:'Sangat keras (Mohs 5-6)',larut:'Sedikit larut (0.087 g/L)',muatan:2,r_ka:13,r_an:16,c_ka:'#e8890a',c_an:'#4f1090',desc:'Muatan ±2, ukuran kecil → ikatan sangat kuat'},
+  CaO:{name:'CaO',leleh:2613,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Menghantarkan'},keras:'Keras (Mohs 3.5)',larut:'Bereaksi dgn air → Ca(OH)₂',muatan:2,r_ka:16,r_an:16,c_ka:'#d97706',c_an:'#4f1090',desc:'Muatan ±2, ukuran sedang-besar'},
+  KCl:{name:'KCl',leleh:776,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Menghantarkan'},keras:'Keras, rapuh (Mohs 2)',larut:'Larut baik (344 g/L)',muatan:1,r_ka:17,r_an:18,c_ka:'#b45309',c_an:'#9b22c9',desc:'Muatan ±1, ukuran lebih besar → ikatan lebih lemah dari NaCl'},
+  AlF3:{name:'AlF₃',leleh:1290,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Sedikit larut'},keras:'Keras (Mohs 5)',larut:'Sedikit larut (5.6 g/L)',muatan:3,r_ka:11,r_an:14,c_ka:'#92400e',c_an:'#7c3aed',desc:'Muatan ±3, ukuran sangat kecil → ikatan sangat kuat'},
+  CaF2:{name:'CaF₂',leleh:1418,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Sedikit larut'},keras:'Keras (Mohs 4)',larut:'Sangat sedikit larut (0.016 g/L)',muatan:2,r_ka:16,r_an:14,c_ka:'#d97706',c_an:'#7c3aed',desc:'Muatan ±2, ukuran kecil-sedang'},
+  MgCl2:{name:'MgCl₂',leleh:714,hantar:{padat:'Tidak menghantarkan',leleh:'Menghantarkan',larutan:'Menghantarkan'},keras:'Keras, rapuh (Mohs 2.5)',larut:'Larut sangat baik (543 g/L)',muatan:2,r_ka:13,r_an:18,c_ka:'#e8890a',c_an:'#9b22c9',desc:'Muatan kation +2, anion −1, ukuran kation kecil'}
+};
+let sim3Anim=null,sim3Tick=0,sim3Wujud='padat';
+function initSim4_sifat(){updateSim4_sifat();}
+function setWujud(w){
+  sim3Wujud=w;
+  ['padat','leleh','larutan'].forEach(ww=>{
+    const btn=document.getElementById('s4Btn'+ww.charAt(0).toUpperCase()+ww.slice(1));
+    if(btn){btn.className='btn '+(ww===w?'btn-start':'btn-reset');btn.style.flex='1';btn.style.padding='6px';btn.style.fontSize='10.5px';}
+  });
+  updateSim4_sifat();
+}
+function updateSim4_sifat(){
+  const key=document.getElementById('s4Senyawa').value;
+  const d=S3_DATA[key];
+  document.getElementById('s4CompInfo').innerHTML=
+    `<b style="color:var(--anion3)">${d.name}</b><br>Kation muatan: +${d.muatan}<br>Anion muatan: −${d.muatan}<br><span style="color:var(--text3)">${d.desc}</span>`;
+  document.getElementById('pcv-leleh').textContent=d.leleh+'°C';
+  document.getElementById('pcd-leleh').textContent=d.leleh>2000?'Sangat tinggi (ikatan sangat kuat)':d.leleh>1000?'Tinggi (ikatan kuat)':'Tinggi (ikatan moderat)';
+  const h=d.hantar[sim3Wujud];
+  document.getElementById('pcv-hantar').textContent=h;
+  document.getElementById('pcd-hantar').textContent=sim3Wujud==='padat'?'Ion terikat kisi, tidak bergerak':sim3Wujud==='leleh'?'Ion bebas bergerak':'Ion terdisosiasi bebas';
+  document.getElementById('pcv-keras').textContent=d.keras.split('(')[0].trim();
+  document.getElementById('pcv-larut').textContent=d.larut.split('(')[0].split('(')[0].slice(0,18);
+  document.getElementById('pcd-larut').textContent=d.larut.length>20?d.larut.slice(0,35)+'...':d.larut;
+  const titles={padat:'🧱 MODEL KISI KRISTAL — WUJUD PADAT (Ion Tidak Bergerak)',leleh:'🌡️ WUJUD LELEHAN — Ion Bebas Bergerak → Menghantarkan Listrik',larutan:'💧 WUJUD LARUTAN — Ion Terdisosiasi → Menghantarkan Listrik'};
+  document.getElementById('s4CanvasTitle').textContent=titles[sim3Wujud];
+  if(sim3Anim)cancelAnimationFrame(sim3Anim);
+  sim3Tick=0;
+  renderSim4Loop(key,d);
+}
+function renderSim4Loop(key,d){
+  const cv=document.getElementById('simCanvas4');if(!cv)return;
+  const par=cv.parentElement;cv.width=par.clientWidth-2;cv.height=Math.max(100,par.clientHeight-50);
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  function frame(){
+    sim3Tick++;
+    const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0d0d1e');bg.addColorStop(1,'#1a0a2e');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.04)';
+    for(let x=20;x<W;x+=28)for(let y=20;y<H;y+=28){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+    const rk=d.r_ka+2,ra=d.r_an+2;
+    if(sim3Wujud==='padat'){
+      // Lattice grid
+      const cols=Math.floor(W/(rk+ra+6)),rows=Math.floor(H/(rk+ra+6));
+      const offX=(W-(cols*(rk+ra+6)))/2,offY=(H-(rows*(rk+ra+6)))/2;
+      for(let row=0;row<rows;row++) for(let col=0;col<cols;col++){
+        const isKa=(row+col)%2===0;
+        const x=offX+col*(rk+ra+6)+(isKa?rk:ra);
+        const y=offY+row*(rk+ra+6)+(isKa?rk:ra);
+        const r=isKa?rk:ra;const c=isKa?d.c_ka:d.c_an;
+        const g=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);
+        g.addColorStop(0,'#ffffff44');g.addColorStop(.5,c+'cc');g.addColorStop(1,c+'55');
+        ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        ctx.strokeStyle=c+'aa';ctx.lineWidth=1;ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.85)';ctx.font=`bold ${Math.max(8,r-3)}px Rajdhani,sans-serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(isKa?'+':'−',x,y);
+      }
+      ctx.fillStyle='rgba(255,255,100,0.7)';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='center';
+      ctx.fillText('🔒 Ion terikat dalam kisi kristal → tidak menghantarkan listrik',W/2,H-10);
+    } else if(sim3Wujud==='leleh'){
+      // Free moving ions
+      if(!cv._ions){
+        cv._ions=[];
+        for(let i=0;i<14;i++){
+          const isKa=i%2===0;
+          cv._ions.push({x:30+Math.random()*(W-60),y:30+Math.random()*(H-60),vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,isKa,r:isKa?rk:ra,c:isKa?d.c_ka:d.c_an});
+        }
+      }
+      cv._ions.forEach(ion=>{
+        ion.x+=ion.vx;ion.y+=ion.vy;
+        if(ion.x<ion.r||ion.x>W-ion.r)ion.vx*=-1;
+        if(ion.y<ion.r||ion.y>H-ion.r-16)ion.vy*=-1;
+        const g=ctx.createRadialGradient(ion.x-ion.r*.3,ion.y-ion.r*.3,ion.r*.1,ion.x,ion.y,ion.r);
+        g.addColorStop(0,'#ffffff55');g.addColorStop(.5,ion.c+'cc');g.addColorStop(1,ion.c+'55');
+        ctx.beginPath();ctx.arc(ion.x,ion.y,ion.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        ctx.strokeStyle=ion.c+'aa';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.fillStyle='#fff';ctx.font=`bold ${ion.r-2}px Rajdhani,sans-serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ion.isKa?'+':'−',ion.x,ion.y);
+      });
+      ctx.fillStyle='rgba(100,255,180,0.8)';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='center';
+      ctx.fillText('🌡️ Ion bebas bergerak → menghantarkan listrik',W/2,H-10);
+    } else {
+      // Solution: ions spread, water molecules
+      if(!cv._solIons){
+        cv._solIons=[];
+        for(let i=0;i<16;i++){
+          const isKa=i%2===0;
+          cv._solIons.push({x:30+Math.random()*(W-60),y:30+Math.random()*(H-60),vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,isKa,r:isKa?rk:ra,c:isKa?d.c_ka:d.c_an,angle:Math.random()*Math.PI*2});
+        }
+      }
+      // Draw water-like background circles
+      if(sim3Tick%3===0){
+        ctx.fillStyle='rgba(100,180,255,0.04)';
+        for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,8+Math.random()*12,0,Math.PI*2);ctx.fill();}
+      }
+      cv._solIons.forEach(ion=>{
+        ion.x+=ion.vx;ion.y+=ion.vy;ion.angle+=0.04;
+        if(ion.x<ion.r||ion.x>W-ion.r)ion.vx*=-1;
+        if(ion.y<ion.r||ion.y>H-ion.r-16)ion.vy*=-1;
+        // hydration shell
+        ctx.beginPath();ctx.arc(ion.x,ion.y,ion.r+6,0,Math.PI*2);
+        ctx.fillStyle=ion.isKa?'rgba(245,166,35,0.1)':'rgba(155,34,201,0.1)';ctx.fill();
+        const g=ctx.createRadialGradient(ion.x-ion.r*.3,ion.y-ion.r*.3,ion.r*.1,ion.x,ion.y,ion.r);
+        g.addColorStop(0,'#ffffff55');g.addColorStop(.5,ion.c+'cc');g.addColorStop(1,ion.c+'55');
+        ctx.beginPath();ctx.arc(ion.x,ion.y,ion.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+        ctx.strokeStyle=ion.c+'cc';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.fillStyle='#fff';ctx.font=`bold ${ion.r-2}px Rajdhani,sans-serif`;
+        ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ion.isKa?'+':'−',ion.x,ion.y);
+      });
+      ctx.fillStyle='rgba(100,220,255,0.8)';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='center';
+      ctx.fillText('💧 Ion terdisosiasi dalam air → menghantarkan listrik',W/2,H-10);
+    }
+    sim3Anim=requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ══════════════════════════════════════════════════
+// ── PERCOBAAN 5: KEKUATAN IKATAN ION ──
+// ══════════════════════════════════════════════════
+const S4_DATA={
+  NaCl:{name:'NaCl',lattice:787,muatan:1,r_ka:102,r_an:181,leleh:801,c_ka:'#f5a623',c_an:'#9b22c9',label:'Na⁺ + Cl⁻'},
+  MgO:{name:'MgO',lattice:3791,muatan:2,r_ka:72,r_an:140,leleh:2852,c_ka:'#e8890a',c_an:'#4f1090',label:'Mg²⁺ + O²⁻'},
+  CaO:{name:'CaO',lattice:3401,muatan:2,r_ka:100,r_an:140,leleh:2613,c_ka:'#d97706',c_an:'#4f1090',label:'Ca²⁺ + O²⁻'},
+  KCl:{name:'KCl',lattice:715,muatan:1,r_ka:138,r_an:181,leleh:776,c_ka:'#b45309',c_an:'#9b22c9',label:'K⁺ + Cl⁻'},
+  AlF3:{name:'AlF₃',lattice:6252,muatan:3,r_ka:53,r_an:133,leleh:1290,c_ka:'#92400e',c_an:'#7c3aed',label:'Al³⁺ + F⁻'},
+  CaF2:{name:'CaF₂',lattice:2630,muatan:2,r_ka:100,r_an:133,leleh:1418,c_ka:'#d97706',c_an:'#7c3aed',label:'Ca²⁺ + F⁻'},
+  MgCl2:{name:'MgCl₂',lattice:2523,muatan:2,r_ka:72,r_an:181,leleh:714,c_ka:'#e8890a',c_an:'#9b22c9',label:'Mg²⁺ + Cl⁻'},
+  Al2O3:{name:'Al₂O₃',lattice:15916,muatan:3,r_ka:53,r_an:140,leleh:2072,c_ka:'#92400e',c_an:'#4f1090',label:'Al³⁺ + O²⁻'}
+};
+let sim4Anim=null,sim4Tick=0;
+function initSim4(){updateSim4();}
+function updateSim4(){
+  const keyA=document.getElementById('s5A').value;
+  const keyB=document.getElementById('s5B').value;
+  const dA=S4_DATA[keyA],dB=S4_DATA[keyB];
+  const maxL=Math.max(dA.lattice,dB.lattice,1000);
+  const maxM=3;const maxR=250;const maxT=Math.max(dA.leleh,dB.leleh,1000);
+  const gauges=[
+    {label:'Energi Kisi',valA:dA.lattice,valB:dB.lattice,max:maxL,unit:' kJ/mol',color:'#9b22c9'},
+    {label:'Muatan Ion',valA:dA.muatan,valB:dB.muatan,max:maxM,unit:'',color:'#f5a623'},
+    {label:'Jari-jari Ion (r_ka+r_an)',valA:dA.r_ka+dA.r_an,valB:dB.r_ka+dB.r_an,max:maxR,unit:' pm',color:'#3b6ef5'},
+    {label:'Titik Leleh',valA:dA.leleh,valB:dB.leleh,max:maxT,unit:'°C',color:'#e8890a'}
+  ];
+  let html='';
+  gauges.forEach(g=>{
+    const pA=Math.max(4,Math.round((g.valA/g.max)*100));
+    const pB=Math.max(4,Math.round((g.valB/g.max)*100));
+    html+=`<div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+        <span style="font-size:9.5px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;">${g.label}</span>
+      </div>
+      <div class="gauge-row"><span class="gauge-label" style="color:${dA.c_ka};font-size:9.5px;">${dA.name}</span>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:${pA}%;background:${dA.c_ka};"></div></div>
+        <span class="gauge-val" style="color:${dA.c_ka};">${g.valA}${g.unit}</span></div>
+      <div class="gauge-row"><span class="gauge-label" style="color:${dB.c_ka};font-size:9.5px;">${dB.name}</span>
+        <div class="gauge-bar"><div class="gauge-fill" style="width:${pB}%;background:${dB.c_ka};"></div></div>
+        <span class="gauge-val" style="color:${dB.c_ka};">${g.valB}${g.unit}</span></div>
+    </div>`;
+  });
+  document.getElementById('s5Gauges').innerHTML=html;
+  // Conclusion
+  const stronger=dA.lattice>dB.lattice?dA:dB;const weaker=dA.lattice>dB.lattice?dB:dA;
+  document.getElementById('s5Kesimpulan').innerHTML=
+    `<b>🔍 Kesimpulan:</b> <b style="color:${stronger.c_ka}">${stronger.name}</b> memiliki ikatan ion lebih kuat (energi kisi ${stronger.lattice} kJ/mol) dibanding <b style="color:${weaker.c_ka}">${weaker.name}</b> (${weaker.lattice} kJ/mol). `+
+    (stronger.muatan>weaker.muatan?`Muatan ${stronger.name} lebih besar (+${stronger.muatan}) → gaya tarik lebih kuat. `:'')+(stronger.r_ka+stronger.r_an<weaker.r_ka+weaker.r_an?`Ukuran ion ${stronger.name} lebih kecil → jarak ion pendek → energi lebih besar.`:`Walaupun ukurannya ${stronger.r_ka+stronger.r_an} pm > ${weaker.r_ka+weaker.r_an} pm, muatan yang lebih besar mendominasi.`);
+  renderSim4(keyA,keyB,dA,dB);
+}
+function renderSim4(keyA,keyB,dA,dB){
+  const cv=document.getElementById('simCanvas5');if(!cv)return;
+  const par=cv.parentElement;cv.width=par.clientWidth-2;cv.height=Math.max(100,par.clientHeight-50);
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0d0d1e');bg.addColorStop(1,'#1a0a2e');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,0.04)';
+  for(let x=20;x<W;x+=28)for(let y=20;y<H;y+=28){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+  const maxL=Math.max(dA.lattice,dB.lattice);
+  // Draw two ion pairs side by side with bond length proportional to strength
+  const pairs=[{d:dA,x:W*0.28},{d:dB,x:W*0.72}];
+  pairs.forEach(({d,x})=>{
+    const cy=H/2-10;
+    const strength=d.lattice/maxL;
+    // Draw bond spring
+    const bondLen=Math.round(20+30*(1-strength));
+    const rkPx=Math.min(24,8+d.muatan*4);const raPx=Math.min(28,10+d.muatan*4);
+    // Spring between ions
+    const x1=x-bondLen-rkPx,x2=x+bondLen+raPx;
+    for(let sx=x1;sx<x2;sx+=8){
+      const sy=cy+6*Math.sin((sx-x1)/(x2-x1)*Math.PI*6);
+      ctx.beginPath();ctx.arc(sx,sy,1.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fill();
+    }
+    // Kation
+    const gKa=ctx.createRadialGradient(x-bondLen-rkPx*.3,cy-rkPx*.3,rkPx*.1,x-bondLen,cy,rkPx);
+    gKa.addColorStop(0,'#ffffff55');gKa.addColorStop(.4,d.c_ka+'dd');gKa.addColorStop(1,d.c_ka+'66');
+    ctx.beginPath();ctx.arc(x-bondLen,cy,rkPx,0,Math.PI*2);ctx.fillStyle=gKa;ctx.fill();
+    ctx.strokeStyle=d.c_ka+'bb';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${rkPx>14?11:9}px Rajdhani,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('+'+d.muatan,x-bondLen,cy);
+    // Anion
+    const gAn=ctx.createRadialGradient(x+bondLen-raPx*.3,cy-raPx*.3,raPx*.1,x+bondLen,cy,raPx);
+    gAn.addColorStop(0,'#ffffff55');gAn.addColorStop(.4,d.c_an+'dd');gAn.addColorStop(1,d.c_an+'66');
+    ctx.beginPath();ctx.arc(x+bondLen,cy,raPx,0,Math.PI*2);ctx.fillStyle=gAn;ctx.fill();
+    ctx.strokeStyle=d.c_an+'bb';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${raPx>14?11:9}px Rajdhani,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('-'+d.muatan,x+bondLen,cy);
+    // Label
+    ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font='bold 12px Rajdhani,sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.name,x,cy+Math.max(rkPx,raPx)+18);
+    // Energi kisi bar
+    const barH=Math.round((d.lattice/maxL)*55);const barW=22;
+    const barX=x-barW/2,barY=cy-Math.max(rkPx,raPx)-barH-24;
+    const barGrad=ctx.createLinearGradient(barX,barY+barH,barX,barY);
+    barGrad.addColorStop(0,d.c_ka+'88');barGrad.addColorStop(1,d.c_ka+'ff');
+    ctx.fillStyle=barGrad;ctx.beginPath();ctx.roundRect(barX,barY,barW,barH,4);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.85)';ctx.font='bold 9px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.lattice,x,barY-5);
+  });
+  // Divider
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(W/2,20);ctx.lineTo(W/2,H-20);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='bold 9px Nunito,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Energi Kisi (kJ/mol)',W/2,15);
+}
+
+// ── BUILD TABEL 1 ──
+const T1_DATA=[
+  {no:1,unsur:'Natrium',noAtom:11,konfig:'2, 8, 1',editable:false,eLepas:'Lepas 1 e⁻',ion:'Na⁺',konfIon:'2, 8'},
+  {no:2,unsur:'Magnesium',noAtom:12,konfig:'2, 8, 2',editable:false,eLepas:'Lepas 2 e⁻',ion:'Mg²⁺',konfIon:'2, 8'},
+  {no:3,unsur:'Kalsium',noAtom:20,konfig:'2, 8, 8, 2',editable:false,eLepas:'Lepas 2 e⁻',ion:'Ca²⁺',konfIon:'2, 8, 8'},
+  {no:4,unsur:'Kalium',noAtom:19,konfig:'2, 8, 8, 1',editable:false,eLepas:'Lepas 1 e⁻',ion:'K⁺',konfIon:'2, 8, 8'},
+  {no:5,unsur:'Aluminium',noAtom:13,konfig:'2, 8, 3',editable:true,eLepas:'',ion:'',konfIon:''},
+  {no:6,unsur:'Klorin',noAtom:17,konfig:'2, 8, 7',editable:false,eLepas:'Tangkap 1 e⁻',ion:'Cl⁻',konfIon:'2, 8, 8'},
+  {no:7,unsur:'Oksigen',noAtom:8,konfig:'2, 6',editable:false,eLepas:'Tangkap 2 e⁻',ion:'O²⁻',konfIon:'2, 8'},
+  {no:8,unsur:'Fluor',noAtom:9,konfig:'2, 7',editable:true,eLepas:'',ion:'',konfIon:''},
+  {no:9,unsur:'Bromin',noAtom:35,konfig:'2, 8, 18, 7',editable:true,eLepas:'',ion:'',konfIon:''},
+  {no:10,unsur:'Sulfur',noAtom:16,konfig:'2, 8, 6',editable:true,eLepas:'',ion:'',konfIon:''},
+];
+function buildTabel1(){
+  document.getElementById('tbody1').innerHTML=T1_DATA.map((r,i)=>`
+    <tr>
+      <td style="text-align:center;font-weight:800;">${r.no}</td>
+      <td style="font-weight:600;">${r.unsur}</td>
+      <td style="text-align:center;font-family:'JetBrains Mono',monospace;">${r.noAtom}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${r.konfig}</td>
+      <td style="text-align:center;">${r.editable?`<input type="text" id="t1r${i}e" style="width:80px;text-align:center;border:1.5px solid var(--border);border-radius:5px;padding:3px;font-family:'Nunito',sans-serif;font-size:11px;outline:none;" oninput="saveLKM()" placeholder="...">`:r.eLepas}</td>
+      <td style="text-align:center;font-weight:800;color:var(--anion3);">${r.editable?`<input type="text" id="t1r${i}f" style="width:60px;text-align:center;border:1.5px solid var(--border);border-radius:5px;padding:3px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--anion3);outline:none;" oninput="saveLKM()" placeholder="...">`:r.ion}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${r.editable?`<input type="text" id="t1r${i}g" style="width:100px;border:1.5px solid var(--border);border-radius:5px;padding:3px 6px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;" oninput="saveLKM()" placeholder="...">`:r.konfIon}</td>
+    </tr>
+  `).join('');
+}
+buildTabel1();
+
+function saveLKM(){}
+function clearLKM(){
+  document.querySelectorAll('#page-lkm input[type=text]').forEach(i=>i.value='');
+  document.querySelectorAll('#page-lkm textarea').forEach(t=>t.value='');
+}
+function printLKM(){window.print();}
+
+// ── DISKUSI ──
+function clearDiskusi(){
+  ['d1','d2','d3','d4'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+
+// ── KUIS ──
+const QUIZ=[
+  {q:'Ikatan ion terbentuk antara...',type:'mc',opts:['Dua atom non-logam','Logam dengan non-logam melalui serah-terima elektron','Dua atom logam','Atom dengan molekul air'],ans:1,fb:'Ikatan ion terbentuk melalui transfer elektron dari logam (kation) ke non-logam (anion), menghasilkan gaya elektrostatis.'},
+  {q:'Atom Na memiliki konfigurasi elektron 2,8,1. Ion yang terbentuk adalah...',type:'mc',opts:['Na⁻','Na²⁺','Na⁺','Na³⁺'],ans:2,fb:'Na melepas 1 elektron valensinya → Na⁺ dengan konfigurasi stabil 2,8 (seperti Ne).'},
+  {q:'Unsur X (nomor atom 12) berikatan dengan unsur Y (nomor atom 9). Rumus kimia senyawa yang terbentuk adalah...',type:'mc',opts:['XY','XY₂','X₂Y','X₂Y₃'],ans:1,fb:'X=Mg (Gol. IIA, X²⁺), Y=F (Gol. VIIA, Y⁻). Untuk netral: 1 Mg²⁺ butuh 2 F⁻ → MgF₂ atau XY₂.'},
+  {q:'Senyawa ion dalam bentuk padat TIDAK dapat menghantarkan listrik karena...',type:'mc',opts:['Ion sudah bereaksi dengan air','Ion-ionnya terikat kuat dalam kisi kristal dan tidak bebas bergerak','Tidak memiliki elektron bebas','Bersifat non-polar'],ans:1,fb:'Dalam wujud padat, ion terikat di posisi tetap pada kisi kristal sehingga tidak dapat bergerak bebas.'},
+  {q:'Titik leleh MgO (2852°C) lebih tinggi dari NaCl (801°C) karena...',type:'mc',opts:['MgO memiliki massa molar lebih besar','Gaya elektrostatis Mg²⁺–O²⁻ lebih kuat dari Na⁺–Cl⁻','MgO berbentuk kristal lebih besar','NaCl lebih mudah larut'],ans:1,fb:'Kekuatan ikatan ion bergantung pada muatan. Mg²⁺–O²⁻ (muatan ±2) memiliki gaya tarik jauh lebih kuat dari Na⁺–Cl⁻ (muatan ±1).'},
+  {q:'Aturan oktet menyatakan bahwa atom berusaha mencapai...',type:'mc',opts:['4 elektron valensi','6 elektron valensi','8 elektron valensi seperti gas mulia','10 elektron valensi'],ans:2,fb:'Aturan oktet: atom stabil ketika memiliki 8 elektron di kulit terluar, seperti konfigurasi gas mulia.'},
+  {q:'Dalam wujud cair (lelehan) senyawa ion dapat menghantarkan listrik.',type:'tf',opts:['Benar','Salah'],ans:0,fb:'BENAR. Ketika dipanaskan hingga meleleh, ion-ion dapat bergerak bebas sehingga menghantarkan listrik.'},
+  {q:'Atom Kalsium (Ca, nomor atom 20) melepas berapa elektron untuk membentuk ion Ca²⁺?',type:'mc',opts:['1 elektron','2 elektron','3 elektron','4 elektron'],ans:1,fb:'Ca: konfigurasi 2,8,8,2. Melepas 2 elektron valensi → Ca²⁺: 2,8,8 (konfigurasi Ar). Golongan IIA selalu melepas 2 elektron.'},
+  {q:'Senyawa ion bersifat keras namun rapuh bila dipukul.',type:'tf',opts:['Benar','Salah'],ans:0,fb:'BENAR. Keras karena kisi kristal kuat, rapuh karena saat dipukul lapisan ion bergeser dan ion sejenis berhadapan sehingga tolak-menolak.'},
+  {q:'Senyawa Al₂O₃ terbentuk dari kombinasi ion...',type:'mc',opts:['2 Al³⁺ dan 2 O²⁻','2 Al³⁺ dan 3 O²⁻','3 Al³⁺ dan 2 O²⁻','1 Al³⁺ dan 1 O²⁻'],ans:1,fb:'Al³⁺ (muatan +3) dan O²⁻ (muatan −2). LCM(3,2)=6. Butuh 2 Al³⁺ (total +6) dan 3 O²⁻ (total −6) → netral → Al₂O₃.'},
+];
+
+let currentQ=0,answers=[];
+function initQuiz(){
+  if(answers.length===QUIZ.length)return;
+  answers=new Array(QUIZ.length).fill(null);
+  renderQuiz();
+}
+function renderQuiz(){
+  const prog=document.getElementById('qprog');
+  prog.innerHTML=QUIZ.map((q,i)=>`<div class="qprog-dot ${i===currentQ?'current':answers[i]!==null?'answered':''}" onclick="goToQ(${i})">${i+1}</div>`).join('');
+  const q=QUIZ[currentQ];
+  const div=document.getElementById('qcontent');
+  const reviewed=answers[currentQ]!==null;
+  div.innerHTML=`
+    <div class="q-card">
+      <div class="qnum">SOAL ${currentQ+1} / ${QUIZ.length}</div>
+      <span class="qtype-badge ${q.type==='mc'?'badge-mc':'badge-tf'}">${q.type==='mc'?'Pilihan Ganda':'Benar / Salah'}</span>
+      <div class="qtext">${q.q}</div>
+      <ul class="opts">
+        ${q.opts.map((o,i)=>`
+          <li class="opt ${answers[currentQ]===i?'sel':''} ${reviewed&&i===q.ans?'correct':''} ${reviewed&&answers[currentQ]===i&&i!==q.ans?'wrong':''}" onclick="selectAnswer(${i})">
+            <input type="radio" name="opt" ${answers[currentQ]===i?'checked':''} ${reviewed?'disabled':''}> ${o}
+          </li>`).join('')}
+      </ul>
+      <div class="qfb ${reviewed?'on':''} ${reviewed?(answers[currentQ]===q.ans?'ok':'bad'):''}">
+        ${reviewed?(answers[currentQ]===q.ans?'✅ Benar! ':'❌ Kurang tepat. ')+q.fb:''}
+      </div>
+    </div>
+    <div class="quiz-foot">
+      <button class="btn-qnav btn-prev" onclick="goToQ(${currentQ-1})" ${currentQ===0?'disabled':''}>← Sebelumnya</button>
+      ${currentQ<QUIZ.length-1
+        ?`<button class="btn-qnav btn-next" onclick="goToQ(${currentQ+1})">Selanjutnya →</button>`
+        :`<button class="btn-qnav btn-submit-q" onclick="submitQuiz()">✓ Selesai</button>`}
+      <span class="qcounter">${answers.filter(a=>a!==null).length}/${QUIZ.length} dijawab</span>
+    </div>`;
+}
+function goToQ(n){if(n<0||n>=QUIZ.length)return;currentQ=n;renderQuiz();}
+function selectAnswer(i){
+  if(answers[currentQ]!==null)return;
+  answers[currentQ]=i;
+  if(i===QUIZ[currentQ].ans)playSound('sndBenar');else playSound('sndSalah');
+  renderQuiz();
+}
+function submitQuiz(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0&&!confirm(`${unanswered} soal belum dijawab. Lanjutkan?`))return;
+  const correct=answers.filter((a,i)=>a===QUIZ[i].ans).length;
+  const score=Math.round(correct/QUIZ.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scoreSub').textContent=`Jawaban benar: ${correct} / ${QUIZ.length}`;
+  const grades=[['A',90,'🌟 Luar Biasa! Pemahaman ikatan ion sangat baik.','#059669'],['B',80,'👍 Bagus! Pemahaman baik.','#0891b2'],['C',70,'📚 Cukup. Pelajari kembali konsep transfer elektron.','#d97706'],['D',0,'💪 Perlu peningkatan. Review teori ikatan ion.','#dc2626']];
+  const g=grades.find(([,min])=>score>=min);
+  document.getElementById('scoreGrade').textContent=g[2];
+  document.getElementById('scoreGrade').style.color=g[3];
+  document.getElementById('scoreOverlay').classList.add('on');
+  if(score>=90)setTimeout(()=>{playSound('sndBerhasil');},200);
+  else if(correct>QUIZ.length/2)playSound('tring');
+  else playSound('sndSalah');
+}
+function reviewQuiz(){document.getElementById('scoreOverlay').classList.remove('on');currentQ=0;renderQuiz();}
+function resetQuiz(){document.getElementById('scoreOverlay').classList.remove('on');answers=new Array(QUIZ.length).fill(null);currentQ=0;renderQuiz();}
+
+// Popup helpers
+function closeDragPopup(){
+  const p=document.getElementById('dragPopup');p.classList.remove('on');
+  const b=document.getElementById('dragPopupBox');b.style.transform='scale(.7)';b.style.opacity='0';
+}
+
+// Init simulation canvas on simulasi tab shown
+window.addEventListener('resize',()=>{
+  if(document.getElementById('page-simulasi').classList.contains('active')){
+    const active=[1,2,3,4,5].find(i=>document.getElementById('simpanel'+i)&&document.getElementById('simpanel'+i).classList.contains('active'));
+    if(active===1)initSimCanvas();
+    if(active===2)lewisUpdate();
+    if(active===3)updateSim3();
+    if(active===4){if(sim3Anim)cancelAnimationFrame(sim3Anim);updateSim4_sifat();}
+    if(active===5)updateSim4();
+  }
+});
+</script>
+</body>
+</html>
