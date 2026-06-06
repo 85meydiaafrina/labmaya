@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Lab Maya Kimia – Identifikasi Karbohidrat</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4f8;
+  --surf:#ffffff;--surf2:#f8fafc;
+  --border:#dde3ec;--border2:#c5cfe0;
+  --acc:#1d4ed8;--acc2:#3b82f6;--acc3:#1e3a8a;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --benedict:#c0392b;--iodin:#1a237e;--seliwanoff:#880e4f;
+  --green:#059669;--red:#dc2626;--yellow:#d97706;--orange:#ea580c;
+  --h:54px;
+  --fbase:14px;
+}
+@media(max-width:768px){:root{--fbase:13px;--h:46px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+/* BACKGROUND */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 5% 0%,rgba(100,149,237,0.13) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 55% at 95% 100%,rgba(192,57,43,0.09) 0%,transparent 60%),
+    radial-gradient(ellipse 35% 35% at 85% 10%,rgba(26,35,126,0.08) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(148,163,184,0.06) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(148,163,184,0.06) 40px);
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#0d1b4b,#1a237e,#283593);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+  box-shadow:0 2px 12px rgba(13,27,75,0.5);
+}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.logo-img{width:36px;height:36px;border-radius:8px;object-fit:contain;background:#fff;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,18px);font-weight:800;color:#fff;line-height:1.1;white-space:nowrap;}
+.logo-sub{font-size:9px;color:rgba(255,255,255,0.65);font-weight:400;}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.65);cursor:pointer;font-family:'Nunito',sans-serif;font-size:clamp(12px,1.4vw,15px);font-weight:700;padding:0 13px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:2.5px;background:linear-gradient(90deg,#f59e0b,#ef4444);transform:scaleX(0);transition:transform .25s;border-radius:2px 2px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.92);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+@media(max-width:640px){
+  header{flex-wrap:nowrap;padding:0 8px;}
+  .logo-text{font-size:14px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;background:linear-gradient(180deg,#0d1b4b,#1a237e);border-bottom:1px solid rgba(255,255,255,.15);box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:50px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;display:flex;align-items:center;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.09);}
+}
+
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .22s ease;}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#0d1b4b 0%,#1a237e 45%,#b71c1c 100%);
+  border-radius:10px;padding:10px 16px;margin-bottom:8px;
+  display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;flex-shrink:0;
+  box-shadow:0 4px 20px rgba(26,35,126,.25);
+}
+.hero::before{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:200px;
+  background:linear-gradient(90deg,transparent,rgba(192,57,43,0.15));pointer-events:none;
+}
+.hero::after{content:'🧪';position:absolute;right:12px;top:-5px;font-size:55px;opacity:.1;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.18em;color:#90caf9;text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.9vw,18px);font-weight:800;color:#fff;line-height:1.2;}
+.h-title span{color:#ffcc80;}
+.h-desc{font-size:11px;color:#bbdefb;line-height:1.55;max-width:500px;}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:7px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 4px rgba(30,41,59,0.06);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 12px rgba(30,41,59,0.09);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ci{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci.ben{background:rgba(192,57,43,.12);}
+.ci.iod{background:rgba(26,35,126,.12);}
+.ci.sel{background:rgba(136,14,79,.12);}
+.ci.b{background:rgba(22,163,74,.1);}
+.ci.g{background:rgba(5,150,105,.1);}
+.ci.y{background:rgba(217,119,6,.1);}
+.ci.r{background:rgba(220,38,38,.1);}
+.ci.p{background:rgba(124,58,237,.1);}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.4vw,15px);font-weight:800;color:var(--acc3);}
+.card p{font-size:clamp(11.5px,1.2vw,13.5px);line-height:1.7;color:var(--text2);margin-bottom:6px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:var(--acc);letter-spacing:.09em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.chips{display:flex;gap:5px;margin:6px 0;flex-wrap:wrap;}
+.chip{border-radius:5px;padding:3px 9px;font-size:clamp(10.5px,1.1vw,12px);font-weight:700;}
+.chip-ben{background:rgba(192,57,43,.09);border:1px solid rgba(192,57,43,.25);color:#c0392b;}
+.chip-iod{background:rgba(26,35,126,.09);border:1px solid rgba(26,35,126,.25);color:#1a237e;}
+.chip-sel{background:rgba(136,14,79,.09);border:1px solid rgba(136,14,79,.25);color:#880e4f;}
+.chip-g{background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);color:#047857;}
+.chip-b{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:#1d4ed8;}
+
+/* REAGENT COLOR BADGES */
+.color-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.color-merahbata{background:#c0392b;}
+.color-birutua{background:#1a237e;}
+.color-merahceri{background:#e91e63;}
+.color-biru{background:#2196f3;}
+.color-coklat{background:#795548;}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:5px;}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;transition:border-color .17s;}
+.step:hover{border-color:var(--acc2);background:#eff6ff;}
+.snum{min-width:20px;height:20px;border-radius:50%;background:rgba(29,78,216,.12);border:1px solid rgba(29,78,216,.25);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);flex-shrink:0;}
+.step p{font-size:clamp(11.5px,1.2vw,13px);color:var(--text2);line-height:1.6;margin:0;}
+.notebox{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;margin-top:7px;}
+.notebox .nt{font-size:9px;font-weight:700;color:var(--yellow);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
+.notebox p{font-size:clamp(11.5px,1.2vw,12.5px);color:#92400e;line-height:1.6;margin:0;}
+.sep{display:flex;align-items:center;gap:8px;margin:8px 0 5px;}
+.sep span{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;font-weight:700;}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* OLIST */
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(11.5px,1.2vw,13px);color:var(--text2);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:900;font-size:16px;margin-top:-1px;}
+
+/* QUIZ */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1px solid var(--border);border-radius:9px;margin-bottom:7px;flex-shrink:0;box-shadow:0 1px 3px rgba(30,41,59,0.05);}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--surf2);font-size:9.5px;font-weight:700;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#eff6ff;}
+.qprog-dot.current{background:var(--acc);color:#fff;border-color:var(--acc);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:14px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;margin-bottom:7px;letter-spacing:.04em;}
+.badge-mc{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
+.badge-tf{background:#fdf4ff;border:1px solid #e9d5ff;color:#7e22ce;}
+.qtext{font-size:13px;color:var(--text);line-height:1.55;font-weight:700;margin-bottom:10px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);}
+.opt:hover{border-color:var(--acc2);background:#eff6ff;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#eff6ff;color:var(--acc3);}
+.opt.correct{background:#f0fdf4;border-color:#22c55e;color:#15803d;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:8px;padding:8px 11px;border-radius:7px;font-size:11.5px;display:none;line-height:1.55;}
+.qfb.on{display:block;}
+.qfb.ok{background:#f0fdf4;color:#166534;border:1px solid #86efac;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:6px 14px;border-radius:6px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);background:#eff6ff;}
+.btn-next{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25);}
+.btn-next:hover{box-shadow:0 4px 14px rgba(37,99,235,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#0d1b4b,#1a237e);color:#fff;}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text3);}
+
+/* SCORE OVERLAY */
+.score-overlay{position:fixed;inset:0;background:rgba(13,27,75,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px 44px;text-align:center;box-shadow:0 20px 60px rgba(13,27,75,.2);animation:fu .28s ease;min-width:280px;}
+.score-big{font-family:'Space Grotesk',sans-serif;font-size:68px;font-weight:800;color:var(--acc);line-height:1;}
+.score-pct{font-size:20px;color:var(--text3);margin-top:2px;}
+.score-sub{font-size:12.5px;color:var(--text2);margin:8px 0 4px;}
+.score-grade{font-size:15px;font-weight:800;margin-top:8px;}
+.score-actions{display:flex;gap:8px;justify-content:center;margin-top:18px;}
+.btn-score{padding:8px 20px;border-radius:7px;font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;border:none;transition:all .17s;}
+.btn-review{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-review:hover{border-color:var(--acc);color:var(--acc);}
+.btn-ulangi{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;}
+.btn-ulangi:hover{box-shadow:0 4px 14px rgba(37,99,235,.35);}
+
+/* SIMULATION */
+.sim-wrap{display:grid;grid-template-columns:200px 1fr;gap:8px;flex:1;min-height:0;}
+@media(max-width:640px){.sim-wrap{grid-template-columns:1fr;}}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.ctrl-panel h3{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800;color:var(--acc3);}
+.cg label{display:block;font-size:9.5px;font-weight:700;color:var(--text3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px;}
+select,input[type=range]{width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 26px 6px 8px;font-family:'Nunito',sans-serif;font-size:11.5px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%231d4ed8' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .17s;}
+select:focus{border-color:var(--acc);}
+input[type=range]{appearance:auto;padding:0;height:18px;background:none;}
+.btn{width:100%;border:none;border-radius:7px;padding:8px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#1a237e,#3b82f6);color:#fff;box-shadow:0 2px 8px rgba(26,35,126,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,35,126,.35);}
+.btn-start:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-reset{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.aquarium{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:10px;flex:1;box-shadow:0 1px 3px rgba(30,41,59,0.06);display:flex;flex-direction:column;}
+.aquarium h3{font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:800;color:var(--acc3);margin-bottom:7px;}
+.tipinfo{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:7px 10px;margin-top:6px;font-size:11px;color:#1e3a8a;display:none;line-height:1.6;}
+.tipinfo.on{display:block;}
+.result-table-wrap{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.wstable{width:100%;border-collapse:collapse;font-size:11px;}
+.wstable th{background:linear-gradient(135deg,#1a237e,#283593);color:#fff;padding:6px 9px;text-align:left;border:1px solid #3949ab;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;}
+.wstable td{padding:5px 9px;border:1px solid var(--border);color:var(--text2);}
+.wstable tr:nth-child(even) td{background:#f8fafc;}
+.wstable tr:hover td{background:#eff6ff;}
+
+/* LEMBAR KERJA */
+.lk-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.lk-table th{background:linear-gradient(135deg,#0d1b4b,#1a237e);color:#fff;padding:7px 10px;border:1px solid #283593;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;text-align:center;}
+.lk-table td{padding:6px 9px;border:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.lk-table tr:nth-child(even) td{background:#f8fafc;}
+.lk-table input[type=text],.lk-table textarea,.lk-table select{width:100%;border:1px solid #cbd5e1;border-radius:5px;padding:4px 7px;font-family:'Nunito',sans-serif;font-size:11.5px;color:var(--text);outline:none;background:#fff;transition:border-color .17s;resize:vertical;min-height:32px;}
+.lk-table input:focus,.lk-table textarea:focus,.lk-table select:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(29,78,216,.1);}
+.disc-area{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Nunito',sans-serif;font-size:12px;color:var(--text);background:var(--surf2);resize:vertical;outline:none;transition:border-color .17s;line-height:1.6;margin-top:6px;min-height:70px;}
+.disc-area:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(29,78,216,.1);}
+
+/* LOADING SCREEN */
+#loadScreen{
+  position:fixed;inset:0;z-index:99999;
+  background:#0a1628;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  transition:opacity .6s ease;
+  overflow:hidden;
+}
+#loadScreen .ls-cover{
+  position:absolute;inset:0;
+  background-image:url('https://85meydiaafrina.github.io/ujikarbohidrat/coverujikarbohidrat.png');
+  background-size:cover;background-position:center;
+  z-index:0;
+}
+#loadScreen .ls-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(10,22,40,0.72) 0%,rgba(13,42,110,0.65) 40%,rgba(183,28,28,0.45) 80%,rgba(136,14,79,0.5) 100%);
+  z-index:1;
+}
+#loadScreen .ls-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-logo{width:clamp(110px,16vw,180px);margin-bottom:12px;border-radius:12px;background:transparent;padding:0;box-shadow:none;}
+.load-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(17px,2.5vw,28px);font-weight:800;color:#fff;text-align:center;margin-bottom:3px;text-shadow:0 2px 12px rgba(0,0,0,.4);}
+.load-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(9.5px,1vw,11px);color:#90caf9;letter-spacing:.18em;text-transform:uppercase;text-align:center;margin-bottom:24px;}
+.load-bar-wrap{width:clamp(220px,28vw,340px);height:5px;background:rgba(255,255,255,.15);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#64b5f6,#ef5350,#ce93d8);border-radius:6px;transition:width .1s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.4vw,15px);color:#fff;font-weight:700;margin-bottom:12px;text-align:center;}
+.load-status{font-size:clamp(10.5px,1.1vw,12px);color:#bbdefb;font-family:'Nunito',sans-serif;margin-bottom:26px;min-height:16px;text-align:center;}
+#btnMulai{display:none;background:linear-gradient(135deg,#1a237e,#c62828);color:#fff;border:none;border-radius:10px;padding:12px 36px;font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,16px);font-weight:700;cursor:pointer;letter-spacing:.03em;box-shadow:0 4px 18px rgba(198,40,40,.4),0 0 40px rgba(198,40,40,.2);animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;transition:transform .18s,box-shadow .18s;}
+#btnMulai:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 28px rgba(198,40,40,.5);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* DRAG & DROP */
+.drag-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:9px 7px;text-align:center;cursor:grab;transition:transform .15s,box-shadow .15s,border-color .15s,opacity .2s;user-select:none;position:relative;min-height:105px;touch-action:none;-webkit-tap-highlight-color:transparent;}
+.drag-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(30,41,59,.12);border-color:var(--border2);}
+.drag-card:active{cursor:grabbing;transform:scale(.96);}
+.drag-card.alat{background:#fff7ed;border-color:#fed7aa;}
+.drag-card.bahan{background:#fdf4ff;border-color:#e9d5ff;}
+.drag-card.dragging{opacity:.3;transform:scale(.95);}
+.drag-card.placed{opacity:.4;cursor:not-allowed;filter:grayscale(.4);}
+.drag-icon{height:72px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;font-size:36px;}.drag-icon img{width:64px;height:64px;object-fit:contain;}
+.drag-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px;}
+.drag-sub{font-size:9px;color:var(--text3);}
+.drop-zone{border:2px dashed var(--border2);border-radius:9px;padding:8px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;transition:background .2s,border-color .2s;position:relative;touch-action:none;}
+.drop-zone.drag-over-ok{background:#eff6ff;border-color:#3b82f6;}
+.drop-zone.drag-over-wrong{background:#fff1f2;border-color:#f87171;}
+.drop-hint{width:100%;text-align:center;font-size:11px;color:var(--text3);padding:14px 0;pointer-events:none;}
+.drop-card{background:#fff;border:1.5px solid #93c5fd;border-radius:8px;padding:6px 9px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text);position:relative;}
+.drop-card.bahan-card{border-color:#d8b4fe;}
+.drop-card-icon{font-size:16px;flex-shrink:0;}
+.drop-card-remove{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px;line-height:1;transition:color .15s;}
+.drop-card-remove:hover{color:#dc2626;}
+
+/* CELEBRATION */
+.score-overlay{position:fixed;inset:0;background:rgba(13,27,75,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+@keyframes celebBounce{0%,100%{transform:translateY(0) scale(1);}40%{transform:translateY(-14px) scale(1.08);}70%{transform:translateY(-4px) scale(.97);}}
+@keyframes starFloat{0%{opacity:0;transform:translateY(0) scale(0);}15%{opacity:1;}85%{opacity:.8;}100%{opacity:0;transform:translateY(-120px) scale(1.2) rotate(180deg);}}
+@keyframes shakeWrong{0%{transform:translateX(0);}15%{transform:translateX(-8px);}30%{transform:translateX(8px);}45%{transform:translateX(-6px);}60%{transform:translateX(6px);}75%{transform:translateX(-3px);}90%{transform:translateX(3px);}100%{transform:translateX(0);}}
+@keyframes bounceRight{0%{transform:scale(1);}30%{transform:scale(1.12);}55%{transform:scale(.95);}75%{transform:scale(1.05);}100%{transform:scale(1);}}
+
+/* TUBE VISUAL */
+.tube-rack{display:flex;justify-content:center;align-items:flex-end;gap:18px;padding:12px 8px;flex:1;}
+.tube-container{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:transform .2s;}
+.tube-container:hover{transform:scale(1.04);}
+.tube-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text);background:#fff;border:1px solid var(--border);border-radius:4px;padding:1px 6px;}
+.tube-wrapper{position:relative;width:48px;height:120px;}
+.tube-body{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:38px;height:115px;border-radius:0 0 19px 19px;border:2.5px solid rgba(180,180,180,0.7);background:linear-gradient(180deg,rgba(240,248,255,0.3) 0%, rgba(200,230,250,0.4) 100%);overflow:hidden;transition:background .8s ease;}
+.tube-liquid{position:absolute;bottom:0;left:0;right:0;height:65%;border-radius:0 0 17px 17px;transition:background 1.2s ease, height 0.5s ease;}
+.tube-liquid.anim{animation:tubeFill 1.2s ease forwards;}
+@keyframes tubeFill{from{height:0%;}to{height:65%;}}
+.tube-bubble{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:8px;opacity:0;transition:opacity .5s;}
+.tube-bubble.show{opacity:1;animation:bubbleFloat 2s ease infinite;}
+@keyframes bubbleFloat{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-5px);}}
+.tube-cap{position:absolute;top:0;left:50%;transform:translateX(-50%);width:44px;height:10px;background:rgba(200,200,210,0.5);border-radius:4px 4px 0 0;border:1.5px solid rgba(180,180,190,0.6);}
+.tube-pipette{position:absolute;top:-32px;left:50%;transform:translateX(-50%) rotate(15deg);font-size:18px;opacity:0;transition:opacity .4s,transform .4s;pointer-events:none;}
+.tube-pipette.show{opacity:1;transform:translateX(-50%) rotate(0deg);}
+.tube-result-badge{margin-top:4px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;min-width:60px;text-align:center;opacity:0;transition:opacity .5s;}
+.tube-result-badge.show{opacity:1;}
+.tube-result-badge.pos{background:#fce4ec;color:#c62828;border:1px solid #ef9a9a;}
+.tube-result-badge.neg{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;}
+.tube-result-badge.pos-iod{background:#e8eaf6;color:#283593;border:1px solid #9fa8da;}
+.tube-result-badge.pos-sel{background:#fce4ec;color:#880e4f;border:1px solid #f48fb1;}
+
+/* WATER BATH */
+.waterbath{width:100%;background:linear-gradient(180deg,#bbdefb 0%,#90caf9 50%,#64b5f6 100%);border-radius:8px;height:18px;margin-top:6px;position:relative;overflow:hidden;border:1px solid #90caf9;}
+.waterbath::after{content:'';position:absolute;top:0;left:-100%;width:200%;height:100%;background:repeating-linear-gradient(90deg,transparent 0px,transparent 15px,rgba(255,255,255,0.2) 15px,rgba(255,255,255,0.2) 16px);animation:waterMove 2s linear infinite;}
+@keyframes waterMove{from{transform:translateX(0);}to{transform:translateX(50%);}}</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <div class="ls-cover"></div>
+  <div class="ls-overlay"></div>
+  <div class="ls-content">
+    <img class="load-logo" src="https://85meydiaafrina.github.io/ujikarbohidrat/sampuluji.png" alt="Logo Lab Maya">
+    <div class="load-title">Lab Maya Kimia</div>
+    <div class="load-sub">Identifikasi Karbohidrat</div>
+    <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+    <div class="load-percent" id="loadPercent">0%</div>
+    <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+    <button id="btnMulai" onclick="startLab()">Mulai Praktikum 🧪</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const bar=document.getElementById('loadBar'),pct=document.getElementById('loadPercent'),status=document.getElementById('loadStatus');
+  const msgs=['Memuat reagen Benedict…','Menyiapkan larutan Iodin…','Menginisialisasi uji Seliwanoff…','Memasang tabung reaksi virtual…','Kalibrasi water bath digital…','Laboratorium siap digunakan!'];
+  let cur=0;const total=3000,step=20,inc=100/(total/step),iv=setInterval(()=>{
+    cur=Math.min(100,cur+inc);const v=Math.floor(cur);
+    bar.style.width=v+'%';pct.textContent=v+'%';
+    const mi=Math.floor((v/100)*msgs.length);status.textContent=msgs[Math.min(mi,msgs.length-1)];
+    if(cur>=100){clearInterval(iv);document.getElementById('btnMulai').style.display='block';}
+  },step);
+})();
+function startLab(){
+  const sfx=new Audio('https://denicendrianto41.github.io/tring.wav');sfx.play().catch(()=>{});
+  const ls=document.getElementById('loadScreen');ls.classList.add('hide');
+  setTimeout(()=>{ls.style.display='none';},650);
+}
+</script>
+
+<!-- AUDIO -->
+<audio id="clickSfx" src="https://denicendrianto41.github.io/jump.wav" preload="auto"></audio>
+<audio id="sndBenar" src="https://denicendrianto41.github.io/benar.wav" preload="auto"></audio>
+<audio id="sndSalah" src="https://denicendrianto41.github.io/salah.wav" preload="auto"></audio>
+<audio id="sndBerhasil" src="https://denicendrianto41.github.io/berhasil.wav" preload="auto"></audio>
+<script>
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.nb,.btn,select,input[type=range],.opt,.drag-card');
+  if(!el||el.id==='btnMulai') return;
+  const a=document.getElementById('clickSfx');if(a){a.currentTime=0;a.play().catch(()=>{});}
+});
+function playSound(id){try{const a=document.getElementById(id);if(a){a.currentTime=0;a.play().catch(()=>{});}}catch(e){}}
+</script>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <img class="load-logo" src="https://denicendrianto41.github.io/logo_vlab.png" alt="Logo" style="width:32px;height:32px;margin-bottom:0;" />
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Makromolekul · Identifikasi Karbohidrat</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="document.getElementById('mainNav').classList.toggle('open')" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <nav id="mainNav">
+    <button class="nb active" onclick="showPage('page-beranda',this)">🎯 Tujuan</button>
+    <button class="nb" onclick="showPage('page-teori',this)">📖 Teori</button>
+    <button class="nb" onclick="showPage('page-alatbahan',this)">🧫 Alat &amp; Bahan</button>
+    <button class="nb" onclick="showPage('page-prosedur',this)">📋 Prosedur</button>
+    <button class="nb" onclick="showPage('page-simulasi',this)">⚗️ Simulasi</button>
+    <button class="nb" onclick="showPage('page-lembarkerja',this)">📝 Lembar Kerja</button>
+    <button class="nb" onclick="showPage('page-kuis',this)">🧠 Kuis</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ===== TUJUAN (formerly BERANDA) ===== -->
+<div id="page-beranda" class="page active">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative;">
+    <!-- ANIMATED HERO BACKGROUND -->
+    <div id="heroCanvas" style="position:absolute;inset:0;overflow:hidden;z-index:0;background:linear-gradient(160deg,#0a1628 0%,#0d2a6e 35%,#1565c0 65%,#87ceeb 100%);">
+      <img src="https://85meydiaafrina.github.io/ujikarbohidrat/coverujikarbohidrat.png" alt="Cover Uji Karbohidrat" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;opacity:0.92;" onerror="this.style.display='none';">
+      <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(10,22,40,0.55) 0%,rgba(13,42,110,0.45) 40%,rgba(21,101,192,0.35) 70%,rgba(135,206,235,0.2) 100%);z-index:1;"></div>
+      <canvas id="moleculeCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;"></canvas>
+      <div id="macroAnim" style="position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden;">
+        <svg id="macroSvg" style="position:absolute;width:100%;height:100%;opacity:0.18;" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g id="glucoseRing" style="animation:rotateMolA 12s linear infinite;transform-origin:120px 200px;">
+            <polygon points="120,160 160,145 185,170 175,205 135,210 105,185" fill="none" stroke="#90caf9" stroke-width="1.8"/>
+            <circle cx="120" cy="160" r="4" fill="#ef9a9a"/><circle cx="160" cy="145" r="4" fill="#90caf9"/><circle cx="185" cy="170" r="4" fill="#a5d6a7"/><circle cx="175" cy="205" r="4" fill="#ef9a9a"/><circle cx="135" cy="210" r="4" fill="#90caf9"/><circle cx="105" cy="185" r="5" fill="#ffcc80"/>
+            <line x1="120" y1="145" x2="120" y2="130" stroke="#90caf9" stroke-width="1.2"/><circle cx="120" cy="128" r="3" fill="#ef9a9a"/>
+            <text x="160" y="128" font-size="9" fill="#bbdefb" font-family="JetBrains Mono,monospace">C₆H₁₂O₆</text>
+          </g>
+          <g style="animation:slideChain 16s linear infinite;transform-origin:400px 80px;">
+            <path d="M 300,80 Q 340,60 380,80 Q 420,100 460,80 Q 500,60 540,80 Q 580,100 620,80" fill="none" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <circle cx="300" cy="80" r="5" fill="#ce93d8"/><circle cx="380" cy="80" r="5" fill="#ce93d8"/><circle cx="460" cy="80" r="5" fill="#ce93d8"/><circle cx="540" cy="80" r="5" fill="#ce93d8"/><circle cx="620" cy="80" r="5" fill="#ce93d8"/>
+            <text x="450" y="58" font-size="8.5" fill="#e1bee7" font-family="JetBrains Mono,monospace" text-anchor="middle">(C₆H₁₀O₅)ₙ — Amilosa</text>
+          </g>
+          <g style="animation:blinkReaction 3s ease-in-out infinite;transform-origin:550px 300px;">
+            <circle cx="520" cy="310" r="16" fill="rgba(192,57,43,0.4)" stroke="#ef5350" stroke-width="1.2"/><circle cx="520" cy="310" r="8" fill="rgba(192,57,43,0.7)"/>
+            <text x="542" y="308" font-size="8" fill="#ef9a9a" font-family="JetBrains Mono,monospace">Cu²⁺→Cu₂O</text>
+            <text x="542" y="320" font-size="7.5" fill="#ffcdd2" font-family="JetBrains Mono,monospace">Benedict (+)</text>
+          </g>
+        </svg>
+        <div style="position:absolute;top:12%;left:4%;font-family:'JetBrains Mono',monospace;font-size:clamp(11px,1.5vw,18px);color:rgba(255,255,255,0.18);font-weight:700;transform:rotate(-8deg);white-space:nowrap;animation:floatLabel 5s ease-in-out infinite;">C₆H₁₂O₆</div>
+        <div style="position:absolute;top:25%;right:5%;font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1.2vw,15px);color:rgba(255,255,255,0.15);font-weight:700;transform:rotate(6deg);white-space:nowrap;animation:floatLabel 6s ease-in-out 1s infinite;">(C₆H₁₀O₅)ₙ</div>
+        <div style="position:absolute;bottom:20%;right:8%;font-family:'JetBrains Mono',monospace;font-size:clamp(9px,1vw,12px);color:rgba(255,255,255,0.12);transform:rotate(10deg);animation:floatLabel 5.5s ease-in-out 0.5s infinite;">R-CHO → Cu₂O</div>
+      </div>
+    </div>
+    <style>
+    @keyframes rotateMolA{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @keyframes rotateMolB{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @keyframes slideChain{0%{transform:translateX(-30px);}50%{transform:translateX(30px);}100%{transform:translateX(-30px);}}
+    @keyframes blinkReaction{0%,100%{opacity:0.5;}50%{opacity:1;}}
+    @keyframes floatLabel{0%,100%{transform:translateY(0) rotate(-8deg);}50%{transform:translateY(-8px) rotate(-8deg);}}
+    </style>
+
+    <!-- MAIN HERO CONTENT — no scroll, fit screen -->
+    <div style="position:relative;z-index:1;flex:1;display:flex;flex-direction:column;overflow:hidden;padding:8px 12px;gap:6px;">
+
+      <!-- TOP: title + rack -->
+      <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:8px 14px;">
+        <!-- Title -->
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.16em;color:#90caf9;text-transform:uppercase;margin-bottom:2px;">Kimia SMA · Makromolekul</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,20px);font-weight:800;color:#fff;line-height:1.1;margin-bottom:3px;">Uji Identifikasi <span style="color:#ffcc80;">Karbohidrat</span></div>
+          <div style="font-size:clamp(9px,1vw,11px);color:#bbdefb;line-height:1.5;">Lab virtual interaktif · uji Benedict, Iodin &amp; Seliwanoff</div>
+        </div>
+        <!-- Animated Rack (compact) -->
+        <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,255,255,0.55);letter-spacing:.1em;text-transform:uppercase;">Rak Virtual</div>
+          <div style="display:flex;gap:6px;align-items:flex-end;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 10px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:11px;transform:rotate(180deg);animation:pipetDrop 3s ease-in-out infinite;">💧</div>
+              <div style="width:18px;height:50px;border:2px solid rgba(200,200,220,0.6);border-radius:0 0 9px 9px;background:rgba(255,255,255,0.08);position:relative;overflow:hidden;">
+                <div id="liqBen" style="position:absolute;bottom:0;left:0;right:0;border-radius:0 0 8px 8px;animation:benedictColor 4s ease-in-out infinite;"></div>
+              </div>
+              <div style="font-size:6.5px;color:#ef9a9a;font-weight:700;">Ben.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:11px;transform:rotate(180deg);animation:pipetDrop 3s ease-in-out 1s infinite;">🟡</div>
+              <div style="width:18px;height:50px;border:2px solid rgba(200,200,220,0.6);border-radius:0 0 9px 9px;background:rgba(255,255,255,0.08);overflow:hidden;position:relative;">
+                <div id="liqIod" style="position:absolute;bottom:0;left:0;right:0;border-radius:0 0 8px 8px;animation:iodinColor 4s ease-in-out 1s infinite;"></div>
+              </div>
+              <div style="font-size:6.5px;color:#9fa8da;font-weight:700;">Iod.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+              <div style="font-size:11px;transform:rotate(180deg);animation:pipetDrop 3s ease-in-out 2s infinite;">🟣</div>
+              <div style="width:18px;height:50px;border:2px solid rgba(200,200,220,0.6);border-radius:0 0 9px 9px;background:rgba(255,255,255,0.08);overflow:hidden;position:relative;">
+                <div id="liqSel" style="position:absolute;bottom:0;left:0;right:0;border-radius:0 0 8px 8px;animation:seliwanoffColor 4s ease-in-out 2s infinite;"></div>
+              </div>
+              <div style="font-size:6.5px;color:#f48fb1;font-weight:700;">Sel.</div>
+            </div>
+          </div>
+          <div style="font-size:16px;animation:flameDance 0.5s ease-in-out infinite alternate;">🔥</div>
+        </div>
+      </div>
+
+      <!-- TUJUAN PEMBELAJARAN -->
+      <div style="flex-shrink:0;background:linear-gradient(135deg,rgba(255,249,196,0.92),rgba(255,243,224,0.92));border:1.5px solid #f59e0b;border-radius:10px;padding:7px 12px;box-shadow:0 3px 12px rgba(245,158,11,0.15);display:flex;align-items:center;gap:10px;">
+        <div style="background:linear-gradient(135deg,#f59e0b,#ea580c);border-radius:8px;width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;">🌟</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.2vw,13px);font-weight:800;color:#92400e;margin-bottom:1px;">Tujuan Pembelajaran</div>
+          <div style="font-size:clamp(9.5px,1vw,11px);color:#78350f;line-height:1.5;font-weight:600;">📌 Menjelaskan senyawa karbon dan makromolekul serta penerapannya dalam kehidupan sehari-hari.</div>
+        </div>
+      </div>
+
+      <!-- TUJUAN PERCOBAAN -->
+      <div style="flex-shrink:0;background:rgba(255,255,255,0.93);border:1.5px solid #dde3ec;border-radius:10px;padding:7px 12px;box-shadow:0 2px 8px rgba(30,41,59,0.07);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);border-radius:7px;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;">🧪</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.2vw,13px);font-weight:800;color:#1e3a8a;">Tujuan Percobaan <span style="font-size:9px;color:#3b82f6;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">· 4 Indikator</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+          <div style="background:linear-gradient(135deg,#fff0f3,#fce4ec);border:1.5px solid #f48fb1;border-radius:8px;padding:6px 10px;display:flex;gap:7px;align-items:flex-start;">
+            <div style="background:#e91e63;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px;">1</div>
+            <div style="font-size:clamp(9px,1vw,11px);color:#880e4f;line-height:1.5;font-weight:600;">Mengidentifikasi <strong>gula pereduksi</strong> dengan uji Benedict</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#e8eaf6,#e3f2fd);border:1.5px solid #90caf9;border-radius:8px;padding:6px 10px;display:flex;gap:7px;align-items:flex-start;">
+            <div style="background:#1a237e;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px;">2</div>
+            <div style="font-size:clamp(9px,1vw,11px);color:#1a237e;line-height:1.5;font-weight:600;">Mengidentifikasi <strong>amilum (pati)</strong> menggunakan uji Iodin</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#f3e5f5,#fce4ec);border:1.5px solid #ce93d8;border-radius:8px;padding:6px 10px;display:flex;gap:7px;align-items:flex-start;">
+            <div style="background:#7c3aed;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px;">3</div>
+            <div style="font-size:clamp(9px,1vw,11px);color:#4a148c;line-height:1.5;font-weight:600;">Membedakan <strong>ketosa dan aldosa</strong> menggunakan uji Seliwanoff</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#e8f5e9,#f0fdf4);border:1.5px solid #a5d6a7;border-radius:8px;padding:6px 10px;display:flex;gap:7px;align-items:flex-start;">
+            <div style="background:#059669;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px;">4</div>
+            <div style="font-size:clamp(9px,1vw,11px);color:#065f46;line-height:1.5;font-weight:600;">Menganalisis hubungan <strong>struktur kimia</strong> karbohidrat dan hasil uji</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REFERENSI UJI (3 cards) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex-shrink:0;">
+        <div style="background:linear-gradient(135deg,#c0392b,#e53935);border-radius:9px;padding:7px 10px;color:#fff;box-shadow:0 2px 8px rgba(192,57,43,0.3);">
+          <div style="font-size:15px;margin-bottom:2px;">🔴</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;margin-bottom:2px;">Uji Benedict</div>
+          <div style="font-size:9px;opacity:0.88;line-height:1.4;">Cu²⁺ + gugus pereduksi → Cu₂O merah bata</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a237e,#283593);border-radius:9px;padding:7px 10px;color:#fff;box-shadow:0 2px 8px rgba(26,35,126,0.3);">
+          <div style="font-size:15px;margin-bottom:2px;">🔵</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;margin-bottom:2px;">Uji Iodin</div>
+          <div style="font-size:9px;opacity:0.88;line-height:1.4;">I₂ + heliks amilosa → kompleks biru tua</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#880e4f,#ad1457);border-radius:9px;padding:7px 10px;color:#fff;box-shadow:0 2px 8px rgba(136,14,79,0.3);">
+          <div style="font-size:15px;margin-bottom:2px;">🌸</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:800;margin-bottom:2px;">Uji Seliwanoff</div>
+          <div style="font-size:9px;opacity:0.88;line-height:1.4;">Resorsinol + ketosa → merah ceri ≤2 mnt</div>
+        </div>
+      </div>
+
+    </div><!-- end main hero content -->
+  </div>
+</div>
+
+<style>
+@keyframes benedictColor{
+  0%{height:60%;background:rgba(33,150,243,0.8);}
+  30%{height:65%;background:rgba(76,175,80,0.8);}
+  60%{height:65%;background:rgba(255,152,0,0.85);}
+  85%,100%{height:65%;background:rgba(192,57,43,0.9);}
+}
+@keyframes iodinColor{
+  0%,20%{height:60%;background:rgba(255,193,7,0.7);}
+  60%,100%{height:60%;background:rgba(13,17,63,0.95);}
+}
+@keyframes seliwanoffColor{
+  0%,30%{height:60%;background:rgba(255,249,196,0.5);}
+  70%,100%{height:60%;background:rgba(233,30,99,0.85);}
+}
+@keyframes pipetDrop{
+  0%,70%{transform:rotate(180deg) translateY(0);}
+  80%{transform:rotate(180deg) translateY(-4px);}
+  90%{transform:rotate(180deg) translateY(3px);}
+  100%{transform:rotate(180deg) translateY(0);}
+}
+@keyframes bubbleUp{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.6;}
+  50%{transform:translate(-50%,-80%) scale(1.3);opacity:1;}
+}
+@keyframes flameDance{
+  from{transform:scaleY(1) scaleX(1);}
+  to{transform:scaleY(1.15) scaleX(0.9);}
+}
+@keyframes floatMol{
+  0%,100%{transform:translateY(0) rotate(0deg);opacity:0.7;}
+  50%{transform:translateY(-12px) rotate(180deg);opacity:1;}
+}
+</style>
+
+<script>
+(function(){
+  const canvas = document.getElementById('moleculeCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, nodes=[], links=[];
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  
+  // Generate polymer chain nodes
+  const colors=['#f59e0b','#ea580c','#7dd3fc','#a78bfa','#34d399','#fb7185'];
+  function initChain(){
+    nodes=[];links=[];
+    const N=40;
+    for(let i=0;i<N;i++){
+      nodes.push({
+        x:Math.random()*W,y:Math.random()*H,
+        vx:(Math.random()-.5)*0.4,vy:(Math.random()-.5)*0.4,
+        r:4+Math.random()*5,
+        col:colors[Math.floor(Math.random()*colors.length)],
+        phase:Math.random()*Math.PI*2
+      });
+    }
+    // Create chain links
+    for(let i=0;i<N-1;i+=2) links.push([i,i+1]);
+    for(let i=1;i<N-1;i+=3) links.push([i,i+2]);
+  }
+  initChain();
+  
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.008;
+    // Draw links
+    ctx.lineWidth=1.5;
+    links.forEach(([a,b])=>{
+      const na=nodes[a],nb=nodes[b];
+      const dx=nb.x-na.x,dy=nb.y-na.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<150){
+        const alpha=0.15*(1-dist/150);
+        ctx.strokeStyle=`rgba(255,255,255,${alpha})`;
+        ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);ctx.stroke();
+      }
+    });
+    // Draw nodes
+    nodes.forEach((n,i)=>{
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W) n.vx*=-1;
+      if(n.y<0||n.y>H) n.vy*=-1;
+      const pulse=1+0.15*Math.sin(t*2+n.phase);
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r*pulse,0,Math.PI*2);
+      ctx.fillStyle=n.col+'33';
+      ctx.fill();
+      ctx.strokeStyle=n.col+'88';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;gap:7px;position:relative;background-image:url('https://85meydiaafrina.github.io/ujikarbohidrat/coverujikarbohidrat.png');background-size:cover;background-position:center;"><div style="position:absolute;inset:0;background:rgba(240,244,248,0.88);z-index:0;pointer-events:none;"></div>
+    <!-- Tab selector -->
+    <div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;position:relative;z-index:1;">
+      <button class="teori-tab active" onclick="switchTeori('karbohidrat',this)" data-border="#1a237e" data-color="#1a237e" style="background:linear-gradient(135deg,#1a237e,#3b82f6);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;">📚 Karbohidrat</button>
+      <button class="teori-tab" onclick="switchTeori('benedict',this)" data-border="#c0392b" data-color="#c0392b" style="background:transparent;border:1px solid #c0392b;color:#c0392b;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;opacity:0.75;">🔴 Benedict</button>
+      <button class="teori-tab" onclick="switchTeori('iodin',this)" data-border="#1a237e" data-color="#1a237e" style="background:transparent;border:1px solid #1a237e;color:#1a237e;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;opacity:0.75;">🔵 Iodin</button>
+      <button class="teori-tab" onclick="switchTeori('seliwanoff',this)" data-border="#880e4f" data-color="#880e4f" style="background:transparent;border:1px solid #880e4f;color:#880e4f;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;opacity:0.75;">🌸 Seliwanoff</button>
+      <button class="teori-tab" onclick="switchTeori('penting',this)" data-border="#f59e0b" data-color="#b45309" style="background:transparent;border:1px solid #f59e0b;color:#b45309;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;opacity:0.75;">⭐ Penting</button>
+      <button class="teori-tab" onclick="switchTeori('ringkasan',this)" data-border="#059669" data-color="#059669" style="background:transparent;border:1px solid #059669;color:#059669;border-radius:6px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;opacity:0.75;">📊 Ringkasan</button>
+    </div>
+    <!-- Panels -->
+    <div style="flex:1;overflow-y:auto;min-height:0;position:relative;z-index:1;">
+
+      <!-- Panel Karbohidrat -->
+      <div id="tp-karbohidrat" class="teori-panel">
+        <div class="two-col" style="gap:7px;">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div class="card">
+              <div class="ch"><div class="ci b">🔬</div><div class="ct">Pengertian Karbohidrat</div></div>
+              <p>Karbohidrat adalah senyawa organik tersusun dari C, H, O dengan rumus umum Cₙ(H₂O)ₙ. Dibagi menjadi tiga golongan berdasarkan kompleksitas strukturnya.</p>
+              <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
+                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:7px 10px;">
+                  <div style="font-size:10px;font-weight:700;color:#c2410c;text-transform:uppercase;letter-spacing:.06em;">Monosakarida</div>
+                  <p style="font-size:11px;margin:3px 0 0;">Gula paling sederhana, tidak dapat dihidrolisis. Contoh: glukosa (aldosa), fruktosa (ketosa).</p>
+                </div>
+                <div style="background:#f3e5f5;border:1px solid #ce93d8;border-radius:6px;padding:7px 10px;">
+                  <div style="font-size:10px;font-weight:700;color:#7e22ce;text-transform:uppercase;letter-spacing:.06em;">Disakarida</div>
+                  <p style="font-size:11px;margin:3px 0 0;">Gabungan 2 monosakarida via ikatan glikosidik. Contoh: sukrosa (glukosa+fruktosa).</p>
+                </div>
+                <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:7px 10px;">
+                  <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;">Polisakarida</div>
+                  <p style="font-size:11px;margin:3px 0 0;">Polimer monosakarida. Amilum (pati) = penyimpan energi pada tumbuhan.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div class="card">
+              <div class="ch"><div class="ci y">⚗️</div><div class="ct">Gula Pereduksi vs Non-pereduksi</div></div>
+              <p>Gula pereduksi memiliki gugus –CHO atau –C=O bebas yang dapat mereduksi senyawa lain.</p>
+              <div style="display:flex;gap:6px;margin:6px 0;">
+                <div style="flex:1;background:#fce4ec;border:1px solid #f48fb1;border-radius:6px;padding:6px 8px;text-align:center;">
+                  <div style="font-size:10px;font-weight:700;color:#c62828;">Pereduksi</div>
+                  <div style="font-size:10px;color:#880e4f;">Glukosa, Fruktosa, Laktosa, Maltosa</div>
+                </div>
+                <div style="flex:1;background:#e8eaf6;border:1px solid #9fa8da;border-radius:6px;padding:6px 8px;text-align:center;">
+                  <div style="font-size:10px;font-weight:700;color:#283593;">Non-pereduksi</div>
+                  <div style="font-size:10px;color:#1a237e;">Sukrosa (gugus terikat)</div>
+                </div>
+              </div>
+              <h4>Aldosa vs Ketosa</h4>
+              <p>Aldosa punya gugus –CHO (contoh: glukosa). Ketosa punya gugus –C=O (contoh: fruktosa). Keduanya termasuk gula pereduksi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Benedict -->
+      <div id="tp-benedict" class="teori-panel" style="display:none;">
+        <div class="two-col" style="gap:7px;">
+          <div class="card" style="border-left:3px solid #c0392b;">
+            <div class="ch"><div class="ci ben">🔴</div><div class="ct" style="color:#c0392b;">Uji Benedict – Gula Pereduksi</div></div>
+            <h4>Prinsip</h4>
+            <p>Ion Cu²⁺ (biru) dalam suasana alkalis direduksi oleh gugus aldehid/keton bebas menjadi Cu₂O (merah bata).</p>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#fff8f8;padding:6px 9px;border-radius:5px;border:1px solid #fecdd3;margin-top:5px;">R-CHO + 2Cu²⁺ → R-COOH + Cu₂O↓</p>
+            <h4>Skala Warna</h4>
+            <div style="display:flex;gap:3px;margin-top:4px;align-items:center;flex-wrap:wrap;">
+              <span style="background:#2196f3;color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">Biru (−)</span>
+              <span style="font-size:12px;">→</span>
+              <span style="background:#4caf50;color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">Hijau</span>
+              <span style="font-size:12px;">→</span>
+              <span style="background:#ff9800;color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">Kuning</span>
+              <span style="font-size:12px;">→</span>
+              <span style="background:#c0392b;color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">Merah Bata (+)</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci b">📋</div><div class="ct">Hasil Uji Benedict</div></div>
+            <p><strong>Positif:</strong> Glukosa ✓, Fruktosa ✓, Laktosa ✓, Maltosa ✓</p>
+            <p><strong>Negatif:</strong> Sukrosa ✗ (non-pereduksi), Amilum ✗ (tanpa gugus bebas)</p>
+            <div class="notebox" style="margin-top:8px;">
+              <div class="nt">⚠️ Perhatian</div>
+              <p>Pemanasan water bath 100°C selama 5 menit diperlukan. Semakin banyak endapan merah bata → semakin tinggi kadar gula pereduksi.</p>
+            </div>
+            <div style="display:flex;justify-content:center;gap:12px;margin-top:8px;">
+              <div style="text-align:center;"><div style="width:22px;height:55px;border:2px solid #90a4ae;border-radius:0 0 11px 11px;background:linear-gradient(180deg,rgba(33,150,243,0.3) 0%,rgba(33,150,243,0.7) 100%);margin:0 auto 3px;"></div><div style="font-size:8.5px;color:#666;">Sebelum</div></div>
+              <div style="font-size:18px;display:flex;align-items:center;">→</div>
+              <div style="text-align:center;"><div style="width:22px;height:55px;border:2px solid #90a4ae;border-radius:0 0 11px 11px;background:linear-gradient(180deg,rgba(192,57,43,0.3) 0%,rgba(192,57,43,0.9) 100%);margin:0 auto 3px;position:relative;"><div style="position:absolute;bottom:2px;left:2px;right:2px;height:6px;background:rgba(180,40,30,0.7);border-radius:0 0 8px 8px;"></div></div><div style="font-size:8.5px;color:#c0392b;font-weight:700;">Positif</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Iodin -->
+      <div id="tp-iodin" class="teori-panel" style="display:none;">
+        <div class="two-col" style="gap:7px;">
+          <div class="card" style="border-left:3px solid #1a237e;">
+            <div class="ch"><div class="ci iod">🔵</div><div class="ct" style="color:#1a237e;">Uji Iodin – Polisakarida</div></div>
+            <h4>Prinsip</h4>
+            <p>Iodin (I₂ dalam KI) terperangkap dalam saluran heliks amilosa membentuk kompleks berwarna biru tua hingga hitam. Reaksi ini spesifik untuk struktur heliks amilum.</p>
+            <h4>Tidak Perlu Pemanasan!</h4>
+            <p>Pemanasan justru menghilangkan warna biru karena kompleks iodin-amilosa terdisosiasi (reversibel).</p>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci b">📋</div><div class="ct">Hasil Uji Iodin</div></div>
+            <p><strong>Positif (Biru Tua):</strong> Amilum ✓, Nasi ✓</p>
+            <p><strong>Negatif (Coklat tetap):</strong> Glukosa ✗, Fruktosa ✗, Sukrosa ✗</p>
+            <div style="display:flex;justify-content:center;gap:12px;margin-top:8px;">
+              <div style="text-align:center;"><div style="width:22px;height:55px;border:2px solid #90a4ae;border-radius:0 0 11px 11px;background:linear-gradient(180deg,rgba(255,193,7,0.3) 0%,rgba(255,193,7,0.6) 100%);margin:0 auto 3px;"></div><div style="font-size:8.5px;color:#666;">Sebelum</div></div>
+              <div style="font-size:18px;display:flex;align-items:center;">→</div>
+              <div style="text-align:center;"><div style="width:22px;height:55px;border:2px solid #90a4ae;border-radius:0 0 11px 11px;background:linear-gradient(180deg,rgba(26,35,126,0.3) 0%,rgba(13,17,63,0.95) 100%);margin:0 auto 3px;"></div><div style="font-size:8.5px;color:#1a237e;font-weight:700;">Positif</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Seliwanoff -->
+      <div id="tp-seliwanoff" class="teori-panel" style="display:none;">
+        <div class="two-col" style="gap:7px;">
+          <div class="card" style="border-left:3px solid #880e4f;">
+            <div class="ch"><div class="ci sel">🌸</div><div class="ct" style="color:#880e4f;">Uji Seliwanoff – Ketosa</div></div>
+            <h4>Prinsip</h4>
+            <p>Resorsinol dalam HCl pekat mendehidrasi ketoheksosa (fruktosa) jauh lebih cepat dari aldoheksosa (glukosa), menghasilkan warna merah ceri dalam ≤2 menit.</p>
+            <div style="display:flex;gap:8px;margin:6px 0;flex-wrap:wrap;">
+              <div style="background:#fce4ec;border:1px solid #f48fb1;border-radius:6px;padding:6px 10px;flex:1;min-width:80px;"><div style="font-size:10px;font-weight:700;color:#880e4f;">KETOSA</div><div style="font-size:10.5px;color:#880e4f;">Merah Ceri ≤2 menit ⚡</div></div>
+              <div style="background:#f3e5f5;border:1px solid #ce93d8;border-radius:6px;padding:6px 10px;flex:1;min-width:80px;"><div style="font-size:10px;font-weight:700;color:#4a148c;">ALDOSA</div><div style="font-size:10.5px;color:#4a148c;">Lambat &gt;5 menit</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci b">📋</div><div class="ct">Hasil Uji Seliwanoff</div></div>
+            <p><strong>Positif cepat:</strong> Fruktosa ✓ (merah ceri &lt;2 menit)</p>
+            <p><strong>Positif lambat:</strong> Sukrosa ✗ (terhidrolisis &gt;5 menit), Glukosa ✗</p>
+            <p><strong>Negatif:</strong> Amilum ✗</p>
+            <div class="notebox" style="margin-top:6px;"><div class="nt">⚠️ Hati-hati</div><p>Jangan panaskan terlalu lama! Sukrosa dapat terhidrolisis memberikan hasil positif palsu.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Ringkasan -->
+      <div id="tp-ringkasan" class="teori-panel" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci b">📊</div><div class="ct">Ringkasan Hasil Semua Uji</div></div>
+          <div style="overflow-x:auto;">
+            <table class="wstable" style="font-size:11.5px;min-width:300px;">
+              <thead><tr><th>Sampel</th><th style="background:#c0392b;">Benedict</th><th style="background:#1a237e;">Iodin</th><th style="background:#880e4f;">Seliwanoff</th><th>Jenis</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Glukosa</strong></td><td>🔴 Merah Bata</td><td>🟤 Coklat (−)</td><td>🩷 Lambat</td><td>Monosakarida · Aldosa</td></tr>
+                <tr><td><strong>Fruktosa</strong></td><td>🔴 Merah Bata</td><td>🟤 Coklat (−)</td><td>🌸 Merah Ceri (++)</td><td>Monosakarida · Ketosa</td></tr>
+                <tr><td><strong>Sukrosa</strong></td><td>🔵 Biru (−)</td><td>🟤 Coklat (−)</td><td>−/+ (lambat)</td><td>Disakarida</td></tr>
+                <tr><td><strong>Amilum</strong></td><td>🔵 Biru (−)</td><td>🔵 Biru Tua (++)</td><td>⚪ Negatif</td><td>Polisakarida</td></tr>
+                <tr><td><strong>Nasi</strong></td><td>🟡 Kuning (+)</td><td>🔵 Biru Tua (++)</td><td>⚪ Negatif</td><td>Campuran</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="notebox" style="margin-top:8px;"><div class="nt">💡 Kunci Identifikasi</div><p>Benedict (+) = gula pereduksi. Iodin (+) = amilum. Seliwanoff cepat (+) = ketosa (fruktosa).</p></div>
+        </div>
+      </div>
+
+      <!-- Panel Penting -->
+      <div id="tp-penting" class="teori-panel" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <!-- Konsep Penting 1 -->
+          <div class="card" style="border-left:4px solid #f59e0b;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci y">⭐</div><div class="ct" style="color:#b45309;font-size:12.5px;">Gula Pereduksi vs Non-Pereduksi</div></div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;background:#fef3c7;border:1px solid #fde68a;border-radius:7px;padding:6px 8px;">
+                <div style="font-size:9.5px;font-weight:800;color:#92400e;text-transform:uppercase;margin-bottom:3px;">✅ Pereduksi</div>
+                <div style="font-size:10.5px;color:#78350f;line-height:1.5;">Glukosa, Fruktosa, Maltosa, Laktosa<br><em>→ Gugus –CHO / –C=O bebas</em></div>
+              </div>
+              <div style="flex:1;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:7px;padding:6px 8px;">
+                <div style="font-size:9.5px;font-weight:800;color:#475569;text-transform:uppercase;margin-bottom:3px;">❌ Non-Pereduksi</div>
+                <div style="font-size:10.5px;color:#334155;line-height:1.5;">Sukrosa<br><em>→ Gugus anomer terikat</em></div>
+              </div>
+            </div>
+          </div>
+          <!-- Konsep Penting 2 -->
+          <div class="card" style="border-left:4px solid #c0392b;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci ben">🔴</div><div class="ct" style="color:#c0392b;font-size:12.5px;">Reaksi Benedict – Penting!</div></div>
+            <p style="font-family:'JetBrains Mono',monospace;font-size:10px;background:#fff0f0;border:1px solid #fecdd3;border-radius:5px;padding:5px 8px;color:#9b1c1c;margin-bottom:5px;">R–CHO + 2Cu²⁺ + 2OH⁻ → R–COOH + Cu₂O↓ + H₂O</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <div style="background:#fce4ec;border-radius:5px;padding:5px 7px;"><div style="font-size:9.5px;font-weight:700;color:#c0392b;">Kondisi</div><div style="font-size:10px;color:#880e4f;">Water bath 100°C, 5 mnt</div></div>
+              <div style="background:#fce4ec;border-radius:5px;padding:5px 7px;"><div style="font-size:9.5px;font-weight:700;color:#c0392b;">Indikator</div><div style="font-size:10px;color:#880e4f;">Biru→Hijau→Kuning→Merah Bata</div></div>
+            </div>
+          </div>
+          <!-- Konsep Penting 3 -->
+          <div class="card" style="border-left:4px solid #1a237e;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci iod">🔵</div><div class="ct" style="color:#1a237e;font-size:12.5px;">Mengapa Iodin Tidak Dipanaskan?</div></div>
+            <div style="background:#e8eaf6;border-radius:7px;padding:7px 9px;">
+              <p style="font-size:10.5px;color:#283593;line-height:1.6;margin:0;">Kompleks <strong>iodin–amilosa bersifat reversibel</strong>. Pemanasan membuka heliks amilosa → iodin lepas → warna biru <em>hilang</em>. Dinginkan → biru kembali. ♻️</p>
+            </div>
+          </div>
+          <!-- Konsep Penting 4 -->
+          <div class="card" style="border-left:4px solid #880e4f;padding:9px 11px;margin-bottom:0;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci sel">🌸</div><div class="ct" style="color:#880e4f;font-size:12.5px;">Mekanisme Uji Seliwanoff</div></div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;background:#fce4ec;border-radius:7px;padding:6px 8px;">
+                <div style="font-size:9.5px;font-weight:800;color:#880e4f;margin-bottom:2px;">KETOSA (Fruktosa)</div>
+                <div style="font-size:10px;color:#4a148c;line-height:1.5;">HCl → 5-HMF + resorsinol → <strong style="color:#e91e63;">MERAH CERI ≤2 mnt</strong></div>
+              </div>
+              <div style="flex:1;background:#f3e5f5;border-radius:7px;padding:6px 8px;">
+                <div style="font-size:9.5px;font-weight:800;color:#4a148c;margin-bottom:2px;">ALDOSA (Glukosa)</div>
+                <div style="font-size:10px;color:#4a148c;line-height:1.5;">Reaksi lambat → warna muncul <strong>&gt;5 menit</strong></div>
+              </div>
+            </div>
+          </div>
+          <!-- Konsep Penting 5 - full width -->
+          <div class="card" style="border-left:4px solid #059669;padding:9px 11px;margin-bottom:0;grid-column:1/-1;">
+            <div class="ch" style="margin-bottom:5px;"><div class="ci g">🧬</div><div class="ct" style="color:#059669;font-size:12.5px;">Struktur Amilum (Pati)</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+              <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:6px;padding:6px 9px;">
+                <div style="font-size:9.5px;font-weight:800;color:#065f46;margin-bottom:2px;">AMILOSA (20%)</div>
+                <div style="font-size:10.5px;color:#047857;line-height:1.5;">Rantai lurus α-1,4 glikosidik. Heliks memerangkap iodin → <strong>biru tua</strong></div>
+              </div>
+              <div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:6px;padding:6px 9px;">
+                <div style="font-size:9.5px;font-weight:800;color:#065f46;margin-bottom:2px;">AMILOPEKTIN (80%)</div>
+                <div style="font-size:10.5px;color:#047857;line-height:1.5;">Rantai bercabang α-1,6. Heliks tidak sempurna → <strong>ungu-merah</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTeori(id,btn){
+  document.querySelectorAll('.teori-panel').forEach(p=>p.style.display='none');
+  document.getElementById('tp-'+id).style.display='block';
+  document.querySelectorAll('.teori-tab').forEach(b=>{
+    const borderColor = b.dataset.border || '#1a237e';
+    const textColor = b.dataset.color || '#1a237e';
+    b.style.background='transparent';
+    b.style.color=textColor;
+    b.style.border='1px solid '+borderColor;
+    b.style.opacity='0.75';
+  });
+  btn.style.background='linear-gradient(135deg,#1a237e,#3b82f6)';
+  btn.style.color='#fff';
+  btn.style.border='none';
+  btn.style.opacity='1';
+}
+</script>
+
+<!-- ===== ALAT DAN BAHAN ===== -->
+<div id="page-alatbahan" class="page">
+  <div class="scroll" style="padding:10px 14px 14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:100%;min-height:0;">
+
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci b">🔍</div><div class="ct">Daftar Alat &amp; Bahan</div></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;flex-shrink:0;">Drag atau <strong style="color:var(--acc3)">tekan &amp; geser</strong> item ke <strong style="color:var(--acc3)">Meja Percobaan</strong> di sebelah kanan.</p>
+        <div id="sourceAlat" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;flex:1;overflow-y:auto;">
+          <!-- ALAT -->
+          <div class="drag-card alat" draggable="true" data-id="tabung" data-type="alat" data-name="5 Tabung Reaksi" data-sub="Tabung 1–5"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/tabungreaksi.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🧪';"></div><div class="drag-name">5 Tabung Reaksi</div><div class="drag-sub">Tabung 1–5</div></div>
+          <div class="drag-card alat" draggable="true" data-id="rak" data-type="alat" data-name="Rak Tabung" data-sub="Penopang tabung"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/raktabung.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🗄️';"></div><div class="drag-name">Rak Tabung</div><div class="drag-sub">Penopang tabung</div></div>
+          <div class="drag-card alat" draggable="true" data-id="pipet" data-type="alat" data-name="Pipet Tetes" data-sub="Meneteskan reagen"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/hukumlavoisier/pipettetes.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='💧';"></div><div class="drag-name">Pipet Tetes</div><div class="drag-sub">Meneteskan reagen</div></div>
+          <div class="drag-card alat" draggable="true" data-id="waterbath" data-type="alat" data-name="Water Bath" data-sub="100°C · 5 menit"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/waterbath.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🌡️';"></div><div class="drag-name">Water Bath</div><div class="drag-sub">100°C · 5 menit</div></div>
+          <div class="drag-card alat" draggable="true" data-id="gelas" data-type="alat" data-name="Gelas Beker" data-sub="Wadah pemanasan"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/gelasbeker.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🥃';"></div><div class="drag-name">Gelas Beker</div><div class="drag-sub">Wadah pemanasan</div></div>
+          <!-- BAHAN -->
+          <div class="drag-card bahan" draggable="true" data-id="benedict" data-type="bahan" data-name="Reagen Benedict" data-sub="Uji gula pereduksi"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/reagenbenedict.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🔵';"></div><div class="drag-name">Reagen Benedict</div><div class="drag-sub">Uji gula pereduksi</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="iodin" data-type="bahan" data-name="Larutan Iodin" data-sub="Uji polisakarida"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/larutaniodin.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🟡';"></div><div class="drag-name">Larutan Iodin</div><div class="drag-sub">Uji polisakarida</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="seliwanoff" data-type="bahan" data-name="Reagen Seliwanoff" data-sub="Uji ketosa"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/reagenseliwanoff.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🟣';"></div><div class="drag-name">Reagen Seliwanoff</div><div class="drag-sub">Uji ketosa</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="glukosa" data-type="bahan" data-name="Glukosa 1%" data-sub="Monosakarida · Aldosa"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/glukosa.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🍬';"></div><div class="drag-name">Glukosa 1%</div><div class="drag-sub">Monosakarida · Aldosa</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="fruktosa" data-type="bahan" data-name="Fruktosa 1%" data-sub="Monosakarida · Ketosa"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/fruktosa.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🍭';"></div><div class="drag-name">Fruktosa 1%</div><div class="drag-sub">Monosakarida · Ketosa</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="sukrosa" data-type="bahan" data-name="Sukrosa 1%" data-sub="Disakarida"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/sukrosa.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🧂';"></div><div class="drag-name">Sukrosa 1%</div><div class="drag-sub">Disakarida</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="amilum" data-type="bahan" data-name="Amilum 1%" data-sub="Polisakarida"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/amilum.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🌾';"></div><div class="drag-name">Amilum 1%</div><div class="drag-sub">Polisakarida</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="nasi" data-type="bahan" data-name="Ekstrak Nasi" data-sub="Campuran karbohidrat"><div class="drag-icon"><img src="https://85meydiaafrina.github.io/ujikarbohidrat/ekstraknasi.png" style="width:64px;height:64px;object-fit:contain;" onerror="this.style.display='none';this.parentNode.innerHTML='🍚';"></div><div class="drag-name">Ekstrak Nasi</div><div class="drag-sub">Campuran karbohidrat</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci g">🔬</div><div class="ct">Meja Percobaan</div></div>
+        <div style="font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">⚙️ Alat Percobaan</div>
+        <div id="dropAlat" class="drop-zone" data-accept="alat" style="flex:1;min-height:0;margin-bottom:10px;"><div class="drop-hint">← Drag alat ke sini</div></div>
+        <div style="font-size:9px;font-weight:700;color:#880e4f;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">🧪 Bahan Percobaan</div>
+        <div id="dropBahan" class="drop-zone" data-accept="bahan" style="flex:1;min-height:0;"><div class="drop-hint">← Drag bahan ke sini</div></div>
+        <button onclick="resetMeja()" style="margin-top:10px;flex-shrink:0;background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .17s;" onmouseover="this.style.borderColor='var(--acc)';this.style.color='var(--acc)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">↺ Reset Meja</button>
+        <div id="catatanMeja" style="display:none;margin-top:8px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:7px 10px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;color:#d97706;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">💡 Catatan</div>
+          <p id="catatanText" style="font-size:11px;color:#92400e;line-height:1.6;margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Celebration -->
+<div id="celebOverlay" style="display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;pointer-events:none;">
+  <canvas id="confettiCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <div id="celebStars" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"></div>
+  <div id="celebBox" style="position:relative;background:linear-gradient(145deg,#0d1b4b,#1a237e,#6a0032);border:1px solid rgba(144,202,249,0.25);border-radius:26px;padding:40px 48px 36px;text-align:center;max-width:400px;width:90%;box-shadow:0 30px 100px rgba(0,0,0,.7),0 0 60px rgba(26,35,126,.3),inset 0 1px 0 rgba(255,255,255,.1);transform:scale(.4) translateY(80px);opacity:0;transition:transform .6s cubic-bezier(.34,1.56,.64,1),opacity .4s;pointer-events:auto;">
+    <div style="position:absolute;inset:-2px;border-radius:28px;background:linear-gradient(145deg,#64b5f6,#c0392b,#880e4f,#64b5f6);opacity:.35;z-index:-1;animation:celebRingPulse 2s ease infinite;"></div>
+    <div style="font-size:68px;line-height:1;margin-bottom:14px;animation:celebBounce .8s ease infinite;filter:drop-shadow(0 0 20px rgba(255,204,0,.6));">🏆</div>
+    <div id="celebBadge" style="display:inline-block;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1a1a;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:12px;box-shadow:0 4px 16px rgba(251,191,36,.5);opacity:0;transform:scale(.6);transition:opacity .4s .5s,transform .4s .5s cubic-bezier(.34,1.56,.64,1);">✨ SEMPURNA! ✨</div>
+    <div id="celebTitle" style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.1;opacity:0;transform:translateY(10px);transition:opacity .4s .65s,transform .4s .65s ease-out;text-shadow:0 2px 20px rgba(100,181,246,.5);">Luar Biasa! 🎉</div>
+    <div id="celebSub" style="font-size:13px;color:#90caf9;line-height:1.7;margin-bottom:20px;opacity:0;transform:translateY(8px);transition:opacity .4s .8s,transform .4s .8s ease-out;">Semua alat dan bahan telah ditempatkan<br>dengan <strong style="color:#69f0ae;">tepat</strong> di meja percobaan!</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="closeCelebration()" style="background:linear-gradient(135deg,#1a237e,#880e4f);color:#fff;border:none;border-radius:12px;padding:10px 28px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 18px rgba(26,35,126,.45);transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px) scale(1.04)'" onmouseout="this.style.transform=''">Lanjutkan ➜</button>
+      <button onclick="closeCelebration();resetMeja();" style="background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 28px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">↺ Coba Lagi</button>
+    </div>
+  </div>
+</div>
+<style>@keyframes celebRingPulse{0%,100%{opacity:.25;}50%{opacity:.5;}}</style>
+
+<!-- Drag Popup -->
+<div id="dragPopup" style="display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:rgba(13,27,75,.4);backdrop-filter:blur(3px);">
+  <div id="dragPopupBox" style="background:#fff;border-radius:16px;padding:28px 32px;text-align:center;max-width:280px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.7);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;">
+    <div id="dragPopupIcon" style="font-size:52px;line-height:1;margin-bottom:10px;"></div>
+    <div id="dragPopupTitle" style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;margin-bottom:5px;"></div>
+    <div id="dragPopupMsg" style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px;"></div>
+    <button onclick="closeDragPopup()" style="background:linear-gradient(135deg,var(--acc),var(--acc3));color:#fff;border:none;border-radius:8px;padding:8px 24px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">OK</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const NOTES={
+    tabung:'Siapkan 5 tabung reaksi bersih, beri label sesuai jenis sampel sebelum memulai.',
+    rak:'Gunakan rak tabung untuk menyimpan dan membandingkan hasil antar sampel secara bersamaan.',
+    pipet:'Gunakan pipet tetes berbeda untuk setiap reagen agar tidak terkontaminasi.',
+    waterbath:'Panaskan water bath hingga 100°C terlebih dahulu sebelum memasukkan tabung.',
+    gelas:'Gunakan gelas beker untuk memanaskan secara tidak langsung (bain-marie).',
+    benedict:'Reagen Benedict mengandung CuSO₄, Na₂CO₃, dan natrium sitrat. Tambahkan 5 tetes per tabung.',
+    iodin:'Larutan Iodin (Lugol: I₂ + KI). Tambahkan 2 tetes per sampel, tidak perlu dipanaskan.',
+    seliwanoff:'Reagen Seliwanoff = resorsinol dalam HCl encer. Tambahkan 2 mL lalu panaskan.',
+    glukosa:'Glukosa 1% adalah standar gula pereduksi positif untuk uji Benedict.',
+    fruktosa:'Fruktosa 1% akan memberikan warna merah ceri cepat pada uji Seliwanoff.',
+    sukrosa:'Sukrosa adalah disakarida non-pereduksi — harapkan hasil negatif Benedict.',
+    amilum:'Amilum (pati) 1% adalah standar positif untuk uji Iodin.',
+    nasi:'Ekstrak nasi mengandung campuran amilum dan gula sederhana hasil hidrolisis parsial.',
+  };
+  let dragId=null,dragType=null;
+  let touchClone=null,touchCard=null;
+  let popupTimer=null;
+  let touchDragging=false;
+  let touchStartX=0,touchStartY=0;
+  let touchLongTimer=null;
+  const LONG_PRESS=120;
+  let alatCount=0,bahanCount=0;
+  const ALAT_NEEDED=5,BAHAN_NEEDED=8;
+
+  function showPopup(icon,title,msg,type){
+    const ov=document.getElementById('dragPopup'),box=document.getElementById('dragPopupBox');
+    const acc=type==='ok'?'#059669':'#c0392b';
+    document.getElementById('dragPopupIcon').textContent=icon;
+    document.getElementById('dragPopupTitle').textContent=title;
+    document.getElementById('dragPopupTitle').style.color=acc;
+    document.getElementById('dragPopupMsg').textContent=msg;
+    ov.style.display='flex';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{box.style.transform='scale(1)';box.style.opacity='1';}));
+    clearTimeout(popupTimer);popupTimer=setTimeout(closeDragPopup,2600);
+  }
+  window.closeDragPopup=function(){
+    clearTimeout(popupTimer);
+    const ov=document.getElementById('dragPopup'),box=document.getElementById('dragPopupBox');
+    box.style.transform='scale(.7)';box.style.opacity='0';
+    setTimeout(()=>{ov.style.display='none';},280);
+  };
+  function highlightZones(type){
+    document.querySelectorAll('.drop-zone').forEach(z=>{
+      z.style.opacity=z.dataset.accept===type?'1':'0.4';
+    });
+  }
+  function clearZoneHighlights(){
+    document.querySelectorAll('.drop-zone').forEach(z=>{z.style.opacity='';z.classList.remove('drag-over-ok','drag-over-wrong');});
+  }
+  function dropCard(zone,card){
+    const hint=zone.querySelector('.drop-hint');if(hint)hint.remove();
+    const div=document.createElement('div');
+    div.className='drop-card'+(card.dataset.type==='bahan'?' bahan-card':'');
+    div.innerHTML=`<span class="drop-card-icon">${card.querySelector('.drag-icon').textContent}</span><span>${card.dataset.name}</span><button class="drop-card-remove" title="Hapus" onclick="removeDropCard(this,'${card.dataset.id}','${card.dataset.type}')">×</button>`;
+    div.style.animation='bounceRight .35s cubic-bezier(.34,1.56,.64,1)';
+    zone.appendChild(div);
+    card.classList.add('placed');
+    if(card.dataset.type==='alat') alatCount++;
+    else bahanCount++;
+    const note=NOTES[card.dataset.id];
+    if(note){
+      document.getElementById('catatanMeja').style.display='block';
+      document.getElementById('catatanText').textContent=note;
+    }
+    if(alatCount>=ALAT_NEEDED && bahanCount>=BAHAN_NEEDED) setTimeout(showCelebration,400);
+  }
+  window.removeDropCard=function(btn,id,type){
+    const card=document.querySelector(`.drag-card[data-id="${id}"]`);
+    if(card) card.classList.remove('placed');
+    btn.parentElement.remove();
+    if(type==='alat') alatCount=Math.max(0,alatCount-1);
+    else bahanCount=Math.max(0,bahanCount-1);
+    if(!document.getElementById('dropAlat').children.length) document.getElementById('dropAlat').innerHTML='<div class="drop-hint">← Drag alat ke sini</div>';
+    if(!document.getElementById('dropBahan').children.length) document.getElementById('dropBahan').innerHTML='<div class="drop-hint">← Drag bahan ke sini</div>';
+  };
+  document.querySelectorAll('.drag-card').forEach(card=>{
+    card.addEventListener('dragstart',e=>{
+      if(card.classList.contains('placed')){e.preventDefault();return;}
+      dragId=card.dataset.id;dragType=card.dataset.type;
+      card.classList.add('dragging');e.dataTransfer.effectAllowed='copy';
+      highlightZones(dragType);
+    });
+    card.addEventListener('dragend',()=>{card.classList.remove('dragging');clearZoneHighlights();});
+    card.addEventListener('touchstart',e=>{
+      if(card.classList.contains('placed')) return;
+      const t=e.touches[0];touchStartX=t.clientX;touchStartY=t.clientY;touchDragging=false;
+      touchLongTimer=setTimeout(()=>{
+        touchDragging=true;touchCard=card;dragId=card.dataset.id;dragType=card.dataset.type;
+        if(navigator.vibrate) navigator.vibrate(25);
+        card.classList.add('touch-grabbing');
+        const rect=card.getBoundingClientRect();
+        touchClone=card.cloneNode(true);
+        touchClone.style.cssText=`position:fixed;z-index:99999;pointer-events:none;width:${rect.width}px;height:${rect.height}px;top:${rect.top}px;left:${rect.left}px;transform:scale(1.08);opacity:.9;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:none;`;
+        document.body.appendChild(touchClone);
+        highlightZones(dragType);
+      },LONG_PRESS);
+    },{passive:true});
+    card.addEventListener('touchmove',e=>{
+      const dx=e.touches[0].clientX-touchStartX,dy=e.touches[0].clientY-touchStartY;
+      if(!touchDragging&&(Math.abs(dx)>8||Math.abs(dy)>8)){clearTimeout(touchLongTimer);}
+      if(!touchDragging) return;
+      e.preventDefault();
+      const t=e.touches[0];
+      if(touchClone){touchClone.style.top=(t.clientY-touchClone.offsetHeight/2)+'px';touchClone.style.left=(t.clientX-touchClone.offsetWidth/2)+'px';}
+      document.querySelectorAll('.drop-zone').forEach(z=>{
+        const r=z.getBoundingClientRect();
+        const over=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;
+        if(over) z.classList.add(z.dataset.accept===dragType?'drag-over-ok':'drag-over-wrong');
+        else z.classList.remove('drag-over-ok','drag-over-wrong');
+      });
+    },{passive:false});
+    card.addEventListener('touchend',e=>{
+      clearTimeout(touchLongTimer);
+      if(touchClone){touchClone.remove();touchClone=null;}
+      if(touchCard) touchCard.classList.remove('touch-grabbing');
+      if(!touchDragging){touchDragging=false;touchCard=null;return;}
+      const t=e.changedTouches[0];
+      let dropped=false;
+      document.querySelectorAll('.drop-zone').forEach(z=>{
+        z.classList.remove('drag-over-ok','drag-over-wrong');z.style.opacity='';
+        const r=z.getBoundingClientRect();
+        if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom){
+          if(z.dataset.accept===dragType){dropCard(z,card);playSound('sndBenar');dropped=true;}
+          else{playSound('sndSalah');showPopup('❌','Zona Salah!','Item ini harus diletakkan di zona yang sesuai.','err');}
+        }
+      });
+      touchDragging=false;touchCard=null;
+    });
+  });
+  document.querySelectorAll('.drop-zone').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';zone.classList.add(zone.dataset.accept===dragType?'drag-over-ok':'drag-over-wrong');});
+    zone.addEventListener('dragleave',()=>{zone.classList.remove('drag-over-ok','drag-over-wrong');});
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('drag-over-ok','drag-over-wrong');clearZoneHighlights();
+      const card=document.querySelector(`.drag-card[data-id="${dragId}"]`);
+      if(!card||card.classList.contains('placed')) return;
+      if(zone.dataset.accept!==dragType){playSound('sndSalah');showPopup('❌','Zona Salah!','Tempatkan alat di zona ALAT dan bahan di zona BAHAN.','err');return;}
+      dropCard(zone,card);playSound('sndBenar');
+    });
+  });
+
+  let confettiRAF=null;
+  function showCelebration(){
+    const a=new Audio('https://denicendrianto41.github.io/berhasil.wav');a.play().catch(()=>{playSound('sndBerhasil');});
+    const ov=document.getElementById('celebOverlay'),box=document.getElementById('celebBox');
+    ov.style.display='flex';ov.style.pointerEvents='auto';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{box.style.transform='scale(1) translateY(0)';box.style.opacity='1';}));
+    setTimeout(()=>{const b=document.getElementById('celebBadge');if(b){b.style.opacity='1';b.style.transform='scale(1)';}},500);
+    setTimeout(()=>{const t=document.getElementById('celebTitle');if(t){t.style.opacity='1';t.style.transform='translateY(0)';}},650);
+    setTimeout(()=>{const s=document.getElementById('celebSub');if(s){s.style.opacity='1';s.style.transform='translateY(0)';}},800);
+    launchStars();launchConfetti();
+  }
+  function launchStars(){
+    const c=document.getElementById('celebStars');if(!c) return;
+    c.innerHTML='';
+    const emojis=['⭐','🌟','✨','💫','🎊','🎉','🔬','⚗️','🧪'];
+    for(let i=0;i<20;i++){
+      const s=document.createElement('div');
+      const em=emojis[Math.floor(Math.random()*emojis.length)];
+      s.textContent=em;
+      s.style.cssText=`position:absolute;left:${5+Math.random()*90}%;bottom:${10+Math.random()*60}%;font-size:${14+Math.floor(Math.random()*20)}px;animation:starFloat ${1.8+Math.random()*1.5}s ease-out ${Math.random()*2.5}s both;pointer-events:none;`;
+      c.appendChild(s);
+    }
+    setTimeout(()=>{if(c) c.innerHTML='';},5500);
+  }
+  function launchConfetti(){
+    const canvas=document.getElementById('confettiCanvas');
+    canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
+    const ctx=canvas.getContext('2d');
+    const colors=['#c0392b','#1a237e','#880e4f','#2196f3','#ffc107','#4caf50'];
+    const particles=Array.from({length:90},()=>({
+      x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+      vx:(Math.random()-.5)*3,vy:Math.random()*4+2,
+      rot:Math.random()*360,vrot:(Math.random()-.5)*8,
+      w:6+Math.random()*6,h:8+Math.random()*10,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      circle:Math.random()>.5
+    }));
+    const start=Date.now();
+    function draw(){
+      const elapsed=Date.now()-start;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vrot;p.vy+=0.05;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.globalAlpha=Math.max(0,1-elapsed/5000);if(p.circle){ctx.beginPath();ctx.arc(0,0,p.w/2,0,Math.PI*2);ctx.fill();}else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+      if(elapsed<5000) confettiRAF=requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    confettiRAF=requestAnimationFrame(draw);
+  }
+  window.closeCelebration=function(){
+    if(confettiRAF){cancelAnimationFrame(confettiRAF);confettiRAF=null;}
+    const ov=document.getElementById('celebOverlay'),box=document.getElementById('celebBox');
+    const canvas=document.getElementById('confettiCanvas');
+    box.style.transform='scale(.5) translateY(60px)';box.style.opacity='0';
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+    const stars=document.getElementById('celebStars');if(stars) stars.innerHTML='';
+    setTimeout(()=>{
+      ov.style.display='none';ov.style.pointerEvents='none';
+      const badge=document.getElementById('celebBadge'),title=document.getElementById('celebTitle'),sub=document.getElementById('celebSub');
+      if(badge){badge.style.opacity='0';badge.style.transform='scale(.6)';}
+      if(title){title.style.opacity='0';title.style.transform='translateY(10px)';}
+      if(sub){sub.style.opacity='0';sub.style.transform='translateY(8px)';}
+    },400);
+  };
+  window.resetMeja=function(){
+    closeCelebration();
+    document.getElementById('dropAlat').innerHTML='<div class="drop-hint">← Drag alat ke sini</div>';
+    document.getElementById('dropBahan').innerHTML='<div class="drop-hint">← Drag bahan ke sini</div>';
+    document.querySelectorAll('.drag-card').forEach(c=>c.classList.remove('placed'));
+    document.getElementById('catatanMeja').style.display='none';
+    alatCount=0;bahanCount=0;
+  };
+})();
+</script>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:6px 10px;"><div style="overflow-y:auto;flex:1;">
+    <div class="two-col" style="gap:6px;">
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div class="card" style="border-left:3px solid #c0392b;padding:9px 11px;margin-bottom:0;">
+          <div class="ch" style="margin-bottom:5px;"><div class="ci ben">🔴</div><div class="ct" style="color:#c0392b;font-size:13px;">A. Prosedur Uji Benedict</div></div>
+          <div class="steps" style="gap:3px;">
+            <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan <strong>5 tabung reaksi</strong>, beri label: Glukosa, Fruktosa, Sukrosa, Amilum, Nasi. Masukkan ke rak tabung.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Masukkan <strong>2 mL sampel</strong> ke masing-masing tabung menggunakan pipet tetes.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Tambahkan <strong>5 tetes Reagen Benedict</strong> ke setiap tabung. Amati warna awal (biru).</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Masukkan semua tabung ke dalam <strong>water bath 100°C selama 5 menit</strong>.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">5</div><p style="font-size:11px;">Angkat tabung, dinginkan, catat perubahan warna: Biru → Hijau → Kuning → Merah Bata.</p></div>
+          </div>
+          <div class="notebox" style="margin-top:5px;padding:6px 10px;">
+            <div class="nt">⚠️ Perhatian</div>
+            <p style="font-size:10.5px;">Merah bata = positif gula pereduksi. Semakin banyak endapan, semakin tinggi konsentrasi gula pereduksi.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-left:3px solid #1a237e;padding:9px 11px;margin-bottom:0;">
+          <div class="ch" style="margin-bottom:5px;"><div class="ci iod">🔵</div><div class="ct" style="color:#1a237e;font-size:13px;">B. Prosedur Uji Iodin</div></div>
+          <div class="steps" style="gap:3px;">
+            <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan 5 tabung baru berlabel sama. Masukkan <strong>2 mL sampel</strong> ke masing-masing tabung.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Tambahkan <strong>2 tetes Larutan Iodin (Lugol)</strong> ke setiap tabung.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;"><strong>Tidak perlu pemanasan.</strong> Amati langsung perubahan warna yang terjadi.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Catat: Biru tua/hitam = positif amilum. Kuning/coklat = negatif.</p></div>
+          </div>
+          <div class="notebox" style="margin-top:5px;padding:6px 10px;">
+            <div class="nt">💡 Catatan Penting</div>
+            <p style="font-size:10.5px;">Jangan panaskan tabung uji Iodin! Pemanasan menghilangkan warna biru karena kompleks iodin-amilum terdisosiasi.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div class="card" style="border-left:3px solid #880e4f;padding:9px 11px;margin-bottom:0;">
+          <div class="ch" style="margin-bottom:5px;"><div class="ci sel">🌸</div><div class="ct" style="color:#880e4f;font-size:13px;">C. Prosedur Uji Seliwanoff</div></div>
+          <div class="steps" style="gap:3px;">
+            <div class="step" style="padding:5px 9px;"><div class="snum">1</div><p style="font-size:11px;">Siapkan tabung berlabel <strong>Glukosa</strong> dan <strong>Fruktosa</strong> (dan opsional Sukrosa).</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">2</div><p style="font-size:11px;">Masukkan <strong>2 mL sampel</strong> ke masing-masing tabung.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">3</div><p style="font-size:11px;">Tambahkan <strong>2 mL Reagen Seliwanoff</strong> ke setiap tabung.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">4</div><p style="font-size:11px;">Masukkan ke <strong>water bath 100°C</strong>. Amati setiap 30 detik selama 5 menit.</p></div>
+            <div class="step" style="padding:5px 9px;"><div class="snum">5</div><p style="font-size:11px;">Catat waktu warna merah ceri. Fruktosa bereaksi <strong>≤ 2 menit</strong>.</p></div>
+          </div>
+          <div class="notebox" style="margin-top:5px;padding:6px 10px;">
+            <div class="nt">⚠️ Perhatian Waktu</div>
+            <p style="font-size:10.5px;">Jangan memanaskan terlalu lama! Sukrosa dapat terhidrolisis dan memberikan hasil positif palsu setelah 5 menit.</p>
+          </div>
+        </div>
+
+        <!-- Tabel Kondisi Tabung -->
+        <div class="card" style="padding:9px 11px;margin-bottom:0;">
+          <div class="ch" style="margin-bottom:5px;"><div class="ci b">🧪</div><div class="ct" style="font-size:13px;">Kondisi Tabung Percobaan</div></div>
+          <div style="display:flex;flex-direction:column;gap:3px;margin-top:2px;">
+            <div style="display:flex;align-items:center;gap:7px;padding:3px 6px;background:#fff7ed;border-radius:6px;border:1px solid #fed7aa;">
+              <span style="background:#c2410c;color:#fff;border-radius:4px;padding:1px 6px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:18px;text-align:center;">1</span>
+              <span style="font-size:11px;color:var(--text2);">Glukosa 1% — Monosakarida (Aldosa)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:3px 6px;background:#fdf4ff;border-radius:6px;border:1px solid #e9d5ff;">
+              <span style="background:#7e22ce;color:#fff;border-radius:4px;padding:1px 6px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:18px;text-align:center;">2</span>
+              <span style="font-size:11px;color:var(--text2);">Fruktosa 1% — Monosakarida (Ketosa)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:3px 6px;background:#fdf2f8;border-radius:6px;border:1px solid #fbcfe8;">
+              <span style="background:#9d174d;color:#fff;border-radius:4px;padding:1px 6px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:18px;text-align:center;">3</span>
+              <span style="font-size:11px;color:var(--text2);">Sukrosa 1% — Disakarida (Non-pereduksi)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:3px 6px;background:#f0fdf4;border-radius:6px;border:1px solid #86efac;">
+              <span style="background:#166534;color:#fff;border-radius:4px;padding:1px 6px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:18px;text-align:center;">4</span>
+              <span style="font-size:11px;color:var(--text2);">Amilum 1% — Polisakarida (Pati)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:3px 6px;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe;">
+              <span style="background:#1e3a8a;color:#fff;border-radius:4px;padding:1px 6px;font-weight:800;font-family:'JetBrains Mono',monospace;font-size:10px;min-width:18px;text-align:center;">5</span>
+              <span style="font-size:11px;color:var(--text2);">Ekstrak Nasi — Campuran Karbohidrat</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<div id="page-simulasi" class="page">
+  <div style="flex:1;overflow:hidden;padding:8px 12px;display:flex;flex-direction:column;gap:8px;">
+    <div class="sim-wrap">
+      <!-- KONTROL -->
+      <div class="ctrl-panel">
+        <h3>⚙️ Pengaturan Uji</h3>
+        <div class="cg">
+          <label>Pilih Jenis Uji</label>
+          <select id="selUji">
+            <option value="benedict">🔴 Uji Benedict</option>
+            <option value="iodin">🔵 Uji Iodin</option>
+            <option value="seliwanoff">🌸 Uji Seliwanoff</option>
+          </select>
+        </div>
+        <div class="cg">
+          <label>Pilih Sampel</label>
+          <select id="selSampel">
+            <option value="glukosa">🍬 Glukosa 1%</option>
+            <option value="fruktosa">🍭 Fruktosa 1%</option>
+            <option value="sukrosa">🧂 Sukrosa 1%</option>
+            <option value="amilum">🌾 Amilum 1%</option>
+            <option value="nasi">🍚 Ekstrak Nasi</option>
+          </select>
+        </div>
+        <div id="ctrlWaterbath" class="cg">
+          <label>Pemanasan Water Bath</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;cursor:pointer;text-transform:none;letter-spacing:0;margin-top:2px;">
+            <input type="checkbox" id="chkWaterbath" style="width:auto;padding:0;appearance:auto;border:none;background:none;"> Aktifkan Pemanasan
+          </label>
+        </div>
+        <button class="btn btn-start" id="btnRunSim" onclick="runSimulation()">▶ Jalankan Uji</button>
+        <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
+        <div class="tipinfo on" id="simTip" style="font-size:10.5px;">Pilih jenis uji dan sampel, lalu klik "Jalankan Uji" untuk melihat reaksi.</div>
+      </div>
+
+      <!-- TAMPILAN VISUAL -->
+      <div class="sim-right">
+        <div class="aquarium">
+          <h3>🧪 Visualisasi Tabung Reaksi</h3>
+          <!-- Rack Label -->
+          <div style="display:flex;justify-content:center;margin-bottom:4px;">
+            <div style="background:linear-gradient(135deg,#0d1b4b,#1a237e);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;padding:3px 14px;border-radius:20px;letter-spacing:.08em;">RAK TABUNG VIRTUAL</div>
+          </div>
+          <!-- TUBE RACK -->
+          <div id="tubeRack" class="tube-rack">
+            <!-- Rendered by JS -->
+          </div>
+          <!-- Water Bath Visual -->
+          <div id="waterbathVis" style="display:none;margin-top:8px;">
+            <div style="font-size:9.5px;font-weight:700;color:#1565c0;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;">🌡️ Water Bath Aktif — 100°C</div>
+            <div class="waterbath"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Hasil -->
+    <div class="result-table-wrap">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:800;color:var(--acc3);margin-bottom:7px;">📊 Tabel Hasil Simulasi</div>
+      <div style="overflow-x:auto;">
+        <table class="wstable">
+          <thead>
+            <tr><th>Sampel</th><th style="background:#c0392b;">Uji Benedict</th><th style="background:#1a237e;">Uji Iodin</th><th style="background:#880e4f;">Uji Seliwanoff</th><th>Jenis Karbohidrat</th></tr>
+          </thead>
+          <tbody id="resultTableBody">
+            <tr><td>Glukosa</td><td id="r-glukosa-benedict">-</td><td id="r-glukosa-iodin">-</td><td id="r-glukosa-seliwanoff">-</td><td>Monosakarida (Aldosa)</td></tr>
+            <tr><td>Fruktosa</td><td id="r-fruktosa-benedict">-</td><td id="r-fruktosa-iodin">-</td><td id="r-fruktosa-seliwanoff">-</td><td>Monosakarida (Ketosa)</td></tr>
+            <tr><td>Sukrosa</td><td id="r-sukrosa-benedict">-</td><td id="r-sukrosa-iodin">-</td><td id="r-sukrosa-seliwanoff">-</td><td>Disakarida</td></tr>
+            <tr><td>Amilum</td><td id="r-amilum-benedict">-</td><td id="r-amilum-iodin">-</td><td id="r-amilum-seliwanoff">-</td><td>Polisakarida</td></tr>
+            <tr><td>Nasi</td><td id="r-nasi-benedict">-</td><td id="r-nasi-iodin">-</td><td id="r-nasi-seliwanoff">-</td><td>Campuran</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simulation Data
+const SIM_DATA = {
+  benedict: {
+    glukosa:   { color:'#c0392b', colorLabel:'Merah Bata', result:'POSITIF', badge:'pos', liquid:'linear-gradient(180deg,rgba(192,57,43,0.3) 0%,rgba(192,57,43,0.9) 100%)', sediment:true, desc:'Glukosa adalah gula pereduksi. Cu²⁺ direduksi menjadi Cu₂O merah bata.' },
+    fruktosa:  { color:'#c0392b', colorLabel:'Merah Bata', result:'POSITIF', badge:'pos', liquid:'linear-gradient(180deg,rgba(192,57,43,0.3) 0%,rgba(192,57,43,0.9) 100%)', sediment:true, desc:'Fruktosa adalah gula pereduksi meskipun merupakan ketosa.' },
+    sukrosa:   { color:'#2196f3', colorLabel:'Biru (Negatif)', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(33,150,243,0.3) 0%,rgba(33,150,243,0.7) 100%)', sediment:false, desc:'Sukrosa adalah disakarida non-pereduksi. Tidak ada gugus aldehid/keton bebas.' },
+    amilum:    { color:'#2196f3', colorLabel:'Biru (Negatif)', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(33,150,243,0.3) 0%,rgba(33,150,243,0.7) 100%)', sediment:false, desc:'Amilum tidak memiliki gugus pereduksi bebas karena ujung rantai terikat.' },
+    nasi:      { color:'#ff9800', colorLabel:'Kuning–Oranye', result:'POSITIF LEMAH', badge:'pos', liquid:'linear-gradient(180deg,rgba(255,152,0,0.3) 0%,rgba(255,152,0,0.7) 100%)', sediment:false, desc:'Nasi mengandung gula hasil hidrolisis parsial amilum, memberikan positif lemah.' },
+  },
+  iodin: {
+    glukosa:   { color:'#795548', colorLabel:'Coklat (Negatif)', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(121,85,72,0.2) 0%,rgba(121,85,72,0.6) 100%)', sediment:false, desc:'Glukosa adalah monosakarida, tidak memiliki struktur heliks untuk mengikat iodin.' },
+    fruktosa:  { color:'#795548', colorLabel:'Coklat (Negatif)', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(121,85,72,0.2) 0%,rgba(121,85,72,0.6) 100%)', sediment:false, desc:'Fruktosa tidak bereaksi dengan iodin karena bukan polisakarida.' },
+    sukrosa:   { color:'#795548', colorLabel:'Coklat (Negatif)', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(121,85,72,0.2) 0%,rgba(121,85,72,0.6) 100%)', sediment:false, desc:'Sukrosa adalah disakarida sederhana, tidak bereaksi dengan iodin.' },
+    amilum:    { color:'#1a237e', colorLabel:'Biru Tua–Hitam', result:'POSITIF', badge:'pos-iod', liquid:'linear-gradient(180deg,rgba(26,35,126,0.4) 0%,rgba(13,17,63,0.95) 100%)', sediment:false, desc:'Amilum positif kuat! I₂ terperangkap dalam heliks amilosa membentuk kompleks biru tua.' },
+    nasi:      { color:'#1a237e', colorLabel:'Biru Tua', result:'POSITIF', badge:'pos-iod', liquid:'linear-gradient(180deg,rgba(26,35,126,0.3) 0%,rgba(20,30,100,0.9) 100%)', sediment:false, desc:'Nasi kaya pati (amilum), memberikan warna biru tua yang jelas dengan iodin.' },
+  },
+  seliwanoff: {
+    glukosa:   { color:'#e8b4c0', colorLabel:'Merah Muda Lemah', result:'POSITIF LAMBAT', badge:'neg', liquid:'linear-gradient(180deg,rgba(232,180,192,0.2) 0%,rgba(232,180,192,0.6) 100%)', sediment:false, desc:'Glukosa adalah aldosa. Bereaksi sangat lambat dengan Seliwanoff (> 5 menit).' },
+    fruktosa:  { color:'#e91e63', colorLabel:'Merah Ceri', result:'POSITIF CEPAT', badge:'pos-sel', liquid:'linear-gradient(180deg,rgba(233,30,99,0.3) 0%,rgba(136,14,79,0.9) 100%)', sediment:false, desc:'Fruktosa adalah ketosa! Merah ceri muncul dalam < 2 menit — pembeda utama ketosa.' },
+    sukrosa:   { color:'#f48fb1', colorLabel:'Merah Muda', result:'POSITIF (LAMBAT)', badge:'neg', liquid:'linear-gradient(180deg,rgba(244,143,177,0.2) 0%,rgba(244,143,177,0.6) 100%)', sediment:false, desc:'Sukrosa terhidrolisis menjadi glukosa+fruktosa dalam HCl panas, positif lambat.' },
+    amilum:    { color:'#eceff1', colorLabel:'Tidak Berubah', result:'NEGATIF', badge:'neg', liquid:'linear-gradient(180deg,rgba(236,239,241,0.2) 0%,rgba(207,216,220,0.5) 100%)', sediment:false, desc:'Amilum adalah polisakarida, tidak bereaksi dengan reagen Seliwanoff.' },
+    nasi:      { color:'#f8bbd0', colorLabel:'Merah Muda Ringan', result:'NEGATIF/LEMAH', badge:'neg', liquid:'linear-gradient(180deg,rgba(248,187,208,0.2) 0%,rgba(248,187,208,0.5) 100%)', sediment:false, desc:'Nasi mengandung sedikit fruktosa bebas, reaksi sangat lemah.' },
+  }
+};
+
+const resultTableMap = {
+  benedict: { glukosa:'🔴 Merah Bata (+)', fruktosa:'🔴 Merah Bata (+)', sukrosa:'🔵 Biru (−)', amilum:'🔵 Biru (−)', nasi:'🟡 Kuning (+)' },
+  iodin:    { glukosa:'🟤 Coklat (−)', fruktosa:'🟤 Coklat (−)', sukrosa:'🟤 Coklat (−)', amilum:'🔵 Biru Tua (++)', nasi:'🔵 Biru Tua (++)' },
+  seliwanoff:{ glukosa:'🩷 Lambat', fruktosa:'🌸 Merah Ceri (++)', sukrosa:'🩷 Lambat/+', amilum:'⚪ Negatif', nasi:'⚪ Lemah' }
+};
+
+const samples = ['glukosa','fruktosa','sukrosa','amilum','nasi'];
+const sampleLabels = { glukosa:'Glukosa', fruktosa:'Fruktosa', sukrosa:'Sukrosa', amilum:'Amilum', nasi:'Nasi' };
+const sampleIcons = { glukosa:'🍬', fruktosa:'🍭', sukrosa:'🧂', amilum:'🌾', nasi:'🍚' };
+const reagen = { benedict:'💧', iodin:'🟡', seliwanoff:'🟣' };
+
+let simulationRunning = false;
+
+function initTubeRack() {
+  const rack = document.getElementById('tubeRack');
+  rack.innerHTML = '';
+  const uji = document.getElementById('selUji').value;
+  samples.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'tube-container';
+    div.id = `tube-${s}`;
+    div.innerHTML = `
+      <div class="tube-label">${sampleIcons[s]} ${sampleLabels[s]}</div>
+      <div class="tube-wrapper">
+        <div class="tube-pipette" id="pipette-${s}">${reagen[uji]}</div>
+        <div class="tube-body" id="tubebody-${s}">
+          <div class="tube-liquid" id="liquid-${s}" style="background:rgba(220,230,240,0.3);"></div>
+          <div class="tube-bubble" id="bubble-${s}">🫧</div>
+        </div>
+        <div class="tube-cap"></div>
+      </div>
+      <div class="tube-result-badge" id="badge-${s}"></div>
+    `;
+    rack.appendChild(div);
+  });
+}
+
+function runSimulation() {
+  if(simulationRunning) return;
+  simulationRunning = true;
+  const uji = document.getElementById('selUji').value;
+  const waterbath = document.getElementById('chkWaterbath').checked;
+  document.getElementById('btnRunSim').disabled = true;
+  document.getElementById('waterbathVis').style.display = waterbath ? 'block' : 'none';
+
+  // Update pipette icon
+  samples.forEach(s => {
+    const p = document.getElementById(`pipette-${s}`);
+    if(p) { p.textContent = reagen[uji]; p.classList.add('show'); }
+  });
+
+  // Animate with delay
+  samples.forEach((s, i) => {
+    setTimeout(() => {
+      const data = SIM_DATA[uji][s];
+      const liquid = document.getElementById(`liquid-${s}`);
+      const badge = document.getElementById(`badge-${s}`);
+      const bubble = document.getElementById(`bubble-${s}`);
+      const pipette = document.getElementById(`pipette-${s}`);
+
+      if(liquid) { liquid.style.background = data.liquid; liquid.classList.add('anim'); }
+      if(data.sediment && bubble) { bubble.classList.add('show'); }
+      if(badge) {
+        badge.textContent = data.result;
+        badge.className = `tube-result-badge show ${data.badge}`;
+      }
+      if(pipette) { setTimeout(() => pipette.classList.remove('show'), 800); }
+
+      // Update tip
+      const selSampel = document.getElementById('selSampel').value;
+      if(s === selSampel) {
+        document.getElementById('simTip').className = 'tipinfo on';
+        document.getElementById('simTip').innerHTML = `<strong>${sampleIcons[s]} ${sampleLabels[s]}:</strong> ${data.desc}`;
+      }
+
+      // Update result table
+      const cell = document.getElementById(`r-${s}-${uji}`);
+      if(cell) { cell.textContent = resultTableMap[uji][s]; cell.style.fontWeight = '700'; }
+
+    }, i * 350 + 300);
+  });
+
+  setTimeout(() => {
+    simulationRunning = false;
+    document.getElementById('btnRunSim').disabled = false;
+    playSound('sndBerhasil2');
+  }, samples.length * 350 + 700);
+}
+
+function resetSimulation() {
+  simulationRunning = false;
+  document.getElementById('btnRunSim').disabled = false;
+  document.getElementById('waterbathVis').style.display = 'none';
+  document.getElementById('simTip').innerHTML = 'Pilih jenis uji dan sampel, lalu klik "Jalankan Uji" untuk melihat reaksi.';
+  samples.forEach(s => {
+    const liquid = document.getElementById(`liquid-${s}`);
+    const badge = document.getElementById(`badge-${s}`);
+    const bubble = document.getElementById(`bubble-${s}`);
+    const pipette = document.getElementById(`pipette-${s}`);
+    if(liquid) { liquid.style.background = 'rgba(220,230,240,0.3)'; liquid.classList.remove('anim'); }
+    if(badge) { badge.className = 'tube-result-badge'; badge.textContent = ''; }
+    if(bubble) bubble.classList.remove('show');
+    if(pipette) pipette.classList.remove('show');
+  });
+  // Reset table
+  ['benedict','iodin','seliwanoff'].forEach(u => {
+    samples.forEach(s => {
+      const cell = document.getElementById(`r-${s}-${u}`);
+      if(cell) { cell.textContent = '-'; cell.style.fontWeight = ''; }
+    });
+  });
+}
+
+document.getElementById('selUji').addEventListener('change', () => { resetSimulation(); initTubeRack(); });
+
+// Init
+initTubeRack();
+</script>
+
+<!-- ===== LEMBAR KERJA ===== -->
+<div id="page-lembarkerja" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;height:100%;">
+    <div style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:7px;">
+    <div class="hero" style="margin-bottom:0;flex-shrink:0;">
+      <div>
+        <div class="h-label">📝 Lembar Kerja Murid</div>
+        <div class="h-title">Tabel Pengamatan &amp; <span>Analisis</span></div>
+        <div class="h-desc">Isi tabel pengamatan dan jawab pertanyaan analisis berdasarkan hasil simulasi yang telah kamu lakukan.</div>
+      </div>
+    </div>
+
+    <!-- TABEL PENGAMATAN -->
+    <div class="card">
+      <div class="ch"><div class="ci b">📊</div><div class="ct">Tabel Hasil Pengamatan</div></div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Isi kolom yang kosong berdasarkan hasil pengamatan simulasi. Kolom bertanda <strong style="color:#c0392b;">*</strong> sudah diisi sebagai referensi.</p>
+      <div style="overflow-x:auto;">
+        <table class="lk-table" style="min-width:700px;">
+          <thead>
+            <tr>
+              <th rowspan="2">Sampel</th>
+              <th colspan="3" style="background:#c0392b;">Uji Benedict</th>
+              <th colspan="2" style="background:#1a237e;">Uji Iodin</th>
+              <th colspan="2" style="background:#880e4f;">Uji Seliwanoff</th>
+              <th rowspan="2">Jenis Karbohidrat</th>
+            </tr>
+            <tr>
+              <th style="background:#e57373;">Warna Akhir</th>
+              <th style="background:#e57373;">Ada Endapan?</th>
+              <th style="background:#e57373;">Hasil (+/−)</th>
+              <th style="background:#5c6bc0;">Warna Akhir</th>
+              <th style="background:#5c6bc0;">Hasil (+/−)</th>
+              <th style="background:#ad1457;">Warna Akhir</th>
+              <th style="background:#ad1457;">Waktu Reaksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>🍬 Glukosa 1%</strong></td>
+              <td style="background:#fce4ec;"><input type="text" value="Merah Bata" style="background:transparent;border:none;font-weight:700;color:#c0392b;" readonly></td>
+              <td><select><option value="">Pilih...</option><option selected>Ya</option><option>Tidak</option></select></td>
+              <td><select><option value="">Pilih...</option><option selected>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>< 2 menit</option><option>2–5 menit</option><option selected>> 5 menit</option></select></td>
+              <td><input type="text" placeholder="Jenis karbohidrat..." value="Monosakarida (Aldosa)"></td>
+            </tr>
+            <tr>
+              <td><strong>🍭 Fruktosa 1%</strong></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Ya</option><option>Tidak</option></select></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>< 2 menit</option><option>2–5 menit</option><option>> 5 menit</option></select></td>
+              <td><input type="text" placeholder="Jenis karbohidrat..."></td>
+            </tr>
+            <tr>
+              <td><strong>🧂 Sukrosa 1%</strong></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Ya</option><option>Tidak</option></select></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>< 2 menit</option><option>2–5 menit</option><option>> 5 menit</option></select></td>
+              <td><input type="text" placeholder="Jenis karbohidrat..."></td>
+            </tr>
+            <tr>
+              <td><strong>🌾 Amilum 1%</strong></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Ya</option><option>Tidak</option></select></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td style="background:#e8eaf6;"><input type="text" value="Biru Tua–Hitam" style="background:transparent;border:none;font-weight:700;color:#1a237e;" readonly></td>
+              <td><select><option value="">Pilih...</option><option selected>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>< 2 menit</option><option>2–5 menit</option><option>> 5 menit</option></select></td>
+              <td><input type="text" placeholder="Jenis karbohidrat..." value="Polisakarida"></td>
+            </tr>
+            <tr>
+              <td><strong>🍚 Ekstrak Nasi</strong></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Ya</option><option>Tidak</option></select></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>Positif (+)</option><option>Negatif (−)</option></select></td>
+              <td><input type="text" placeholder="Warna akhir..."></td>
+              <td><select><option value="">Pilih...</option><option>< 2 menit</option><option>2–5 menit</option><option>> 5 menit</option></select></td>
+              <td><input type="text" placeholder="Jenis karbohidrat..."></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tombol Cetak / Reset -->
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;flex-shrink:0;">
+      <button onclick="window.print()" style="background:linear-gradient(135deg,#1a237e,#3b82f6);color:#fff;border:none;border-radius:7px;padding:8px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(26,35,126,.3);">🖨️ Cetak Lembar Kerja</button>
+      <button onclick="resetLembarKerja()" style="background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;">↺ Reset Isian</button>
+    </div>
+  </div></div>
+</div>
+
+<script>
+function resetLembarKerja() {
+  if(!confirm('Reset semua isian lembar kerja?')) return;
+  document.querySelectorAll('#page-lembarkerja .disc-area').forEach(t => t.value = '');
+  document.querySelectorAll('#page-lembarkerja input[type=text]:not([readonly])').forEach(i => i.value = '');
+  document.querySelectorAll('#page-lembarkerja select').forEach(s => s.selectedIndex = 0);
+}
+</script>
+
+<!-- ===== EVALUASI / KUIS ===== -->
+<div id="page-kuis" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px;gap:6px;">
+    <!-- Mode selector -->
+    <div style="display:flex;gap:5px;flex-shrink:0;">
+      <button id="modeBtn-mc" onclick="setQuizMode('mc')" style="flex:1;background:linear-gradient(135deg,#1a237e,#3b82f6);color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .2s;">📝 Pilihan Ganda</button>
+      <button id="modeBtn-tf" onclick="setQuizMode('tf')" style="flex:1;background:#fff;border:1.5px solid #059669;color:#059669;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .2s;">✅ Benar / Salah</button>
+      <button id="modeBtn-fc" onclick="setQuizMode('fc')" style="flex:1;background:#fff;border:1.5px solid #f59e0b;color:#b45309;border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .2s;">🃏 Flash Card</button>
+    </div>
+    <!-- Progress bar for mc/tf -->
+    <div id="quizProgressBar" style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+      <div class="qprog" id="quizProg" style="flex:1;"></div>
+      <button class="btn-score btn-review" onclick="resetKuis()" style="flex-shrink:0;font-size:11px;padding:4px 10px;">↺ Ulangi</button>
+    </div>
+    <div id="quizContainer" style="flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;"></div>
+  </div>
+</div>
+
+<!-- Score Overlay -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:36px;margin-bottom:8px;">🏆</div>
+    <div class="score-big" id="scoreBig">0</div>
+    <div class="score-pct" id="scorePct">/ 10</div>
+    <div class="score-sub" id="scoreSub">Kamu menjawab — pertanyaan dengan benar.</div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="closeScore()">Tinjau Jawaban</button>
+      <button class="btn-score btn-ulangi" onclick="resetKuis()">↺ Ulangi Kuis</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ QUIZ DATA ============
+const QUIZ_MC = [
+  {q:'Larutan X: Benedict (+) merah bata, Iodin (−), Seliwanoff merah ceri dalam 1 menit. Larutan X PALING MUNGKIN mengandung... (pilih semua jawaban yang benar)', type:'mc-complex', opts:['Gula pereduksi','Bukan amilum','Ketosa (fruktosa)','Polisakarida'], ans:[0,1,2], fb:'Benedict (+) = gula pereduksi ✓. Iodin (−) = bukan amilum ✓. Seliwanoff <2 mnt = ketosa (fruktosa) ✓. Semua ciri ini menunjukkan FRUKTOSA!'},
+  {q:'Uji Benedict digunakan untuk mendeteksi...', type:'mc', opts:['Polisakarida (amilum)','Gula pereduksi (monosakarida & disakarida tertentu)','Ketosa secara spesifik','Protein'], ans:1, fb:'Uji Benedict mendeteksi gula pereduksi karena gugus aldehid/keton bebas mereduksi Cu²⁺ menjadi Cu₂O merah bata.'},
+  {q:'Warna positif pada uji Iodin adalah...', type:'mc', opts:['Merah bata dengan endapan','Merah ceri cerah','Biru tua hingga hitam','Kuning kehijauan'], ans:2, fb:'Iodin terperangkap dalam struktur heliks amilosa membentuk kompleks berwarna biru tua hingga hitam.'},
+  {q:'Larutan Y: Benedict (−), Iodin (biru tua), Seliwanoff (−). Pilih SEMUA pernyataan yang benar tentang Larutan Y!', type:'mc-complex', opts:['Mengandung amilum','Termasuk polisakarida','Bukan gula pereduksi','Bukan ketosa'], ans:[0,1,2,3], fb:'Benedict (−) = bukan gula pereduksi ✓. Iodin (+) = ada amilum ✓. Amilum adalah polisakarida ✓. Seliwanoff (−) = bukan ketosa ✓. Ini karakteristik AMILUM MURNI!'},
+  {q:'Fruktosa menghasilkan warna merah ceri LEBIH CEPAT dari glukosa pada uji Seliwanoff karena...', type:'mc', opts:['Fruktosa adalah disakarida','Fruktosa adalah ketosa yang lebih mudah terdehidrasi','Fruktosa adalah polisakarida','Fruktosa tidak larut dalam air'], ans:1, fb:'Fruktosa adalah ketoheksosa. Reagen Seliwanoff (HCl + resorsinol) mendehidrasi ketosa jauh lebih cepat daripada aldosa.'},
+  {q:'Sukrosa memberikan hasil negatif pada uji Benedict karena...', type:'mc', opts:['Sukrosa bukan karbohidrat','Sukrosa tidak larut air','Sukrosa adalah disakarida non-pereduksi yang tidak memiliki gugus aldehid/keton bebas','Sukrosa bereaksi dengan iodin terlebih dahulu'], ans:2, fb:'Dalam sukrosa, gugus aldehid glukosa dan gugus keton fruktosa berikatan satu sama lain, sehingga tidak ada gugus bebas untuk mereduksi Cu²⁺.'},
+  {q:'Larutan Z: Benedict (+) kuning, Iodin (biru tua), Seliwanoff (−). Pilih SEMUA ciri yang tepat untuk Larutan Z!', type:'mc-complex', opts:['Mengandung amilum (pati)','Mengandung sedikit gula pereduksi','Bukan fruktosa murni','Kemungkinan ekstrak nasi'], ans:[0,1,2,3], fb:'Benedict (+) kuning = sedikit gula pereduksi ✓. Iodin (+) = ada amilum ✓. Seliwanoff (−) = bukan fruktosa murni ✓. Ini pola khas EKSTRAK NASI yang mengandung campuran amilum + gula hidrolisis!'},
+  {q:'Uji Iodin TIDAK memerlukan pemanasan karena...', type:'mc', opts:['Iodin bersifat eksplosif jika dipanaskan','Pemanasan akan mendisosiasi kompleks iodin-amilosa sehingga warna biru menghilang','Iodin tidak larut pada suhu tinggi','Tidak ada alasan khusus'], ans:1, fb:'Kompleks iodin-amilosa bersifat reversibel. Pemanasan menyebabkan rantai heliks amilosa terbuka dan melepas iodin, sehingga warna biru hilang.'},
+  {q:'Glukosa termasuk kelompok...', type:'mc', opts:['Ketosa — karena memiliki gugus keton','Aldosa — karena memiliki gugus aldehid','Polisakarida — karena polimer panjang','Disakarida — karena terdiri dari dua unit'], ans:1, fb:'Glukosa adalah aldoheksosa (aldosa) karena memiliki gugus aldehid (−CHO) di ujung rantai karbonnya.'},
+  {q:'Reagen Seliwanoff terdiri dari resorsinol dan HCl. Fungsi HCl dalam reaksi ini adalah...', type:'mc', opts:['Menetralkan larutan karbohidrat','Membuat suasana asam untuk mendehidrasi ketoheksosa membentuk furfural','Mereduksi Cu²⁺ menjadi Cu⁺','Mengikat iodin agar stabil'], ans:1, fb:'HCl pekat menciptakan kondisi asam dan panas untuk mendehidrasi ketoheksosa menjadi 5-hidroksimetilfurfural, yang bereaksi dengan resorsinol → merah ceri.'},
+];
+
+const QUIZ_TF = [
+  {q:'Nasi memberikan hasil positif pada uji Iodin karena mengandung amilum (pati) yang memiliki struktur heliks amilosa.', ans:true, fb:'BENAR. Nasi terdiri dari amilum (pati). Struktur heliks amilosa dalam pati bereaksi dengan iodin → biru tua.'},
+  {q:'Sukrosa termasuk gula pereduksi karena merupakan disakarida.', ans:false, fb:'SALAH. Sukrosa adalah disakarida NON-pereduksi. Gugus anomer glukosa dan fruktosa saling terikat sehingga tidak ada gugus bebas yang bisa mereduksi Cu²⁺.'},
+  {q:'Uji Benedict harus dilakukan dengan pemanasan water bath 100°C selama 5 menit.', ans:true, fb:'BENAR. Pemanasan diperlukan agar reaksi reduksi Cu²⁺ menjadi Cu₂O dapat berlangsung.'},
+  {q:'Glukosa dan fruktosa keduanya merupakan gula pereduksi.', ans:true, fb:'BENAR. Glukosa (aldosa) punya gugus –CHO bebas; fruktosa (ketosa) punya gugus –C=O bebas. Keduanya pereduksi.'},
+  {q:'Amilosa dan amilopektin adalah dua komponen penyusun amilum yang keduanya memberikan warna biru tua dengan iodin.', ans:false, fb:'SALAH. Amilosa membentuk warna biru tua. Amilopektin (bercabang) memberikan warna ungu-merah karena heliks tidak sempurna.'},
+  {q:'Pemanasan larutan amilum + iodin yang berwarna biru akan menghilangkan warna biru tersebut.', ans:true, fb:'BENAR. Pemanasan menyebabkan heliks amilosa membuka dan melepaskan iodin. Reaksi ini reversibel — didinginkan kembali → biru lagi.'},
+  {q:'Fruktosa memberikan hasil positif pada uji Benedict.', ans:true, fb:'BENAR. Meskipun fruktosa adalah ketosa, gugus ketonnya bebas dan dapat mereduksi Cu²⁺ dalam kondisi basa (uji Benedict).'},
+  {q:'Reagen Seliwanoff positif berarti sampel mengandung amilum.', ans:false, fb:'SALAH. Seliwanoff positif menunjukkan adanya KETOSA (seperti fruktosa), BUKAN amilum. Iodin yang digunakan untuk mendeteksi amilum.'},
+];
+
+const FLASHCARDS = [
+  {front:'Apa yang terjadi ketika Cu²⁺ bertemu gula pereduksi dalam uji Benedict?', back:'Cu²⁺ (biru) direduksi menjadi Cu₂O (endapan merah bata). Semakin banyak endapan = semakin banyak gula pereduksi.', color:'#c0392b'},
+  {front:'Mengapa uji Iodin tidak boleh dipanaskan?', back:'Kompleks iodin–amilosa bersifat reversibel. Pemanasan membuka heliks amilosa dan melepas iodin → warna biru hilang. Dinginkan kembali → biru muncul lagi.', color:'#1a237e'},
+  {front:'Apa perbedaan Amilosa dan Amilopektin?', back:'Amilosa (20%): rantai lurus α-1,4, membentuk heliks → biru tua dengan iodin.\nAmilopektin (80%): bercabang α-1,6, heliks tidak sempurna → ungu-merah.', color:'#059669'},
+  {front:'Apa itu Aldosa dan Ketosa?', back:'Aldosa: monosakarida dengan gugus ALDEHID (–CHO). Contoh: Glukosa.\nKetosa: monosakarida dengan gugus KETON (–C=O). Contoh: Fruktosa.\nKeduanya adalah gula pereduksi.', color:'#f59e0b'},
+  {front:'Rumus reaksi uji Benedict?', back:'R–CHO + 2Cu²⁺ + 2OH⁻ → R–COOH + Cu₂O↓ + H₂O\n\nSkala warna: Biru (−) → Hijau → Kuning → Jingga → Merah Bata (++)', color:'#c0392b'},
+  {front:'Mengapa Sukrosa negatif pada uji Benedict?', back:'Sukrosa adalah disakarida NON-pereduksi. Gugus aldehid glukosa dan gugus keton fruktosa saling berikatan (ikatan glikosidik antara C1-C2), sehingga tidak ada gugus bebas untuk mereduksi Cu²⁺.', color:'#7c3aed'},
+  {front:'Bagaimana cara identifikasi Fruktosa menggunakan uji Seliwanoff?', back:'Fruktosa (ketosa) bereaksi dengan resorsinol dalam HCl → membentuk warna MERAH CERI dalam ≤2 menit.\nGlukosa (aldosa) bereaksi jauh lebih lambat (>5 menit).', color:'#880e4f'},
+  {front:'Apa kandungan Reagen Benedict?', back:'CuSO₄ (tembaga sulfat) + Na₂CO₃ (natrium karbonat) + Natrium sitrat.\nFungsi: Cu²⁺ sebagai oksidator yang direduksi oleh gula pereduksi.', color:'#1d4ed8'},
+];
+
+let quizMode = 'mc';
+let quizMC_State = {cur:0, answers:Array(QUIZ_MC.length).fill(null), submitted:Array(QUIZ_MC.length).fill(false)};
+let quizTF_State = {cur:0, answers:Array(QUIZ_TF.length).fill(null), submitted:Array(QUIZ_TF.length).fill(false)};
+let fcState = {cur:0, flipped:false, viewed:new Set()};
+
+function setQuizMode(mode) {
+  quizMode = mode;
+  document.getElementById('modeBtn-mc').style.background = mode==='mc' ? 'linear-gradient(135deg,#1a237e,#3b82f6)' : '#fff';
+  document.getElementById('modeBtn-mc').style.color = mode==='mc' ? '#fff' : '#1a237e';
+  document.getElementById('modeBtn-mc').style.border = mode==='mc' ? 'none' : '1.5px solid #1a237e';
+  document.getElementById('modeBtn-tf').style.background = mode==='tf' ? 'linear-gradient(135deg,#059669,#10b981)' : '#fff';
+  document.getElementById('modeBtn-tf').style.color = mode==='tf' ? '#fff' : '#059669';
+  document.getElementById('modeBtn-tf').style.border = mode==='tf' ? 'none' : '1.5px solid #059669';
+  document.getElementById('modeBtn-fc').style.background = mode==='fc' ? 'linear-gradient(135deg,#f59e0b,#fbbf24)' : '#fff';
+  document.getElementById('modeBtn-fc').style.color = mode==='fc' ? '#fff' : '#b45309';
+  document.getElementById('modeBtn-fc').style.border = mode==='fc' ? 'none' : '1.5px solid #f59e0b';
+  document.getElementById('quizProgressBar').style.display = mode==='fc' ? 'none' : 'flex';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  if(quizMode==='mc') renderMC();
+  else if(quizMode==='tf') renderTF();
+  else renderFC();
+}
+
+function isCorrectMC(q, sel) {
+  if (Array.isArray(q.ans)) {
+    if (!Array.isArray(sel) || sel.length !== q.ans.length) return false;
+    return q.ans.every(a => sel.includes(a)) && sel.every(s => q.ans.includes(s));
+  }
+  return sel === q.ans;
+}
+
+function renderMC() {
+  const st = quizMC_State;
+  const q = QUIZ_MC[st.cur];
+  const prog = document.getElementById('quizProg');
+  prog.innerHTML = QUIZ_MC.map((_,i)=>`<div class="qprog-dot ${i===st.cur?'current':st.answers[i]!==null?'answered':''}" onclick="gotoMC(${i})">${i+1}</div>`).join('');
+  const sub = st.submitted[st.cur];
+  const sel = st.answers[st.cur];
+  const isComplex = q.type==='mc-complex';
+  const multiAns = isComplex && Array.isArray(q.ans);
+  const correct = sub ? isCorrectMC(q, sel) : false;
+  // For multi-answer: sel is an array; for single: sel is a number
+  const selArr = multiAns ? (Array.isArray(sel) ? sel : []) : [];
+  const hasSelection = multiAns ? selArr.length > 0 : sel !== null;
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = `
+    <div class="q-card" style="flex:1;overflow-y:auto;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap;">
+        <div class="qnum" style="margin:0;">SOAL ${st.cur+1} / ${QUIZ_MC.length}</div>
+        <span class="qtype-badge ${isComplex?'badge-complex':'badge-mc'}">${isComplex?'🧩 Multi-Jawaban':'Pilihan Ganda'}</span>
+        ${multiAns?'<span style="background:#f3e8ff;border:1px solid #d8b4fe;color:#7c3aed;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;">☑ Pilih semua jawaban benar</span>':''}
+        ${sub?'<span style="background:#dcfce7;border:1px solid #86efac;color:#15803d;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.04em;">✅ Selesai</span>':''}
+      </div>
+      <div class="qtext">${q.q}</div>
+      <ul class="opts">
+        ${q.opts.map((o,i)=>{
+          let cls='';
+          if(sub){
+            const inAns = Array.isArray(q.ans)?q.ans.includes(i):q.ans===i;
+            const inSel = multiAns?selArr.includes(i):sel===i;
+            if(inAns) cls='correct';
+            else if(inSel && !inAns) cls='wrong';
+          } else {
+            if(multiAns) cls=selArr.includes(i)?'sel':'';
+            else cls=sel===i?'sel':'';
+          }
+          const checked = multiAns?selArr.includes(i):sel===i;
+          const inputType = multiAns?'checkbox':'radio';
+          return `<li class="opt ${cls}" onclick="${sub?'':'selectMC('+i+')'}" style="${sub?'cursor:default':''}">
+            <input type="${inputType}" name="q" ${checked?'checked':''} ${sub?'disabled':''} style="flex-shrink:0;accent-color:var(--acc);cursor:pointer;"> ${o}</li>`;
+        }).join('')}
+      </ul>
+      <div class="qfb ${sub?'on':''} ${sub?(correct?'ok':'bad'):''}">${sub?(correct?'✅ Benar! ':'❌ Kurang tepat. ')+q.fb:''}</div>
+    </div>
+    <div class="quiz-foot" style="flex-shrink:0;">
+      <button class="btn-qnav btn-prev" onclick="gotoMC(${st.cur-1})" ${st.cur===0?'disabled':''}>← Sebelumnya</button>
+      ${!sub?`<button class="btn-qnav btn-next" onclick="submitMC()" style="background:linear-gradient(135deg,#1a237e,#c0392b);" ${!hasSelection?'disabled':''}>Konfirmasi</button>`:''}
+      ${st.cur<QUIZ_MC.length-1?`<button class="btn-qnav btn-next" onclick="gotoMC(${st.cur+1})">Berikutnya →</button>`:''}
+      ${st.cur===QUIZ_MC.length-1?`<button class="btn-qnav btn-submit-q" onclick="showScoreMC()">Lihat Nilai 🏆</button>`:''}
+      <span class="qcounter">${st.answers.filter(x=>x!==null).length}/${QUIZ_MC.length} dijawab</span>
+    </div>
+  `;
+}
+
+function selectMC(i){
+  if(quizMC_State.submitted[quizMC_State.cur]) return;
+  const q = QUIZ_MC[quizMC_State.cur];
+  const multiAns = q.type==='mc-complex' && Array.isArray(q.ans);
+  if(multiAns){
+    let cur = Array.isArray(quizMC_State.answers[quizMC_State.cur]) ? [...quizMC_State.answers[quizMC_State.cur]] : [];
+    const idx = cur.indexOf(i);
+    if(idx>=0) cur.splice(idx,1); else cur.push(i);
+    quizMC_State.answers[quizMC_State.cur] = cur.length>0 ? cur : null;
+  } else {
+    quizMC_State.answers[quizMC_State.cur]=i;
+  }
+  renderMC();
+}
+function submitMC(){
+  if(quizMC_State.answers[quizMC_State.cur]===null) return;
+  quizMC_State.submitted[quizMC_State.cur]=true;
+  const correct=isCorrectMC(QUIZ_MC[quizMC_State.cur], quizMC_State.answers[quizMC_State.cur]);
+  playSound(correct?'sndBenar':'sndSalah');renderMC();
+}
+function gotoMC(i){if(i<0||i>=QUIZ_MC.length) return;quizMC_State.cur=i;renderMC();}
+function showScoreMC(){
+  const score=QUIZ_MC.reduce((acc,q,i)=>acc+(isCorrectMC(q,quizMC_State.answers[i])?1:0),0);
+  const pct=Math.round(score/QUIZ_MC.length*100);
+  document.getElementById('scoreBig').textContent=pct;
+  document.getElementById('scorePct').textContent='/ 100';
+  document.getElementById('scoreSub').textContent=`Kamu menjawab ${score} dari ${QUIZ_MC.length} pertanyaan dengan benar.`;
+  const grade=pct>=90?'🌟 Sangat Baik (A)':pct>=75?'😊 Baik (B)':pct>=60?'😐 Cukup (C)':'💪 Perlu Belajar Lagi (D)';
+  const gc=pct>=90?'#059669':pct>=75?'#2563eb':pct>=60?'#d97706':'#dc2626';
+  document.getElementById('scoreGrade').textContent=grade;document.getElementById('scoreGrade').style.color=gc;
+  document.getElementById('scoreOverlay').classList.add('on');
+  playSound(pct>=75?'sndBerhasil':'sndBenar');
+}
+
+function renderTF() {
+  const st = quizTF_State;
+  const q = QUIZ_TF[st.cur];
+  const prog = document.getElementById('quizProg');
+  prog.innerHTML = QUIZ_TF.map((_,i)=>`<div class="qprog-dot ${i===st.cur?'current':st.answers[i]!==null?'answered':''}" onclick="gotoTF(${i})">${i+1}</div>`).join('');
+  const sub = st.submitted[st.cur];
+  const sel = st.answers[st.cur];
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = `
+    <div class="q-card" style="flex:1;overflow-y:auto;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
+        <div class="qnum" style="margin:0;">SOAL ${st.cur+1} / ${QUIZ_TF.length}</div>
+        <span class="qtype-badge badge-tf">✅ Benar / Salah</span>
+        ${sub?'<span style="background:#dcfce7;border:1px solid #86efac;color:#15803d;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.04em;">✅ Selesai</span>':''}
+      </div>
+      <div class="qtext" style="font-size:13.5px;line-height:1.65;">${q.q}</div>
+      <div style="display:flex;gap:12px;margin:14px 0;">
+        <button onclick="${sub?'':'selectTF(true)'}" style="flex:1;padding:12px;border-radius:10px;border:2.5px solid ${sub?(q.ans===true?'#22c55e':'#94a3b8'):(sel===true?'#22c55e':'#dde3ec')};background:${sub?(q.ans===true?'#f0fdf4':sel===true?'#fff1f2':'#f8fafc'):(sel===true?'#f0fdf4':'#fff')};font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;cursor:${sub?'default':'pointer'};color:${sub?(q.ans===true?'#15803d':'#64748b'):(sel===true?'#15803d':'#475569')};transition:all .2s;">
+          ✅ BENAR
+        </button>
+        <button onclick="${sub?'':'selectTF(false)'}" style="flex:1;padding:12px;border-radius:10px;border:2.5px solid ${sub?(q.ans===false?'#22c55e':'#94a3b8'):(sel===false?'#ef4444':'#dde3ec')};background:${sub?(q.ans===false?'#f0fdf4':sel===false?'#fff1f2':'#f8fafc'):(sel===false?'#fff1f2':'#fff')};font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;cursor:${sub?'default':'pointer'};color:${sub?(q.ans===false?'#15803d':'#64748b'):(sel===false?'#dc2626':'#475569')};transition:all .2s;">
+          ❌ SALAH
+        </button>
+      </div>
+      <div class="qfb ${sub?'on':''} ${sub?(sel===q.ans?'ok':'bad'):''}">${sub?(sel===q.ans?'✅ Benar! ':'❌ Kurang tepat. ')+q.fb:''}</div>
+    </div>
+    <div class="quiz-foot" style="flex-shrink:0;">
+      <button class="btn-qnav btn-prev" onclick="gotoTF(${st.cur-1})" ${st.cur===0?'disabled':''}>← Sebelumnya</button>
+      ${!sub?`<button class="btn-qnav btn-next" onclick="submitTF()" style="background:linear-gradient(135deg,#059669,#10b981);" ${sel===null?'disabled':''}>Konfirmasi</button>`:''}
+      ${st.cur<QUIZ_TF.length-1?`<button class="btn-qnav btn-next" onclick="gotoTF(${st.cur+1})" style="background:linear-gradient(135deg,#059669,#10b981);">Berikutnya →</button>`:''}
+      ${st.cur===QUIZ_TF.length-1?`<button class="btn-qnav btn-submit-q" onclick="showScoreTF()">Lihat Nilai 🏆</button>`:''}
+      <span class="qcounter">${st.answers.filter(x=>x!==null).length}/${QUIZ_TF.length} dijawab</span>
+    </div>
+  `;
+}
+
+function selectTF(v){if(quizTF_State.submitted[quizTF_State.cur]) return;quizTF_State.answers[quizTF_State.cur]=v;renderTF();}
+function submitTF(){
+  if(quizTF_State.answers[quizTF_State.cur]===null) return;
+  quizTF_State.submitted[quizTF_State.cur]=true;
+  const correct=quizTF_State.answers[quizTF_State.cur]===QUIZ_TF[quizTF_State.cur].ans;
+  playSound(correct?'sndBenar':'sndSalah');renderTF();
+}
+function gotoTF(i){if(i<0||i>=QUIZ_TF.length) return;quizTF_State.cur=i;renderTF();}
+function showScoreTF(){
+  const score=QUIZ_TF.reduce((acc,q,i)=>acc+(quizTF_State.answers[i]===q.ans?1:0),0);
+  const pct=Math.round(score/QUIZ_TF.length*100);
+  document.getElementById('scoreBig').textContent=pct;
+  document.getElementById('scorePct').textContent='/ 100';
+  document.getElementById('scoreSub').textContent=`Kamu menjawab ${score} dari ${QUIZ_TF.length} pertanyaan dengan benar.`;
+  const grade=pct>=90?'🌟 Sangat Baik (A)':pct>=75?'😊 Baik (B)':pct>=60?'😐 Cukup (C)':'💪 Perlu Belajar Lagi (D)';
+  const gc=pct>=90?'#059669':pct>=75?'#2563eb':pct>=60?'#d97706':'#dc2626';
+  document.getElementById('scoreGrade').textContent=grade;document.getElementById('scoreGrade').style.color=gc;
+  document.getElementById('scoreOverlay').classList.add('on');
+  playSound(pct>=75?'sndBerhasil':'sndBenar');
+}
+
+function renderFC() {
+  const card = FLASHCARDS[fcState.cur];
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = `
+    <div style="flex:1;display:flex;flex-direction:column;min-height:0;gap:8px;">
+      <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;">${fcState.cur+1} / ${FLASHCARDS.length} — Klik kartu untuk membalik</div>
+      <!-- Flash Card -->
+      <div id="fcCardWrap" onclick="flipFC()" style="flex:1;perspective:1000px;cursor:pointer;min-height:0;">
+        <div id="fcCardInner" style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);transform:${fcState.flipped?'rotateY(180deg)':'rotateY(0deg)'};">
+          <!-- Front -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,${card.color}dd,${card.color}aa);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+            <div style="font-size:13px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;font-family:'JetBrains Mono',monospace;">❓ Pertanyaan</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,18px);font-weight:800;color:#fff;text-align:center;line-height:1.5;text-shadow:0 2px 8px rgba(0,0,0,.2);">${card.front}</div>
+            <div style="margin-top:20px;font-size:11px;color:rgba(255,255,255,0.55);">👆 Ketuk untuk melihat jawaban</div>
+          </div>
+          <!-- Back -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:#fff;border:2.5px solid ${card.color};border-radius:16px;display:flex;flex-direction:column;padding:20px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+            <div style="font-size:11px;color:${card.color};text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-weight:700;">✅ Jawaban</div>
+            <div style="font-size:clamp(11.5px,1.4vw,14px);color:#1e293b;line-height:1.75;white-space:pre-line;font-weight:600;">${card.back}</div>
+          </div>
+        </div>
+      </div>
+      <!-- Navigation -->
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+        <button onclick="prevFC()" style="padding:8px 16px;border-radius:8px;background:var(--surf2);border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;" ${fcState.cur===0?'disabled':''}>← Sebelumnya</button>
+        <div style="flex:1;display:flex;gap:4px;justify-content:center;flex-wrap:wrap;">
+          ${FLASHCARDS.map((_,i)=>`<div onclick="gotoFC(${i})" style="width:10px;height:10px;border-radius:50%;background:${i===fcState.cur?card.color:'#dde3ec'};cursor:pointer;transition:background .2s;"></div>`).join('')}
+        </div>
+        <button onclick="nextFC()" style="padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,${card.color}cc,${card.color});color:#fff;border:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;" ${fcState.cur===FLASHCARDS.length-1?'disabled':''}>Berikutnya →</button>
+      </div>
+    </div>
+  `;
+}
+
+function flipFC(){fcState.flipped=!fcState.flipped;if(fcState.flipped) fcState.viewed.add(fcState.cur);renderFC();}
+function prevFC(){if(fcState.cur>0){fcState.cur--;fcState.flipped=false;renderFC();}}
+function nextFC(){if(fcState.cur<FLASHCARDS.length-1){fcState.cur++;fcState.flipped=false;renderFC();}}
+function gotoFC(i){fcState.cur=i;fcState.flipped=false;renderFC();}
+function showScoreFC(){
+  const viewed=fcState.viewed.size;const total=FLASHCARDS.length;
+  const pct=Math.round(viewed/total*100);
+  document.getElementById('scoreBig').textContent=pct;
+  document.getElementById('scorePct').textContent='/ 100';
+  document.getElementById('scoreSub').textContent=`Kamu telah mempelajari ${viewed} dari ${total} kartu flash.`;
+  const grade=pct>=100?'🌟 Semua Kartu Dipelajari (A)':pct>=75?'😊 Hampir Selesai (B)':pct>=50?'😐 Setengah Jalan (C)':'💪 Lanjutkan Belajar (D)';
+  const gc=pct>=100?'#059669':pct>=75?'#2563eb':pct>=50?'#d97706':'#dc2626';
+  document.getElementById('scoreGrade').textContent=grade;document.getElementById('scoreGrade').style.color=gc;
+  document.getElementById('scoreOverlay').classList.add('on');
+  playSound(pct>=75?'sndBerhasil':'sndBenar');
+}
+
+function resetKuis(){
+  quizMC_State={cur:0,answers:Array(QUIZ_MC.length).fill(null),submitted:Array(QUIZ_MC.length).fill(false)};
+  quizTF_State={cur:0,answers:Array(QUIZ_TF.length).fill(null),submitted:Array(QUIZ_TF.length).fill(false)};
+  fcState={cur:0,flipped:false,viewed:new Set()};
+  closeScore();renderQuiz();
+}
+
+// Add badge-complex style
+const complexStyle=document.createElement('style');
+complexStyle.textContent='.badge-complex{background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;padding:3px 8px;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:.04em;}';
+document.head.appendChild(complexStyle);
+
+// Init
+setQuizMode('mc');
+</script>
+
+<!-- Score Overlay Script (shared) -->
+<script>
+function closeScore(){document.getElementById('scoreOverlay').classList.remove('on');}
+</script>
+
+<!-- NAV & PAGE SWITCH -->
+<script>
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('mainNav').classList.remove('open');
+}
+</script>
+
+</div><!-- #app -->
+</body>
+</html>
