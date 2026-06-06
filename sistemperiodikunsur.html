@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Lab Maya Kimia – Sistem Periodik Unsur</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4f8;--surf:#ffffff;--surf2:#f8fafc;
+  --border:#dde3ec;--border2:#c5cfe0;
+  --acc:#7c3aed;--acc2:#8b5cf6;--acc3:#6d28d9;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --yellow:#d97706;--red:#dc2626;--green:#059669;--teal:#0d9488;
+  --h:56px;--fbase:14px;
+}
+@media(max-width:768px){:root{--fbase:13px;--h:46px;}}
+@media(min-width:1200px){:root{--fbase:15px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(124,58,237,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 50% at 90% 100%,rgba(124,58,237,0.05) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(148,163,184,0.08) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(148,163,184,0.08) 40px);
+}
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#0f172a,#4c1d95);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;padding:0 14px;gap:12px;
+  box-shadow:0 2px 10px rgba(15,23,42,0.45);
+}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:38px;height:38px;border-radius:8px;background:#ffffff10;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.1;}
+.logo-sub{font-size:9.5px;color:rgba(255,255,255,0.75);}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:500;padding:0 13px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:2px;background:#c4b5fd;transform:scaleX(0);transition:transform .2s;border-radius:2px 2px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.95);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;}
+#menuToggle svg{display:block;}
+@media(max-width:640px){
+  header{flex-wrap:nowrap;padding:0 10px;}
+  .logo-text{font-size:15px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;
+    background:linear-gradient(180deg,#0f172a,#4c1d95);border-bottom:1px solid rgba(255,255,255,.15);
+    box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:52px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.08);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .22s ease;}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.hero{background:linear-gradient(135deg,#0f172a,#7c3aed);border:none;border-radius:9px;padding:10px 16px;margin-bottom:8px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 4px 18px rgba(124,58,237,.25);}
+.hero::after{content:'⚗️';position:absolute;right:12px;top:-8px;font-size:60px;opacity:.1;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,18px);font-weight:700;color:#fff;line-height:1.2;}
+.h-title span{color:#ddd6fe;}
+.h-desc{font-size:11px;color:#ddd6fe;line-height:1.5;max-width:480px;}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:7px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 10px rgba(30,41,59,0.09);}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.ci{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ci.b{background:rgba(124,58,237,.12);}
+.ci.y{background:rgba(217,119,6,.1);}
+.ci.g{background:rgba(5,150,105,.1);}
+.ci.r{background:rgba(220,38,38,.1);}
+.ci.t{background:rgba(13,148,136,.1);}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,15px);font-weight:700;color:var(--acc3);}
+.card p{font-size:clamp(12px,1.3vw,14px);line-height:1.7;color:var(--text2);margin-bottom:6px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1.1vw,12px);font-weight:600;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(12px,1.3vw,14px);color:var(--text2);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:700;font-size:15px;margin-top:-1px;}
+/* PERIODIC TABLE */
+.pt-wrap{overflow-x:auto;padding-bottom:8px;}
+.pt-grid{display:grid;grid-template-columns:repeat(18,minmax(36px,1fr));gap:2px;min-width:680px;}
+.el{border-radius:5px;padding:2px 2px 3px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .2s;border:1px solid transparent;position:relative;min-height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.el:hover{transform:scale(1.13);box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:5;}
+.el .an{font-family:'JetBrains Mono',monospace;font-size:7px;opacity:.75;line-height:1;}
+.el .sym{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;line-height:1.1;}
+.el .nm{font-size:6.5px;line-height:1;opacity:.8;}
+.el .ms{font-size:6px;opacity:.65;line-height:1;}
+/* Category colors */
+.el.alkali{background:#fde8d8;border-color:#f97316;color:#7c2d12;}
+.el.alkali-earth{background:#fef9c3;border-color:#eab308;color:#713f12;}
+.el.transition{background:#dbeafe;border-color:#3b82f6;color:#1e3a8a;}
+.el.post-trans{background:#d1fae5;border-color:#10b981;color:#064e3b;}
+.el.metalloid{background:#ede9fe;border-color:#8b5cf6;color:#4c1d95;}
+.el.nonmetal{background:#fce7f3;border-color:#ec4899;color:#831843;}
+.el.halogen{background:#ffedd5;border-color:#f97316;color:#7c2d12;}
+.el.noble{background:#e0f2fe;border-color:#0ea5e9;color:#0c4a6e;}
+.el.lanthanide{background:#f3e8ff;border-color:#a855f7;color:#581c87;}
+.el.actinide{background:#fce7f3;border-color:#db2777;color:#831843;}
+.el.unknown{background:#f1f5f9;border-color:#94a3b8;color:#475569;}
+.el.hydrogen{background:#fef2f2;border-color:#ef4444;color:#7f1d1d;}
+/* Legend */
+.pt-legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2);}
+.leg-dot{width:12px;height:12px;border-radius:3px;border:1px solid;}
+/* ELEMENT MODAL */
+.el-modal-overlay{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.6);backdrop-filter:blur(6px);}
+.el-modal-overlay.on{display:flex;}
+.el-modal{background:#fff;border-radius:16px;padding:28px 32px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(30,41,59,.25);animation:fu .22s ease;position:relative;}
+.el-modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1;}
+.el-modal-close:hover{color:var(--text);}
+.el-modal-sym{font-family:'Space Grotesk',sans-serif;font-size:56px;font-weight:700;line-height:1;margin-bottom:4px;}
+.el-modal-name{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.el-modal-cat{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:14px;}
+.el-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.el-info-item{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+.el-info-label{font-size:9.5px;color:var(--text3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+.el-info-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text);}
+.el-desc{font-size:12.5px;color:var(--text2);line-height:1.6;}
+/* SIMULASI */
+.sim-panel{display:flex;gap:12px;height:100%;min-height:0;}
+.sim-controls{width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
+.sim-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}
+@media(max-width:640px){
+  .sim-panel{flex-direction:column;height:auto;}
+  .sim-controls{width:100%;}
+}
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1px solid var(--border);border-radius:9px;margin-bottom:7px;flex-shrink:0;}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--surf2);font-size:9.5px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#ede9fe;}
+.qprog-dot.current{background:var(--acc);color:#fff;border-color:var(--acc);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:14px;flex:1;display:flex;flex-direction:column;}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:7px;letter-spacing:.04em;}
+.badge-mc{background:#ede9fe;border:1px solid #c4b5fd;color:#6d28d9;}
+.badge-tf{background:#ede9fe;border:1px solid #a78bfa;color:#4c1d95;}
+.qtext{font-size:13px;color:var(--text);line-height:1.55;font-weight:500;margin-bottom:10px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);}
+.opt:hover{border-color:var(--acc2);background:#ede9fe;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#ede9fe;color:var(--acc3);}
+.opt.correct{background:#ede9fe;border-color:#8b5cf6;color:#4c1d95;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:8px;padding:7px 10px;border-radius:6px;font-size:11.5px;display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#ede9fe;color:#4c1d95;border:1px solid #c4b5fd;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:6px 14px;border-radius:6px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);background:#ede9fe;}
+.btn-next{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.25);}
+.btn-next:hover{box-shadow:0 4px 14px rgba(124,58,237,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;}
+.btn-reset-q{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset-q:hover{border-color:var(--acc);color:var(--acc);background:#ede9fe;}
+.qcounter{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text3);}
+/* SCORE */
+.score-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(8px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:32px 44px;text-align:center;box-shadow:0 20px 60px rgba(30,41,59,.18);animation:fu .28s ease;min-width:280px;}
+.score-big{font-family:'Space Grotesk',sans-serif;font-size:68px;font-weight:700;color:var(--acc);line-height:1;}
+/* LOADING */
+#loadScreen{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0f172a 0%,#4c1d95 50%,#7c3aed 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;transition:opacity .6s ease;}
+#loadScreen.hide{opacity:0;pointer-events:none;}
+.load-logo{width:clamp(70px,9vw,100px);margin-bottom:16px;}
+.load-img-wrap{position:relative;margin-bottom:20px;display:flex;align-items:center;justify-content:center;}
+.load-logo-img{
+  width:clamp(240px,32vw,400px);
+  max-height:clamp(160px,22vw,270px);
+  object-fit:contain;
+  border-radius:16px;
+  filter:drop-shadow(0 0 28px rgba(167,139,250,0.55)) saturate(1.25) contrast(1.08) brightness(1.05);
+  animation:imgFloat 3.5s ease-in-out infinite, imgFadeIn .8s ease forwards;
+  position:relative;z-index:1;
+}
+.load-img-glow{
+  position:absolute;inset:-18px;
+  background:radial-gradient(ellipse 70% 55% at 50% 60%, rgba(139,92,246,0.35) 0%, transparent 70%);
+  filter:blur(18px);
+  border-radius:50%;
+  z-index:0;
+  animation:glowPulse 3.5s ease-in-out infinite;
+}
+@keyframes imgFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
+}
+@keyframes imgFadeIn{
+  from{opacity:0;transform:translateY(14px) scale(0.96);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes glowPulse{
+  0%,100%{opacity:0.7;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.08);}
+}
+.load-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(18px,2.5vw,28px);font-weight:800;color:#fff;text-align:center;margin-bottom:4px;}
+.load-sub{font-family:'JetBrains Mono',monospace;font-size:clamp(10px,1.1vw,12px);color:#c4b5fd;letter-spacing:.15em;text-transform:uppercase;text-align:center;margin-bottom:28px;}
+.load-bar-wrap{width:clamp(220px,28vw,340px);height:6px;background:rgba(255,255,255,.15);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.load-bar-slide{height:100%;width:0%;background:linear-gradient(90deg,#c4b5fd,#a78bfa,#8b5cf6);border-radius:6px;transition:width .1s linear;}
+.load-percent{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.4vw,15px);color:#fff;font-weight:700;margin-bottom:14px;text-align:center;}
+.load-status{font-size:clamp(11px,1.1vw,12px);color:#ddd6fe;font-family:'Inter',sans-serif;margin-bottom:32px;min-height:16px;text-align:center;}
+#btnMulaiLab{display:none;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 28px;font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(124,58,237,.5);animation:btnPop .4s cubic-bezier(.34,1.56,.64,1) forwards;transition:transform .18s,box-shadow .18s;}
+#btnMulaiLab:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 28px rgba(124,58,237,.6);}
+@keyframes btnPop{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+/* LKS WORKSHEET */
+.lks-section{margin-bottom:14px;}
+.lks-section h3{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid #ede9fe;}
+.lks-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.lks-label{font-size:12px;color:var(--text2);white-space:nowrap;min-width:120px;}
+.lks-input{flex:1;border:none;border-bottom:1.5px solid var(--border2);background:transparent;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);padding:3px 4px;outline:none;transition:border-color .2s;}
+.lks-input:focus{border-color:var(--acc);}
+.lks-textarea{width:100%;border:1px solid var(--border2);border-radius:6px;background:var(--surf2);font-family:'Inter',sans-serif;font-size:12px;color:var(--text);padding:8px 10px;outline:none;resize:vertical;min-height:60px;transition:border-color .2s;}
+.lks-textarea:focus{border-color:var(--acc);}
+.lks-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.lks-table th{background:#ede9fe;color:#4c1d95;padding:5px 8px;text-align:left;font-weight:600;font-size:10.5px;letter-spacing:.04em;}
+.lks-table td{border:1px solid var(--border);padding:4px 6px;vertical-align:top;}
+.lks-table td input{width:100%;border:none;background:transparent;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);outline:none;}
+.btn-print{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .17s;}
+.btn-print:hover{box-shadow:0 4px 14px rgba(124,58,237,.4);}
+.btn-reset-lks{background:var(--surf2);border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:8px 16px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .17s;}
+.btn-reset-lks:hover{border-color:var(--acc);color:var(--acc);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+@media print{
+  #loadScreen,header,nav,#page-tujuan,#page-teori,#page-alat,#page-prosedur,#page-simulasi,#page-evaluasi,#page-tabel{display:none!important;}
+  #page-lks{display:block!important;overflow:visible!important;}
+  #page-lks .scroll{overflow:visible!important;}
+  body{overflow:visible!important;height:auto!important;}
+  .btn-print,.btn-reset-lks{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <!-- Sistem Periodik Image -->
+  <div class="load-img-wrap">
+    <img src="https://85meydiaafrina.github.io/sistemperiodik/sistemperiodik.png" alt="Sistem Periodik Unsur" class="load-logo-img">
+    <div class="load-img-glow"></div>
+  </div>
+
+  <div class="load-title">Lab Maya Kimia</div>
+  <div class="load-sub">Sistem Periodik Unsur</div>
+  <div class="load-bar-wrap"><div class="load-bar-slide" id="loadBar"></div></div>
+  <div class="load-percent" id="loadPercent">0%</div>
+  <div class="load-status" id="loadStatus">Memuat laboratorium virtual…</div>
+  <button id="btnMulaiLab" onclick="startLab()">Mulai Praktikum ⚗️</button>
+</div>
+
+<script>
+(function(){
+  const bar=document.getElementById('loadBar'),pct=document.getElementById('loadPercent'),status=document.getElementById('loadStatus');
+  let cur=0;const total=3000,step=20,inc=100/(total/step);
+  const msgs=['Memuat tabel periodik…','Memuat data unsur…','Menyiapkan simulasi…','Memuat soal evaluasi…','Laboratorium siap!'];
+  let mi=0;
+  const iv=setInterval(()=>{
+    cur=Math.min(100,cur+inc);const v=Math.floor(cur);
+    bar.style.width=v+'%';pct.textContent=v+'%';
+    if(v>=mi*25&&mi<msgs.length){status.textContent=msgs[mi];mi++;}
+    if(cur>=100){clearInterval(iv);pct.textContent='100%';status.textContent='✅ Laboratorium siap digunakan!';document.getElementById('btnMulaiLab').style.display='block';}
+  },step);
+})();
+function startLab(){
+  const sfx=new Audio('https://denicendrianto41.github.io/tring.wav');sfx.play().catch(()=>{});
+  const ls=document.getElementById('loadScreen');ls.classList.add('hide');setTimeout(()=>{ls.style.display='none';},650);
+}
+</script>
+
+<audio id="clickSfx" src="https://denicendrianto41.github.io/jump.wav" preload="auto"></audio>
+<audio id="sndBenar" src="https://denicendrianto41.github.io/benar.wav" preload="auto"></audio>
+<audio id="sndSalah" src="https://denicendrianto41.github.io/salah.wav" preload="auto"></audio>
+<audio id="sndBerhasil" src="https://denicendrianto41.github.io/berhasil.wav" preload="auto"></audio>
+<script>
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.nb,.el,select,input[type="range"]');
+  if(!el||el.id==='btnMulaiLab')return;
+  const sfx=document.getElementById('clickSfx');
+  if(sfx){sfx.currentTime=0;sfx.play().catch(()=>{});}
+});
+</script>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <!-- Beaker logo icon in header -->
+      <svg viewBox="0 0 40 40" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 7 L11 22 Q11 32 20 32 Q29 32 29 22 L29 7 Z" fill="none" stroke="#c4b5fd" stroke-width="2.2"/>
+        <path d="M9 7 L31 7 L33 4 L7 4 Z" fill="#c4b5fd" opacity="0.9"/>
+        <clipPath id="hClip"><path d="M13 9 L13 22 Q13 30 20 30 Q27 30 27 22 L27 9 Z"/></clipPath>
+        <g clip-path="url(#hClip)">
+          <rect x="12" y="20" width="16" height="12" fill="#8b5cf6" opacity="0.85" rx="1"/>
+          <circle cx="17" cy="24" r="1.2" fill="#ddd6fe" opacity="0.8"><animate attributeName="cy" values="24;19;24" dur="1.8s" repeatCount="indefinite"/></circle>
+          <circle cx="22" cy="26" r="0.9" fill="#ede9fe" opacity="0.6"><animate attributeName="cy" values="26;20;26" dur="2.2s" repeatCount="indefinite"/></circle>
+        </g>
+        <line x1="12" y1="16" x2="15" y2="16" stroke="#c4b5fd" stroke-width="1.2" opacity="0.7"/>
+        <line x1="12" y1="21" x2="15" y2="21" stroke="#c4b5fd" stroke-width="1.2" opacity="0.7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Lab Maya Kimia</div>
+      <div class="logo-sub">Sistem Periodik Unsur</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="toggleNav()" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line id="mL1" x1="3" y1="6" x2="21" y2="6"/><line id="mL2" x1="3" y1="12" x2="21" y2="12"/><line id="mL3" x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <nav id="mainNav" style="margin-left:0;justify-content:flex-end;">
+    <button class="nb active" onclick="show('tujuan',this);closeNav()">🎯 Tujuan</button>
+    <button class="nb" onclick="show('teori',this);closeNav()">📖 Teori</button>
+    <button class="nb" onclick="show('alat',this);closeNav()">🧰 Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('tabel',this);closeNav()">🔬 Tabel Periodik</button>
+    <button class="nb" onclick="show('prosedur',this);closeNav()">📋 Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this);closeNav()">⚗️ Simulasi</button>
+    <button class="nb" onclick="show('lks',this);closeNav()">📝 LKS</button>
+    <button class="nb" onclick="show('evaluasi',this);closeNav()">🧪 Evaluasi</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ===== TUJUAN ===== -->
+<div id="page-tujuan" class="page active">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 14px;">
+    <div style="background:linear-gradient(135deg,#0f172a,#7c3aed);border-radius:9px;padding:12px 18px;margin-bottom:8px;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 4px 18px rgba(124,58,237,.25);">
+      <div style="position:absolute;right:14px;top:-10px;font-size:64px;opacity:.08;pointer-events:none;">🎯</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;margin-bottom:2px;">Pembelajaran</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(14px,2vw,19px);font-weight:700;color:#fff;line-height:1.2;">Tujuan <span style="color:#ddd6fe;">Praktikum</span></div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:8px;overflow:hidden;">
+      <!-- Tujuan Pembelajaran -->
+      <div style="grid-column:span 2;background:#fff;border:2px solid #a78bfa;border-radius:10px;padding:12px 16px;box-shadow:0 2px 10px rgba(124,58,237,.1);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#7c3aed,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📚</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.5vw,14px);font-weight:700;color:#4c1d95;">Tujuan Pembelajaran</div>
+        </div>
+        <p style="font-size:clamp(12px,1.3vw,13.5px);color:#374151;line-height:1.65;background:#f5f3ff;border-left:3px solid #7c3aed;padding:8px 12px;border-radius:0 6px 6px 0;">Melalui kegiatan praktikum virtual Sistem Periodik Unsur, peserta didik mampu <strong style="color:#4c1d95;">menganalisis dan menjelaskan kecenderungan sifat periodik unsur</strong> (jari-jari atom, energi ionisasi, dan keelektronegatifan) berdasarkan letak unsur dalam tabel periodik, serta mengidentifikasi golongan dan periode suatu unsur berdasarkan konfigurasi elektronnya secara mandiri dan bertanggung jawab.</p>
+      </div>
+      <!-- Tujuan Percobaan -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:12px 16px;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:26px;height:26px;border-radius:6px;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🎯</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,13.5px);font-weight:700;color:#6d28d9;">Tujuan Percobaan</div>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#7c3aed;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Memahami susunan unsur dalam tabel periodik berdasarkan nomor atom</li>
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#7c3aed;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Menjelaskan sifat periodik unsur: jari-jari atom, energi ionisasi, keelektronegatifan</li>
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#7c3aed;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Mengidentifikasi golongan dan periode unsur berdasarkan konfigurasi elektron</li>
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#7c3aed;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Membedakan logam, nonlogam, dan metaloid berdasarkan sifatnya</li>
+        </ul>
+      </div>
+      <!-- Hasil Belajar -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:12px 16px;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:26px;height:26px;border-radius:6px;background:rgba(5,150,105,.1);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🏆</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,13.5px);font-weight:700;color:#047857;">Hasil Belajar yang Diharapkan</div>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#059669;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Menyebutkan penemu dan sejarah perkembangan sistem periodik unsur</li>
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#059669;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Menjelaskan dasar pengelompokan unsur dalam tabel periodik modern</li>
+          <li style="display:flex;align-items:flex-start;gap:7px;font-size:clamp(11px,1.2vw,12.5px);color:#475569;line-height:1.55;"><span style="color:#059669;font-weight:700;font-size:14px;margin-top:-2px;flex-shrink:0;">›</span>Menganalisis kecenderungan sifat unsur dalam satu golongan dan satu periode</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px 10px;">
+    <!-- Header compact -->
+    <div style="background:linear-gradient(135deg,#0f172a,#7c3aed);border-radius:9px;padding:8px 14px;margin-bottom:8px;flex-shrink:0;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;box-shadow:0 3px 14px rgba(124,58,237,.25);">
+      <div style="position:absolute;right:10px;top:-8px;font-size:54px;opacity:.09;pointer-events:none;">📚</div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;">Dasar Teori</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,17px);font-weight:700;color:#fff;">Sistem Periodik <span style="color:#ddd6fe;">Unsur</span></div>
+      </div>
+    </div>
+    <!-- 3-column layout for theory cards -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;overflow:hidden;min-height:0;">
+      <!-- Card 1: Sejarah -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:11px 13px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-shrink:0;">
+          <div style="width:24px;height:24px;border-radius:6px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">📜</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.3vw,13px);font-weight:700;color:#6d28d9;">Sejarah Perkembangan</div>
+        </div>
+        <!-- Timeline visual -->
+        <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;gap:7px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#d97706);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">1829</div>
+              <div style="width:2px;height:12px;background:#e5e7eb;"></div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:#374151;">Döbereiner</div>
+              <div style="font-size:clamp(9px,1vw,10.5px);color:#6b7280;line-height:1.4;">Hukum Triad — mengelompokkan unsur berpola massa</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#34d399,#059669);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">1864</div>
+              <div style="width:2px;height:12px;background:#e5e7eb;"></div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:#374151;">Newlands</div>
+              <div style="font-size:clamp(9px,1vw,10.5px);color:#6b7280;line-height:1.4;">Hukum Oktaf — setiap unsur ke-8 mirip sifatnya</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">1869</div>
+              <div style="width:2px;height:12px;background:#e5e7eb;"></div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:#374151;">Mendeleev</div>
+              <div style="font-size:clamp(9px,1vw,10.5px);color:#6b7280;line-height:1.4;">Tabel periodik berdasarkan kenaikan massa atom</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">1913</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:clamp(10px,1.1vw,11.5px);font-weight:700;color:#374151;">Moseley ⭐</div>
+              <div style="font-size:clamp(9px,1vw,10.5px);color:#6b7280;line-height:1.4;">Tabel periodik modern berdasarkan <strong style="color:#6d28d9;">nomor atom</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2: Struktur Tabel -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:11px 13px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-shrink:0;">
+          <div style="width:24px;height:24px;border-radius:6px;background:rgba(13,148,136,.1);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🗂️</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.3vw,13px);font-weight:700;color:#0d9488;">Struktur Tabel Periodik</div>
+        </div>
+        <!-- Visual grid mini -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <!-- Period vs Group visual -->
+          <div style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:1px solid #5eead4;border-radius:8px;padding:7px 10px;">
+            <div style="font-size:clamp(9.5px,1vw,11px);font-weight:700;color:#0f766e;margin-bottom:4px;">🗂 18 Golongan × 7 Periode</div>
+            <div style="display:flex;gap:6px;">
+              <div style="flex:1;background:#fff;border-radius:5px;padding:5px 7px;border:1px solid #99f6e4;">
+                <div style="font-size:9px;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Golongan</div>
+                <div style="font-size:clamp(9px,1vw,10.5px);color:#374151;margin-top:2px;line-height:1.4;">Kolom vertikal → jumlah <strong>elektron valensi</strong> sama</div>
+              </div>
+              <div style="flex:1;background:#fff;border-radius:5px;padding:5px 7px;border:1px solid #99f6e4;">
+                <div style="font-size:9px;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Periode</div>
+                <div style="font-size:clamp(9px,1vw,10.5px);color:#374151;margin-top:2px;line-height:1.4;">Baris horizontal → jumlah <strong>kulit elektron</strong> sama</div>
+              </div>
+            </div>
+          </div>
+          <!-- Hukum Periodik -->
+          <div style="background:#faf5ff;border:1px solid #c4b5fd;border-radius:8px;padding:7px 10px;">
+            <div style="font-size:9px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">⚖️ Hukum Periodik Moseley</div>
+            <div style="font-size:clamp(9px,1vw,10.5px);color:#4c1d95;font-style:italic;line-height:1.45;">"Sifat-sifat unsur merupakan fungsi periodik dari <strong>nomor atomnya</strong>"</div>
+          </div>
+          <!-- Kategori unsur -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#fde8d8;border:1px solid #f97316;flex-shrink:0;"></div>Logam Alkali</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#dbeafe;border:1px solid #3b82f6;flex-shrink:0;"></div>Logam Transisi</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#ede9fe;border:1px solid #8b5cf6;flex-shrink:0;"></div>Metaloid</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#fce7f3;border:1px solid #ec4899;flex-shrink:0;"></div>Nonlogam</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#ffedd5;border:1px solid #f97316;flex-shrink:0;"></div>Halogen</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:clamp(9px,1vw,10.5px);color:#374151;"><div style="width:10px;height:10px;border-radius:2px;background:#e0f2fe;border:1px solid #0ea5e9;flex-shrink:0;"></div>Gas Mulia</div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3: Sifat Periodik -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:11px 13px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-shrink:0;">
+          <div style="width:24px;height:24px;border-radius:6px;background:rgba(220,38,38,.08);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">📈</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(11px,1.3vw,13px);font-weight:700;color:#b91c1c;">Sifat Periodik Unsur</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+          <!-- Jari-jari -->
+          <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:6px 9px;">
+            <div style="font-size:9.5px;font-weight:700;color:#dc2626;margin-bottom:3px;">⬤ Jari-Jari Atom</div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Periode →<br><span style="color:#dc2626;font-weight:600;">Mengecil</span> (muatan inti ↑)</div>
+              <div style="width:1px;background:#fecaca;"></div>
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Golongan ↓<br><span style="color:#dc2626;font-weight:600;">Membesar</span> (kulit ↑)</div>
+            </div>
+          </div>
+          <!-- Energi Ionisasi -->
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:6px 9px;">
+            <div style="font-size:9.5px;font-weight:700;color:#d97706;margin-bottom:3px;">⚡ Energi Ionisasi</div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Periode →<br><span style="color:#d97706;font-weight:600;">Bertambah</span></div>
+              <div style="width:1px;background:#fde68a;"></div>
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Golongan ↓<br><span style="color:#d97706;font-weight:600;">Berkurang</span></div>
+            </div>
+          </div>
+          <!-- Keelektronegatifan -->
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:6px 9px;">
+            <div style="font-size:9.5px;font-weight:700;color:#059669;margin-bottom:3px;">🧲 Keelektronegatifan</div>
+            <div style="display:flex;gap:5px;">
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Periode →<br><span style="color:#059669;font-weight:600;">Bertambah</span></div>
+              <div style="width:1px;background:#bbf7d0;"></div>
+              <div style="flex:1;font-size:clamp(8.5px,0.95vw,10px);color:#374151;line-height:1.4;">Golongan ↓<br><span style="color:#059669;font-weight:600;">Berkurang</span></div>
+            </div>
+          </div>
+          <!-- Fun fact -->
+          <div style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:7px;padding:6px 9px;margin-top:auto;">
+            <div style="font-size:clamp(9px,1vw,10.5px);color:#4c1d95;line-height:1.4;"><strong>💡</strong> Fluor (F) = unsur paling elektronegatif (3,98 skala Pauling). Fransium (Fr) = jari-jari atom terbesar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALAT & BAHAN ===== -->
+<style>
+.ab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;}
+.ab-item{background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;transition:border-color .2s,box-shadow .2s;cursor:default;}
+.ab-item:hover{border-color:#a78bfa;box-shadow:0 3px 12px rgba(124,58,237,.12);}
+.ab-img{width:56px;height:56px;object-fit:contain;border-radius:6px;}
+.ab-name{font-size:clamp(9px,1.1vw,11px);font-weight:700;color:#374151;line-height:1.3;}
+.ab-desc{font-size:clamp(8px,0.9vw,9.5px);color:#9ca3af;line-height:1.3;}
+.ab-badge{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.03em;}
+.badge-alat{background:#dbeafe;color:#1e40af;}
+.badge-bahan{background:#dcfce7;color:#166534;}
+</style>
+<div id="page-alat" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px 10px;">
+    <div style="background:linear-gradient(135deg,#0f172a,#7c3aed);border-radius:9px;padding:8px 14px;margin-bottom:8px;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 3px 14px rgba(124,58,237,.25);">
+      <div style="position:absolute;right:10px;top:-8px;font-size:54px;opacity:.09;">🧰</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;">Perlengkapan</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.8vw,17px);font-weight:700;color:#fff;">Alat &amp; <span style="color:#ddd6fe;">Bahan</span></div>
+    </div>
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow:hidden;min-height:0;">
+      <!-- ALAT -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-shrink:0;">
+          <div style="width:24px;height:24px;border-radius:6px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🔧</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,14px);font-weight:700;color:#1e40af;">Alat</div>
+        </div>
+        <div class="ab-grid" style="overflow-y:auto;padding-bottom:4px;">
+
+          <!-- Laptop -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Screen body -->
+              <rect x="8" y="4" width="64" height="42" rx="4" fill="#2d3748" stroke="#1a202c" stroke-width="1.5"/>
+              <!-- Screen bezel inner -->
+              <rect x="11" y="7" width="58" height="35" rx="2" fill="#1a202c"/>
+              <!-- Screen display -->
+              <rect x="13" y="9" width="54" height="31" rx="1.5" fill="#1e3a5f"/>
+              <!-- Screen content lines -->
+              <rect x="16" y="13" width="28" height="2.5" rx="1" fill="#60a5fa" opacity="0.8"/>
+              <rect x="16" y="18" width="20" height="2" rx="1" fill="#93c5fd" opacity="0.5"/>
+              <rect x="16" y="22" width="34" height="2" rx="1" fill="#93c5fd" opacity="0.4"/>
+              <rect x="16" y="26" width="25" height="2" rx="1" fill="#93c5fd" opacity="0.3"/>
+              <!-- Code-like lines right side -->
+              <rect x="48" y="13" width="16" height="2" rx="1" fill="#86efac" opacity="0.6"/>
+              <rect x="48" y="18" width="10" height="2" rx="1" fill="#fde68a" opacity="0.5"/>
+              <rect x="48" y="22" width="14" height="2" rx="1" fill="#f9a8d4" opacity="0.4"/>
+              <!-- Camera dot -->
+              <circle cx="40" cy="8.5" r="1.2" fill="#4b5563"/>
+              <!-- Keyboard base -->
+              <rect x="4" y="46" width="72" height="14" rx="3" fill="#374151" stroke="#1f2937" stroke-width="1"/>
+              <!-- Trackpad -->
+              <rect x="28" y="50" width="24" height="7" rx="2" fill="#4b5563" stroke="#6b7280" stroke-width="0.8"/>
+              <!-- Keyboard keys hint -->
+              <rect x="8" y="48" width="5" height="3" rx="0.8" fill="#4b5563"/>
+              <rect x="15" y="48" width="5" height="3" rx="0.8" fill="#4b5563"/>
+              <rect x="22" y="48" width="5" height="3" rx="0.8" fill="#4b5563"/>
+              <rect x="58" y="48" width="5" height="3" rx="0.8" fill="#4b5563"/>
+              <rect x="65" y="48" width="5" height="3" rx="0.8" fill="#4b5563"/>
+            </svg>
+            <div class="ab-name">Laptop / PC</div>
+            <div class="ab-desc">Menjalankan lab virtual</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+          <!-- Web Browser -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Browser window frame -->
+              <rect x="4" y="4" width="72" height="56" rx="5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+              <!-- Title bar -->
+              <rect x="4" y="4" width="72" height="18" rx="5" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
+              <rect x="4" y="14" width="72" height="8" fill="#e2e8f0"/>
+              <!-- Traffic lights -->
+              <circle cx="16" cy="13" r="4" fill="#fc5c65"/>
+              <circle cx="28" cy="13" r="4" fill="#fd9644"/>
+              <circle cx="40" cy="13" r="4" fill="#26de81"/>
+              <!-- URL bar -->
+              <rect x="50" y="8.5" width="22" height="9" rx="4" fill="white" stroke="#cbd5e1" stroke-width="1"/>
+              <text x="52" y="15.5" font-size="5.5" fill="#6b7280" font-family="monospace">🌐 url...</text>
+              <!-- Page content area -->
+              <!-- Nav bar simulation -->
+              <rect x="8" y="26" width="64" height="7" rx="2" fill="#3b82f6"/>
+              <rect x="10" y="28.5" width="12" height="2" rx="1" fill="white" opacity="0.7"/>
+              <rect x="26" y="28.5" width="8" height="2" rx="1" fill="white" opacity="0.6"/>
+              <rect x="38" y="28.5" width="8" height="2" rx="1" fill="white" opacity="0.6"/>
+              <!-- Content blocks -->
+              <rect x="8" y="36" width="64" height="4" rx="1" fill="#dbeafe"/>
+              <rect x="8" y="42" width="42" height="3" rx="1" fill="#e2e8f0"/>
+              <rect x="8" y="47" width="52" height="3" rx="1" fill="#e2e8f0"/>
+              <rect x="8" y="52" width="36" height="3" rx="1" fill="#e2e8f0"/>
+            </svg>
+            <div class="ab-name">Web Browser</div>
+            <div class="ab-desc">Chrome / Firefox</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+          <!-- Koneksi Internet / Router -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Router device body -->
+              <rect x="14" y="38" width="52" height="18" rx="4" fill="#1e40af" stroke="#1e3a8a" stroke-width="1.2"/>
+              <!-- Router lights -->
+              <circle cx="24" cy="47" r="3" fill="#4ade80"/>
+              <circle cx="33" cy="47" r="3" fill="#4ade80"/>
+              <circle cx="42" cy="47" r="3" fill="#fbbf24"/>
+              <circle cx="51" cy="47" r="3" fill="#4ade80"/>
+              <circle cx="60" cy="47" r="3" fill="#4ade80"/>
+              <!-- Antenna left -->
+              <line x1="24" y1="38" x2="20" y2="18" stroke="#1e40af" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="20" cy="17" r="2.5" fill="#3b82f6"/>
+              <!-- Antenna right -->
+              <line x1="56" y1="38" x2="60" y2="18" stroke="#1e40af" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="60" cy="17" r="2.5" fill="#3b82f6"/>
+              <!-- WiFi waves above router -->
+              <path d="M30 30 Q40 22 50 30" stroke="#60a5fa" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M24 24 Q40 12 56 24" stroke="#93c5fd" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M18 18 Q40 2 62 18" stroke="#bfdbfe" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <!-- Signal dot -->
+              <circle cx="40" cy="34" r="2.5" fill="#2563eb"/>
+            </svg>
+            <div class="ab-name">Koneksi Internet</div>
+            <div class="ab-desc">Akses lab maya</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+          <!-- Alat Tulis: Pulpen & Buku -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Notebook body -->
+              <rect x="4" y="8" width="42" height="52" rx="3" fill="#fef9c3" stroke="#d97706" stroke-width="1.5"/>
+              <!-- Spiral/binding left side -->
+              <rect x="4" y="8" width="8" height="52" rx="2" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
+              <!-- Spiral dots -->
+              <circle cx="8" cy="16" r="2.5" fill="#92400e"/>
+              <circle cx="8" cy="25" r="2.5" fill="#92400e"/>
+              <circle cx="8" cy="34" r="2.5" fill="#92400e"/>
+              <circle cx="8" cy="43" r="2.5" fill="#92400e"/>
+              <circle cx="8" cy="52" r="2.5" fill="#92400e"/>
+              <!-- Page lines -->
+              <line x1="16" y1="20" x2="42" y2="20" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+              <line x1="16" y1="27" x2="42" y2="27" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+              <line x1="16" y1="34" x2="42" y2="34" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+              <line x1="16" y1="41" x2="42" y2="41" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+              <line x1="16" y1="48" x2="42" y2="48" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+              <!-- Pen body -->
+              <rect x="50" y="6" width="8" height="46" rx="3" fill="#dc2626" stroke="#991b1b" stroke-width="1"/>
+              <!-- Pen clip -->
+              <rect x="56" y="8" width="3" height="30" rx="1.5" fill="#991b1b"/>
+              <!-- Pen cap -->
+              <rect x="49" y="4" width="10" height="8" rx="3" fill="#1e40af" stroke="#1e3a8a" stroke-width="1"/>
+              <!-- Pen tip/nib -->
+              <polygon points="50,52 58,52 54,62" fill="#374151" stroke="#1f2937" stroke-width="0.8"/>
+              <!-- Ink visible on page -->
+              <path d="M18 23 Q22 21 26 23 Q30 25 34 22" stroke="#1e40af" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div class="ab-name">Alat Tulis</div>
+            <div class="ab-desc">Pulpen &amp; buku catatan</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+          <!-- Kalkulator -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Calculator body -->
+              <rect x="16" y="2" width="48" height="60" rx="5" fill="#374151" stroke="#1f2937" stroke-width="1.5"/>
+              <!-- Screen -->
+              <rect x="20" y="7" width="40" height="14" rx="2" fill="#d1fae5" stroke="#10b981" stroke-width="1"/>
+              <text x="56" y="18" font-size="9" fill="#065f46" font-family="monospace" text-anchor="end" font-weight="bold">3.14</text>
+              <!-- Buttons row 1 - function keys -->
+              <rect x="20" y="25" width="9" height="7" rx="2" fill="#6d28d9"/>
+              <rect x="31" y="25" width="9" height="7" rx="2" fill="#6d28d9"/>
+              <rect x="42" y="25" width="9" height="7" rx="2" fill="#6d28d9"/>
+              <rect x="53" y="25" width="7" height="7" rx="2" fill="#dc2626"/>
+              <text x="24.5" y="31" font-size="6" fill="white" font-family="sans-serif" text-anchor="middle">AC</text>
+              <text x="35.5" y="31" font-size="6" fill="white" font-family="sans-serif" text-anchor="middle">+/-</text>
+              <text x="46.5" y="31" font-size="6" fill="white" font-family="sans-serif" text-anchor="middle">%</text>
+              <text x="56.5" y="31" font-size="7" fill="white" font-family="sans-serif" text-anchor="middle">÷</text>
+              <!-- Row 2 -->
+              <rect x="20" y="34" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="31" y="34" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="42" y="34" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="53" y="34" width="7" height="7" rx="2" fill="#d97706"/>
+              <text x="24.5" y="40" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">7</text>
+              <text x="35.5" y="40" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">8</text>
+              <text x="46.5" y="40" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">9</text>
+              <text x="56.5" y="40" font-size="7" fill="white" font-family="sans-serif" text-anchor="middle">×</text>
+              <!-- Row 3 -->
+              <rect x="20" y="43" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="31" y="43" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="42" y="43" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="53" y="43" width="7" height="7" rx="2" fill="#d97706"/>
+              <text x="24.5" y="49" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">4</text>
+              <text x="35.5" y="49" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">5</text>
+              <text x="46.5" y="49" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">6</text>
+              <text x="56.5" y="49" font-size="7" fill="white" font-family="sans-serif" text-anchor="middle">−</text>
+              <!-- Row 4 -->
+              <rect x="20" y="52" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="31" y="52" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="42" y="52" width="9" height="7" rx="2" fill="#9ca3af"/>
+              <rect x="53" y="52" width="7" height="7" rx="2" fill="#d97706"/>
+              <text x="24.5" y="58" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">1</text>
+              <text x="35.5" y="58" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">2</text>
+              <text x="46.5" y="58" font-size="7" fill="#1f2937" font-family="sans-serif" text-anchor="middle">3</text>
+              <text x="56.5" y="58" font-size="7" fill="white" font-family="sans-serif" text-anchor="middle">+</text>
+            </svg>
+            <div class="ab-name">Kalkulator</div>
+            <div class="ab-desc">Perhitungan data</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+          <!-- Lembar Kerja / Clipboard -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Clipboard board -->
+              <rect x="10" y="10" width="60" height="52" rx="3" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
+              <!-- Clipboard clip top -->
+              <rect x="26" y="5" width="28" height="12" rx="4" fill="#d97706"/>
+              <rect x="30" y="7" width="20" height="8" rx="3" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+              <!-- Hole in clip -->
+              <circle cx="40" cy="11" r="3" fill="#d97706"/>
+              <!-- Header line -->
+              <rect x="14" y="22" width="52" height="2.5" rx="1" fill="#6d28d9" opacity="0.7"/>
+              <!-- Table grid -->
+              <line x1="14" y1="30" x2="66" y2="30" stroke="#d97706" stroke-width="0.7" opacity="0.6"/>
+              <line x1="14" y1="38" x2="66" y2="38" stroke="#d97706" stroke-width="0.7" opacity="0.6"/>
+              <line x1="14" y1="46" x2="66" y2="46" stroke="#d97706" stroke-width="0.7" opacity="0.6"/>
+              <line x1="14" y1="54" x2="66" y2="54" stroke="#d97706" stroke-width="0.7" opacity="0.6"/>
+              <!-- Vertical dividers -->
+              <line x1="30" y1="22" x2="30" y2="58" stroke="#d97706" stroke-width="0.7" opacity="0.5"/>
+              <line x1="50" y1="22" x2="50" y2="58" stroke="#d97706" stroke-width="0.7" opacity="0.5"/>
+              <!-- Text fill indicators -->
+              <rect x="15" y="25" width="14" height="3" rx="1" fill="#c4b5fd" opacity="0.8"/>
+              <rect x="31" y="25" width="18" height="3" rx="1" fill="#c4b5fd" opacity="0.8"/>
+              <rect x="51" y="25" width="14" height="3" rx="1" fill="#c4b5fd" opacity="0.8"/>
+              <!-- Pencil icon bottom right -->
+              <rect x="54" y="48" width="5" height="14" rx="1.5" fill="#fbbf24" transform="rotate(-30 57 55)" stroke="#d97706" stroke-width="0.5"/>
+              <polygon points="52,58 57,58 54.5,63" fill="#374151" transform="rotate(-30 54 59)"/>
+            </svg>
+            <div class="ab-name">Lembar Kerja</div>
+            <div class="ab-desc">LKS (tersedia di tab)</div>
+            <div class="ab-badge badge-alat">ALAT</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- BAHAN -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-shrink:0;">
+          <div style="width:24px;height:24px;border-radius:6px;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">🧪</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.4vw,14px);font-weight:700;color:#166534;">Bahan</div>
+        </div>
+        <div class="ab-grid" style="overflow-y:auto;padding-bottom:4px;">
+
+          <!-- Tabel Periodik Buku/Poster -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Book cover -->
+              <rect x="6" y="4" width="58" height="56" rx="3" fill="#1e40af" stroke="#1e3a8a" stroke-width="1.5"/>
+              <!-- Book spine -->
+              <rect x="6" y="4" width="8" height="56" rx="2" fill="#1e3a8a"/>
+              <!-- Book pages edge -->
+              <rect x="62" y="5" width="3" height="54" rx="1" fill="#f8fafc" opacity="0.5"/>
+              <!-- Title on cover -->
+              <text x="38" y="18" font-size="5.5" fill="white" font-family="sans-serif" font-weight="bold" text-anchor="middle">TABEL</text>
+              <text x="38" y="25" font-size="5.5" fill="white" font-family="sans-serif" font-weight="bold" text-anchor="middle">PERIODIK</text>
+              <!-- Mini periodic table grid on cover -->
+              <rect x="15" y="30" width="5" height="4" rx="0.5" fill="#fde68a" stroke="#d97706" stroke-width="0.5"/>
+              <rect x="21" y="30" width="5" height="4" rx="0.5" fill="#bfdbfe" stroke="#3b82f6" stroke-width="0.5"/>
+              <rect x="27" y="30" width="5" height="4" rx="0.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <rect x="33" y="30" width="5" height="4" rx="0.5" fill="#fce7f3" stroke="#ec4899" stroke-width="0.5"/>
+              <rect x="39" y="30" width="5" height="4" rx="0.5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.5"/>
+              <rect x="45" y="30" width="5" height="4" rx="0.5" fill="#ffedd5" stroke="#f97316" stroke-width="0.5"/>
+              <rect x="15" y="36" width="5" height="4" rx="0.5" fill="#fde68a" stroke="#d97706" stroke-width="0.5"/>
+              <rect x="21" y="36" width="5" height="4" rx="0.5" fill="#bfdbfe" stroke="#3b82f6" stroke-width="0.5"/>
+              <rect x="27" y="36" width="5" height="4" rx="0.5" fill="#d1fae5" stroke="#10b981" stroke-width="0.5"/>
+              <rect x="33" y="36" width="5" height="4" rx="0.5" fill="#fce7f3" stroke="#ec4899" stroke-width="0.5"/>
+              <rect x="39" y="36" width="5" height="4" rx="0.5" fill="#ede9fe" stroke="#8b5cf6" stroke-width="0.5"/>
+              <rect x="45" y="36" width="5" height="4" rx="0.5" fill="#ffedd5" stroke="#f97316" stroke-width="0.5"/>
+              <!-- Na element highlight -->
+              <text x="17.5" y="34" font-size="3" fill="#92400e" font-family="monospace" font-weight="bold" text-anchor="middle">Na</text>
+              <text x="41.5" y="34" font-size="3" fill="#4c1d95" font-family="monospace" font-weight="bold" text-anchor="middle">Si</text>
+              <!-- Author line -->
+              <line x1="15" y1="46" x2="51" y2="46" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+              <text x="33" y="52" font-size="4.5" fill="rgba(255,255,255,0.6)" font-family="sans-serif" text-anchor="middle">118 Unsur Kimia</text>
+            </svg>
+            <div class="ab-name">Tabel Periodik</div>
+            <div class="ab-desc">Referensi 118 unsur</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+          <!-- Data Unsur - Spreadsheet/Tabel -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Paper background -->
+              <rect x="6" y="4" width="60" height="56" rx="3" fill="white" stroke="#10b981" stroke-width="1.5"/>
+              <!-- Header row -->
+              <rect x="6" y="4" width="60" height="11" rx="3" fill="#10b981"/>
+              <rect x="6" y="9" width="60" height="6" fill="#10b981"/>
+              <text x="16" y="12" font-size="4.5" fill="white" font-family="sans-serif" font-weight="bold">Z</text>
+              <text x="27" y="12" font-size="4.5" fill="white" font-family="sans-serif" font-weight="bold">Simbol</text>
+              <text x="45" y="12" font-size="4.5" fill="white" font-family="sans-serif" font-weight="bold">Nama</text>
+              <!-- Column dividers -->
+              <line x1="22" y1="4" x2="22" y2="60" stroke="#bbf7d0" stroke-width="0.8"/>
+              <line x1="38" y1="4" x2="38" y2="60" stroke="#bbf7d0" stroke-width="0.8"/>
+              <!-- Data rows -->
+              <line x1="6" y1="22" x2="66" y2="22" stroke="#d1fae5" stroke-width="0.8"/>
+              <text x="14" y="20" font-size="5" fill="#065f46" font-family="monospace">1</text>
+              <text x="29" y="20" font-size="5" fill="#065f46" font-family="monospace" text-anchor="middle">H</text>
+              <text x="52" y="20" font-size="5" fill="#065f46" font-family="sans-serif" text-anchor="middle">Hidrogen</text>
+              <line x1="6" y1="30" x2="66" y2="30" stroke="#d1fae5" stroke-width="0.8"/>
+              <text x="14" y="28" font-size="5" fill="#065f46" font-family="monospace">3</text>
+              <text x="29" y="28" font-size="5" fill="#065f46" font-family="monospace" text-anchor="middle">Li</text>
+              <text x="52" y="28" font-size="5" fill="#065f46" font-family="sans-serif" text-anchor="middle">Litium</text>
+              <line x1="6" y1="38" x2="66" y2="38" stroke="#d1fae5" stroke-width="0.8"/>
+              <text x="14" y="36" font-size="5" fill="#065f46" font-family="monospace">8</text>
+              <text x="29" y="36" font-size="5" fill="#065f46" font-family="monospace" text-anchor="middle">O</text>
+              <text x="52" y="36" font-size="5" fill="#065f46" font-family="sans-serif" text-anchor="middle">Oksigen</text>
+              <line x1="6" y1="46" x2="66" y2="46" stroke="#d1fae5" stroke-width="0.8"/>
+              <text x="14" y="44" font-size="5" fill="#065f46" font-family="monospace">11</text>
+              <text x="29" y="44" font-size="5" fill="#065f46" font-family="monospace" text-anchor="middle">Na</text>
+              <text x="52" y="44" font-size="5" fill="#065f46" font-family="sans-serif" text-anchor="middle">Natrium</text>
+              <line x1="6" y1="54" x2="66" y2="54" stroke="#d1fae5" stroke-width="0.8"/>
+              <text x="14" y="52" font-size="5" fill="#065f46" font-family="monospace">17</text>
+              <text x="29" y="52" font-size="5" fill="#065f46" font-family="monospace" text-anchor="middle">Cl</text>
+              <text x="52" y="52" font-size="5" fill="#065f46" font-family="sans-serif" text-anchor="middle">Klorin</text>
+            </svg>
+            <div class="ab-name">Data Unsur</div>
+            <div class="ab-desc">Nomor atom &amp; massa</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+          <!-- Konfigurasi Elektron - Diagram Atom -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Atom nucleus -->
+              <circle cx="40" cy="32" r="9" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+              <text x="40" y="36" font-size="7" fill="white" font-family="monospace" font-weight="bold" text-anchor="middle">Na</text>
+              <!-- Orbit 1 (K shell) -->
+              <ellipse cx="40" cy="32" rx="16" ry="16" stroke="#6d28d9" stroke-width="1.2" fill="none" stroke-dasharray="2 1" opacity="0.6"/>
+              <!-- Electron on orbit 1 -->
+              <circle cx="56" cy="32" r="3" fill="#8b5cf6" stroke="#6d28d9" stroke-width="1"/>
+              <circle cx="24" cy="32" r="3" fill="#8b5cf6" stroke="#6d28d9" stroke-width="1"/>
+              <!-- Orbit 2 (L shell) -->
+              <ellipse cx="40" cy="32" rx="26" ry="10" stroke="#3b82f6" stroke-width="1.2" fill="none" stroke-dasharray="2 1" opacity="0.6" transform="rotate(30 40 32)"/>
+              <!-- More electrons -->
+              <circle cx="40" cy="6" r="3" fill="#60a5fa" stroke="#3b82f6" stroke-width="1"/>
+              <circle cx="60" cy="20" r="3" fill="#60a5fa" stroke="#3b82f6" stroke-width="1"/>
+              <!-- Orbit 3 (M shell) -->
+              <ellipse cx="40" cy="32" rx="32" ry="12" stroke="#10b981" stroke-width="1.2" fill="none" stroke-dasharray="2 1" opacity="0.5" transform="rotate(-30 40 32)"/>
+              <circle cx="12" cy="22" r="3" fill="#34d399" stroke="#10b981" stroke-width="1"/>
+              <!-- Config label bottom -->
+              <rect x="6" y="54" width="68" height="9" rx="3" fill="#ede9fe"/>
+              <text x="40" y="61" font-size="5" fill="#4c1d95" font-family="monospace" text-anchor="middle">1s² 2s² 2p⁶ 3s¹</text>
+            </svg>
+            <div class="ab-name">Konfigurasi e⁻</div>
+            <div class="ab-desc">Data periode 2 &amp; 3</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+          <!-- Energi Ionisasi - Grafik Batang -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Chart background -->
+              <rect x="4" y="4" width="72" height="48" rx="3" fill="#fafafa" stroke="#e5e7eb" stroke-width="1"/>
+              <!-- Y axis -->
+              <line x1="14" y1="8" x2="14" y2="48" stroke="#374151" stroke-width="1.2"/>
+              <!-- X axis -->
+              <line x1="14" y1="48" x2="74" y2="48" stroke="#374151" stroke-width="1.2"/>
+              <!-- Y axis label -->
+              <text x="4" y="30" font-size="4" fill="#6b7280" font-family="sans-serif" transform="rotate(-90 6 30)">EI</text>
+              <!-- Bars - period 2 elements -->
+              <rect x="17" y="38" width="6" height="10" rx="1" fill="#818cf8"/>
+              <rect x="25" y="28" width="6" height="20" rx="1" fill="#818cf8"/>
+              <rect x="33" y="34" width="6" height="14" rx="1" fill="#818cf8"/>
+              <rect x="41" y="25" width="6" height="23" rx="1" fill="#818cf8"/>
+              <rect x="49" y="18" width="6" height="30" rx="1" fill="#818cf8"/>
+              <rect x="57" y="30" width="6" height="18" rx="1" fill="#818cf8"/>
+              <rect x="65" y="12" width="6" height="36" rx="1" fill="#6d28d9"/>
+              <!-- Ne bar highlighted -->
+              <!-- Element labels -->
+              <text x="20" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">Li</text>
+              <text x="28" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">Be</text>
+              <text x="36" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">B</text>
+              <text x="44" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">N</text>
+              <text x="52" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">O</text>
+              <text x="60" y="54" font-size="4" fill="#374151" font-family="monospace" text-anchor="middle">F</text>
+              <text x="68" y="54" font-size="4" fill="#6d28d9" font-family="monospace" text-anchor="middle">Ne</text>
+              <!-- Title -->
+              <text x="44" y="62" font-size="5" fill="#6b7280" font-family="sans-serif" text-anchor="middle">Energi Ionisasi (kJ/mol)</text>
+            </svg>
+            <div class="ab-name">Data Energi Ionisasi</div>
+            <div class="ab-desc">Nilai EI (kJ/mol)</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+          <!-- Jari-jari Atom - Penggaris/Diagram -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Large atom Li (big radius) -->
+              <circle cx="22" cy="30" r="16" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <circle cx="22" cy="30" r="4" fill="#3b82f6" opacity="0.7"/>
+              <text x="22" y="34" font-size="5" fill="white" font-family="monospace" font-weight="bold" text-anchor="middle">Li</text>
+              <!-- Radius arrow Li -->
+              <line x1="22" y1="30" x2="38" y2="30" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arr)"/>
+              <text x="30" y="27" font-size="4" fill="#dc2626" font-family="monospace">r=152</text>
+              <!-- Small atom F (small radius) -->
+              <circle cx="60" cy="30" r="8" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3 2"/>
+              <circle cx="60" cy="30" r="3" fill="#8b5cf6" opacity="0.7"/>
+              <text x="60" y="33" font-size="5" fill="white" font-family="monospace" font-weight="bold" text-anchor="middle">F</text>
+              <!-- Radius arrow F -->
+              <line x1="60" y1="30" x2="68" y2="30" stroke="#dc2626" stroke-width="1.5"/>
+              <text x="64" y="27" font-size="4" fill="#dc2626" font-family="monospace">64</text>
+              <!-- Arrow -->
+              <defs><marker id="arr" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><polygon points="0 0, 4 2, 0 4" fill="#dc2626"/></marker></defs>
+              <!-- Trend arrow bottom -->
+              <path d="M10 54 Q40 50 70 54" stroke="#f97316" stroke-width="1.5" fill="none"/>
+              <polygon points="68,51 74,54 68,57" fill="#f97316"/>
+              <text x="40" y="62" font-size="4.5" fill="#92400e" font-family="sans-serif" text-anchor="middle">Periode → Mengecil</text>
+            </svg>
+            <div class="ab-name">Data Jari-Jari</div>
+            <div class="ab-desc">Nilai jari-jari (pm)</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+          <!-- Elektronegatifan - Skala Pauling -->
+          <div class="ab-item">
+            <svg class="ab-img" viewBox="0 0 80 64" xmlns="http://www.w3.org/2000/svg">
+              <!-- Magnet shape U -->
+              <path d="M18 8 L18 36 Q18 52 32 52 Q46 52 46 36 L46 8" fill="none" stroke="#ef4444" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Left pole N - red -->
+              <rect x="12" y="6" width="12" height="16" rx="3" fill="#ef4444" stroke="#dc2626" stroke-width="1"/>
+              <!-- Right pole S - blue -->
+              <rect x="40" y="6" width="12" height="16" rx="3" fill="#3b82f6" stroke="#2563eb" stroke-width="1"/>
+              <!-- N label -->
+              <text x="18" y="18" font-size="9" fill="white" font-family="sans-serif" font-weight="bold" text-anchor="middle">N</text>
+              <!-- S label -->
+              <text x="46" y="18" font-size="9" fill="white" font-family="sans-serif" font-weight="bold" text-anchor="middle">S</text>
+              <!-- Field lines -->
+              <path d="M18 22 Q32 40 46 22" stroke="#f97316" stroke-width="1.2" fill="none" stroke-dasharray="3 2"/>
+              <path d="M14 26 Q32 52 50 26" stroke="#fbbf24" stroke-width="1" fill="none" stroke-dasharray="3 2" opacity="0.7"/>
+              <!-- Pauling scale bar -->
+              <rect x="6" y="54" width="68" height="7" rx="3" fill="linear-gradient(90deg,#bfdbfe,#ef4444)"/>
+              <defs><linearGradient id="scaleGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#bfdbfe"/><stop offset="100%" stop-color="#ef4444"/></linearGradient></defs>
+              <rect x="6" y="54" width="68" height="7" rx="3" fill="url(#scaleGrad)"/>
+              <text x="8" y="59.5" font-size="4.5" fill="#1e3a8a" font-family="monospace">0.7</text>
+              <text x="60" y="59.5" font-size="4.5" fill="#7f1d1d" font-family="monospace">4.0</text>
+              <text x="38" y="51" font-size="4" fill="#6b7280" font-family="sans-serif" text-anchor="middle">Skala Pauling (EN)</text>
+            </svg>
+            <div class="ab-name">Elektronegatifan</div>
+            <div class="ab-desc">Skala Pauling</div>
+            <div class="ab-badge badge-bahan">BAHAN</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TABEL PERIODIK ===== -->
+<div id="page-tabel" class="page">
+  <div class="scroll" style="padding:10px 14px 14px;">
+    <div class="hero" style="margin-bottom:8px;flex-shrink:0;">
+      <div>
+        <div class="h-label">Interaktif</div>
+        <div class="h-title">Tabel Periodik <span>118 Unsur</span></div>
+        <div class="h-desc">Klik unsur mana saja untuk melihat detail lengkap: nomor atom, massa, konfigurasi elektron, dan fakta menarik.</div>
+      </div>
+    </div>
+    <div class="card" style="padding:8px 10px;">
+      <div class="pt-wrap">
+        <div class="pt-grid" id="ptGrid"></div>
+      </div>
+      <div class="pt-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#fde8d8;border-color:#f97316;"></div>Logam Alkali</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fef9c3;border-color:#eab308;"></div>Alkali Tanah</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;border-color:#3b82f6;"></div>Logam Transisi</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#d1fae5;border-color:#10b981;"></div>Logam Pasca Transisi</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ede9fe;border-color:#8b5cf6;"></div>Metaloid</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fce7f3;border-color:#ec4899;"></div>Nonlogam</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#ffedd5;border-color:#f97316;"></div>Halogen</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#e0f2fe;border-color:#0ea5e9;"></div>Gas Mulia</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f3e8ff;border-color:#a855f7;"></div>Lantanida</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fce7f3;border-color:#db2777;"></div>Aktinida</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ELEMENT MODAL -->
+<div class="el-modal-overlay" id="elModal">
+  <div class="el-modal">
+    <button class="el-modal-close" onclick="closeElModal()">✕</button>
+    <div class="el-modal-sym" id="emSym"></div>
+    <div class="el-modal-name" id="emName"></div>
+    <div class="el-modal-cat" id="emCat"></div>
+    <div class="el-info-grid">
+      <div class="el-info-item"><div class="el-info-label">Nomor Atom</div><div class="el-info-value" id="emAN"></div></div>
+      <div class="el-info-item"><div class="el-info-label">Massa Atom</div><div class="el-info-value" id="emMass"></div></div>
+      <div class="el-info-item"><div class="el-info-label">Golongan</div><div class="el-info-value" id="emGroup"></div></div>
+      <div class="el-info-item"><div class="el-info-label">Periode</div><div class="el-info-value" id="emPeriod"></div></div>
+      <div class="el-info-item" style="grid-column:span 2;"><div class="el-info-label">Konfigurasi Elektron</div><div class="el-info-value" id="emConfig" style="font-size:11px;word-break:break-all;"></div></div>
+    </div>
+    <div class="el-desc" id="emDesc"></div>
+  </div>
+</div>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px 10px;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0f172a,#7c3aed);border-radius:9px;padding:8px 14px;margin-bottom:8px;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 3px 14px rgba(124,58,237,.25);">
+      <div style="position:absolute;right:10px;top:-8px;font-size:54px;opacity:.09;">📋</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;">Langkah Kerja</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.6vw,16px);font-weight:700;color:#fff;">Prosedur <span style="color:#ddd6fe;">Praktikum</span></div>
+      <div style="font-size:10.5px;color:#c4b5fd;margin-top:1px;">Ikuti setiap langkah dengan teliti untuk memahami sifat periodik unsur.</div>
+    </div>
+    <!-- Grid 2x2 + warning full-width -->
+    <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr auto;gap:7px;overflow:hidden;min-height:0;">
+
+      <!-- Langkah 1 -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:9px 11px;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-shrink:0;">
+          <div style="width:26px;height:26px;border-radius:7px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">1️⃣</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.2vw,12.5px);font-weight:700;color:#1e40af;">Persiapan Data</div>
+        </div>
+        <ul style="margin:0;padding-left:14px;font-size:clamp(9.5px,1.05vw,11px);color:#374151;line-height:1.55;flex:1;overflow:hidden;">
+          <li>Siapkan tabel data: nama unsur, simbol, nomor atom, massa atom, golongan, dan periode.</li>
+          <li>Identifikasi 10 unsur dari periode 2 dan 3 sebagai bahan pengamatan utama.</li>
+          <li>Catat konfigurasi elektron masing-masing unsur (notasi subkulit s, p, d, f).</li>
+        </ul>
+      </div>
+
+      <!-- Langkah 2 -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:9px 11px;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-shrink:0;">
+          <div style="width:26px;height:26px;border-radius:7px;background:#fef9c3;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">2️⃣</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.2vw,12.5px);font-weight:700;color:#92400e;">Pengamatan Sifat Periodik</div>
+        </div>
+        <ul style="margin:0;padding-left:14px;font-size:clamp(9.5px,1.05vw,11px);color:#374151;line-height:1.55;flex:1;overflow:hidden;">
+          <li>Gunakan Tabel Periodik interaktif untuk mengamati kecenderungan jari-jari atom dalam satu periode (Li→Ne) dan satu golongan (Li→Cs).</li>
+          <li>Catat nilai energi ionisasi pertama (kJ/mol) unsur periode 2: Li, Be, B, C, N, O, F, Ne.</li>
+          <li>Bandingkan nilai keelektronegatifan (skala Pauling) untuk unsur periode 2 dan 3.</li>
+        </ul>
+      </div>
+
+      <!-- Langkah 3 -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:9px 11px;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-shrink:0;">
+          <div style="width:26px;height:26px;border-radius:7px;background:#dcfce7;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">3️⃣</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.2vw,12.5px);font-weight:700;color:#166534;">Simulasi Identifikasi Unsur</div>
+        </div>
+        <ul style="margin:0;padding-left:14px;font-size:clamp(9.5px,1.05vw,11px);color:#374151;line-height:1.55;flex:1;overflow:hidden;">
+          <li>Buka tab <strong>Simulasi</strong> dan ikuti instruksi untuk mengidentifikasi unsur berdasarkan ciri-cirinya.</li>
+          <li>Tentukan golongan dan periode unsur hanya berdasarkan konfigurasi elektronnya.</li>
+          <li>Catat hasil pengamatan pada Lembar Kerja Siswa (LKS) di tab <strong>LKS</strong>.</li>
+        </ul>
+      </div>
+
+      <!-- Langkah 4 -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:9px 11px;overflow:hidden;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-shrink:0;">
+          <div style="width:26px;height:26px;border-radius:7px;background:#ede9fe;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">4️⃣</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.2vw,12.5px);font-weight:700;color:#5b21b6;">Analisis &amp; Kesimpulan</div>
+        </div>
+        <ul style="margin:0;padding-left:14px;font-size:clamp(9.5px,1.05vw,11px);color:#374151;line-height:1.55;flex:1;overflow:hidden;">
+          <li>Buat grafik sederhana hubungan nomor atom vs energi ionisasi untuk periode 2.</li>
+          <li>Jelaskan anomali energi ionisasi antara Be dan B, serta N dan O.</li>
+          <li>Simpulkan kecenderungan sifat periodik dan kaitkan dengan konfigurasi elektron.</li>
+          <li>Kerjakan soal <strong>Evaluasi</strong> untuk mengukur pemahaman kamu.</li>
+        </ul>
+      </div>
+
+      <!-- Peringatan K3 full width -->
+      <div style="grid-column:span 2;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:8px 12px;box-shadow:0 1px 4px rgba(30,41,59,.05);display:flex;align-items:flex-start;gap:9px;">
+        <div style="width:28px;height:28px;border-radius:7px;background:#fde68a;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">⚠️</div>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(10.5px,1.2vw,12px);font-weight:700;color:#92400e;margin-bottom:2px;">Perhatian Keselamatan Kerja</div>
+          <p style="margin:0;font-size:clamp(9.5px,1.05vw,11px);color:#92400e;line-height:1.5;">Dalam praktikum nyata menggunakan bahan kimia seperti larutan asam/basa untuk uji sifat unsur, selalu gunakan sarung tangan dan kacamata pelindung. Jangan mencicipi bahan kimia apapun. Bekerjalah di ruangan berventilasi baik.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<style>
+/* ── Simulasi tab bar ── */
+.sim-tabs{display:flex;gap:4px;margin-bottom:10px;flex-shrink:0;overflow-x:auto;padding-bottom:2px;}
+.sim-tabs::-webkit-scrollbar{display:none;}
+.sim-tab{background:var(--surf);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .18s;}
+.sim-tab.active{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border-color:#6d28d9;}
+.sim-tab:hover:not(.active){border-color:var(--acc2);color:var(--acc);}
+.sim-panel{display:none;}
+.sim-panel.active{display:block;}
+
+/* ── Atom model ── */
+.atom-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.atom-canvas-wrap{position:relative;width:200px;height:200px;flex-shrink:0;}
+#atomCanvas{border-radius:50%;}
+.atom-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;}
+.atom-info-box{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;text-align:center;}
+.atom-info-box .val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--acc3);}
+.atom-info-box .lbl{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.config-display{font-family:'JetBrains Mono',monospace;font-size:11px;background:#ede9fe;padding:6px 10px;border-radius:6px;color:#4c1d95;border:1px solid #c4b5fd;word-break:break-all;}
+
+/* ── Sifat periodik chart ── */
+.sifat-selectors{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.sifat-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--surf2);font-size:11.5px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .17s;}
+.sifat-btn.active{background:var(--acc);color:#fff;border-color:var(--acc);}
+.chart-area{position:relative;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px;overflow:hidden;}
+.chart-svg{width:100%;overflow:visible;}
+.bar-anim{transition:height .5s cubic-bezier(.34,1.2,.64,1),y .5s cubic-bezier(.34,1.2,.64,1);}
+.bar-lbl{font-size:9px;fill:#475569;font-family:'Inter',sans-serif;}
+.bar-val{font-size:8px;fill:#6d28d9;font-family:'JetBrains Mono',monospace;font-weight:700;}
+.trend-label{font-size:10px;font-weight:600;border-radius:5px;padding:3px 8px;display:inline-block;margin-top:6px;}
+
+/* ── Reaksi simulasi ── */
+.react-stage{background:linear-gradient(180deg,#0f172a 0%,#1e1b4b 100%);border-radius:12px;padding:16px;position:relative;overflow:hidden;min-height:220px;}
+.beaker-svg{filter:drop-shadow(0 4px 12px rgba(124,58,237,.35));}
+.react-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+.react-btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .17s;}
+.react-btn.primary{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;}
+.react-btn.secondary{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e2e8f0;}
+.react-btn:hover{transform:translateY(-1px);}
+.react-log{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);max-height:100px;overflow-y:auto;line-height:1.7;}
+.react-log .ok{color:#059669;}
+.react-log .warn{color:#d97706;}
+.react-log .err{color:#dc2626;}
+.react-log .info{color:#6d28d9;}
+
+/* ── Ionisasi slider ── */
+.ion-panel{display:flex;gap:12px;flex-wrap:wrap;}
+.ion-chart-wrap{flex:1;min-width:280px;}
+.ion-detail{width:180px;flex-shrink:0;}
+@media(max-width:600px){.ion-detail{width:100%;}}
+.electron-shell{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px;}
+.shell-row{display:flex;gap:4px;align-items:center;}
+.e-dot{width:14px;height:14px;border-radius:50%;background:#8b5cf6;border:1.5px solid #6d28d9;transition:all .4s;box-shadow:0 0 6px rgba(139,92,246,.5);}
+.e-dot.removed{background:#ef4444;border-color:#dc2626;transform:scale(1.3);box-shadow:0 0 10px rgba(239,68,68,.7);}
+.e-dot.gone{opacity:0;transform:scale(0);}
+.nucleus{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;box-shadow:0 0 12px rgba(245,158,11,.5);}
+</style>
+
+<div id="page-simulasi" class="page">
+  <div class="scroll" style="padding:10px 14px 14px;">
+
+    <!-- Hero -->
+    <div class="hero" style="margin-bottom:8px;flex-shrink:0;">
+      <div>
+        <div class="h-label">Laboratorium Virtual</div>
+        <div class="h-title">Simulasi Praktikum <span>Sistem Periodik</span></div>
+        <div class="h-desc">4 percobaan interaktif: model atom, sifat periodik, reaksi unsur, dan energi ionisasi.</div>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="sim-tabs">
+      <button class="sim-tab active" onclick="switchSimTab('atom',this)">⚛️ Model Atom</button>
+      <button class="sim-tab" onclick="switchSimTab('sifat',this)">📊 Grafik Sifat Periodik</button>
+      <button class="sim-tab" onclick="switchSimTab('reaksi',this)">🧪 Reaksi Unsur</button>
+      <button class="sim-tab" onclick="switchSimTab('ionisasi',this)">⚡ Energi Ionisasi</button>
+    </div>
+
+    <!-- ── PANEL 1: MODEL ATOM ── -->
+    <div id="sp-atom" class="sim-panel active">
+      <div class="two-col" style="gap:10px;">
+        <!-- Left: selector + atom visual -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="ch"><div class="ci b">⚛️</div><div class="ct">Model Atom Bohr</div></div>
+          <p style="font-size:11.5px;color:var(--text2);margin-bottom:8px;">Pilih unsur untuk melihat model atom dan konfigurasi elektronnya secara visual.</p>
+
+          <select id="atomSelect" onchange="drawAtom()" style="width:100%;border:1.5px solid var(--border2);border-radius:8px;padding:7px 10px;font-family:'Inter',sans-serif;font-size:13px;background:var(--surf);color:var(--text);margin-bottom:10px;outline:none;cursor:pointer;">
+            <option value="1">H – Hidrogen (Z=1)</option>
+            <option value="2">He – Helium (Z=2)</option>
+            <option value="3">Li – Litium (Z=3)</option>
+            <option value="4">Be – Berilium (Z=4)</option>
+            <option value="5">B – Boron (Z=5)</option>
+            <option value="6" selected>C – Karbon (Z=6)</option>
+            <option value="7">N – Nitrogen (Z=7)</option>
+            <option value="8">O – Oksigen (Z=8)</option>
+            <option value="9">F – Fluor (Z=9)</option>
+            <option value="10">Ne – Neon (Z=10)</option>
+            <option value="11">Na – Natrium (Z=11)</option>
+            <option value="12">Mg – Magnesium (Z=12)</option>
+            <option value="13">Al – Aluminium (Z=13)</option>
+            <option value="14">Si – Silikon (Z=14)</option>
+            <option value="15">P – Fosfor (Z=15)</option>
+            <option value="16">S – Belerang (Z=16)</option>
+            <option value="17">Cl – Klor (Z=17)</option>
+            <option value="18">Ar – Argon (Z=18)</option>
+            <option value="19">K – Kalium (Z=19)</option>
+            <option value="20">Ca – Kalsium (Z=20)</option>
+          </select>
+
+          <div style="display:flex;justify-content:center;margin-bottom:10px;">
+            <canvas id="atomCanvas" width="200" height="200"></canvas>
+          </div>
+
+          <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;">
+            <button onclick="toggleAtomAnim()" id="btnAtomAnim" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;">⏸ Pause</button>
+            <button onclick="drawAtom()" style="background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:6px 14px;font-size:11.5px;font-weight:600;color:var(--text2);cursor:pointer;">↺ Reset</button>
+          </div>
+        </div>
+
+        <!-- Right: detail data -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="ch"><div class="ci g">📋</div><div class="ct">Data Unsur</div></div>
+
+          <div class="atom-info-grid" id="atomInfoGrid" style="margin-bottom:10px;">
+            <div class="atom-info-box"><div class="val" id="aiZ">6</div><div class="lbl">Nomor Atom (Z)</div></div>
+            <div class="atom-info-box"><div class="val" id="aiMass">12.01</div><div class="lbl">Massa Atom (u)</div></div>
+            <div class="atom-info-box"><div class="val" id="aiProton">6</div><div class="lbl">Proton</div></div>
+            <div class="atom-info-box"><div class="val" id="aiNeutron">6</div><div class="lbl">Neutron</div></div>
+            <div class="atom-info-box"><div class="val" id="aiElectron">6</div><div class="lbl">Elektron</div></div>
+            <div class="atom-info-box"><div class="val" id="aiPeriod">2</div><div class="lbl">Periode</div></div>
+          </div>
+
+          <div style="margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:700;color:var(--acc3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Konfigurasi Elektron</div>
+            <div class="config-display" id="aiConfig">1s² 2s² 2p²</div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:700;color:var(--acc3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Distribusi Kulit</div>
+            <div id="aiShellDist" style="font-size:12px;color:var(--text2);line-height:1.8;"></div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--acc3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">Golongan & Kategori</div>
+            <div id="aiCatBadge" style="display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;"></div>
+          </div>
+
+          <div style="margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 10px;">
+            <div style="font-size:9.5px;font-weight:700;color:#92400e;text-transform:uppercase;margin-bottom:3px;">💡 Fakta Menarik</div>
+            <div style="font-size:11.5px;color:#78350f;line-height:1.5;" id="aiFact"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 2: GRAFIK SIFAT PERIODIK ── -->
+    <div id="sp-sifat" class="sim-panel">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="ch"><div class="ci b">📊</div><div class="ct">Grafik Sifat Periodik Unsur</div></div>
+        <p style="font-size:11.5px;color:var(--text2);margin-bottom:10px;">Amati kecenderungan sifat unsur dalam satu periode (2 dan 3) dan satu golongan IA. Klik tombol sifat dan golongan/periode untuk beralih tampilan.</p>
+
+        <div class="sifat-selectors">
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="sifat-btn active" onclick="setSifat('jari',this)">Jari-jari Atom (pm)</button>
+            <button class="sifat-btn" onclick="setSifat('ionisasi',this)">Energi Ionisasi (kJ/mol)</button>
+            <button class="sifat-btn" onclick="setSifat('en',this)">Keelektronegatifan</button>
+            <button class="sifat-btn" onclick="setSifat('afinitas',this)">Afinitas Elektron</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;">
+          <button class="sifat-btn active" id="btnP2" onclick="setSeries('p2',this)">Periode 2</button>
+          <button class="sifat-btn" id="btnP3" onclick="setSeries('p3',this)">Periode 3</button>
+          <button class="sifat-btn" id="btnG1" onclick="setSeries('g1',this)">Golongan IA</button>
+        </div>
+
+        <div class="chart-area">
+          <svg id="sifatSvg" class="chart-svg" height="200" viewBox="0 0 560 200"></svg>
+        </div>
+
+        <div style="margin-top:8px;padding:8px 12px;background:#ede9fe;border-radius:8px;border:1px solid #c4b5fd;">
+          <div style="font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">📈 Kecenderungan</div>
+          <div style="font-size:12px;color:#6d28d9;line-height:1.6;" id="trendText">Dalam satu periode, jari-jari atom <strong>mengecil</strong> dari kiri ke kanan karena muatan inti bertambah sedangkan jumlah kulit tetap. Akibatnya, elektron ditarik lebih kuat ke inti.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 3: REAKSI UNSUR ── -->
+    <div id="sp-reaksi" class="sim-panel">
+      <div class="two-col" style="gap:10px;">
+        <!-- Kontrol -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="ch"><div class="ci r">🧪</div><div class="ct">Pilih Reaksi</div></div>
+          <p style="font-size:11.5px;color:var(--text2);margin-bottom:8px;">Pilih unsur dan pereaksi, lalu klik <strong>Mulai Reaksi</strong> untuk menyaksikan simulasi reaksi kimia.</p>
+
+          <div style="margin-bottom:8px;">
+            <label style="font-size:11px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Unsur Reaktan</label>
+            <select id="reactEl" style="width:100%;border:1.5px solid var(--border2);border-radius:7px;padding:7px;font-size:12px;background:var(--surf);color:var(--text);outline:none;cursor:pointer;">
+              <option value="na">Na – Natrium (Logam Alkali)</option>
+              <option value="mg">Mg – Magnesium (Alkali Tanah)</option>
+              <option value="fe">Fe – Besi (Logam Transisi)</option>
+              <option value="cl2">Cl₂ – Klor (Halogen)</option>
+              <option value="cu">Cu – Tembaga (Logam Transisi)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:11px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Pereaksi</label>
+            <select id="reactWith" style="width:100%;border:1.5px solid var(--border2);border-radius:7px;padding:7px;font-size:12px;background:var(--surf);color:var(--text);outline:none;cursor:pointer;">
+              <option value="h2o">H₂O – Air</option>
+              <option value="o2">O₂ – Oksigen</option>
+              <option value="hcl">HCl – Asam Klorida</option>
+              <option value="naoh">NaOH – Natrium Hidroksida</option>
+            </select>
+          </div>
+
+          <div style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;">
+            <div style="font-size:9.5px;font-weight:700;color:var(--acc3);text-transform:uppercase;margin-bottom:4px;">Persamaan Reaksi</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);line-height:1.6;" id="reactEq">2Na + 2H₂O → 2NaOH + H₂↑</div>
+            <div style="font-size:10.5px;color:var(--text3);margin-top:4px;" id="reactType">Reaksi redoks • sangat eksoterm • menghasilkan gas H₂</div>
+          </div>
+
+          <button onclick="startReaction()" class="react-btn primary" style="width:100%;padding:9px;">▶ Mulai Reaksi</button>
+          <button onclick="resetReaction()" class="react-btn secondary" style="width:100%;padding:7px;margin-top:6px;background:var(--surf2);border:1px solid var(--border);color:var(--text2);">↺ Reset</button>
+
+          <!-- Kondisi -->
+          <div style="margin-top:10px;">
+            <label style="font-size:11px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">Suhu Reaksi</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="tempSlider" min="0" max="100" value="25" style="flex:1;" oninput="document.getElementById('tempVal').textContent=this.value+'°C'">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--acc3);min-width:40px;" id="tempVal">25°C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual area -->
+        <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;">
+          <div class="ch"><div class="ci g">🔬</div><div class="ct">Laboratorium Visual</div></div>
+          <div class="react-stage" id="reactStage">
+            <canvas id="reactCanvas" width="320" height="190" style="display:block;margin:0 auto;"></canvas>
+          </div>
+          <div style="margin-top:8px;">
+            <div style="font-size:9.5px;font-weight:700;color:var(--acc3);text-transform:uppercase;margin-bottom:4px;">📋 Log Reaksi</div>
+            <div class="react-log" id="reactLog"><span class="info">» Pilih unsur dan pereaksi, lalu klik Mulai Reaksi…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PANEL 4: ENERGI IONISASI ── -->
+    <div id="sp-ionisasi" class="sim-panel">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="ch"><div class="ci b">⚡</div><div class="ct">Simulasi Energi Ionisasi</div></div>
+        <p style="font-size:11.5px;color:var(--text2);margin-bottom:10px;">Pilih unsur dan saksikan proses pelepasan elektron satu per satu. Amati bagaimana energi ionisasi berubah untuk setiap elektron yang dilepas.</p>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+          <div style="flex:1;min-width:160px;">
+            <label style="font-size:10.5px;font-weight:700;color:var(--acc3);text-transform:uppercase;display:block;margin-bottom:4px;">Pilih Unsur</label>
+            <select id="ionEl" onchange="loadIonEl()" style="width:100%;border:1.5px solid var(--border2);border-radius:7px;padding:7px;font-size:12px;background:var(--surf);color:var(--text);outline:none;cursor:pointer;">
+              <option value="Na">Na – Natrium</option>
+              <option value="Mg">Mg – Magnesium</option>
+              <option value="Al">Al – Aluminium</option>
+              <option value="Si">Si – Silikon</option>
+              <option value="Cl">Cl – Klor</option>
+              <option value="K">K – Kalium</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:160px;">
+            <label style="font-size:10.5px;font-weight:700;color:var(--acc3);text-transform:uppercase;display:block;margin-bottom:4px;">Energi Ionisasi ke-</label>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input type="range" id="ionSlider" min="1" max="11" value="1" style="flex:1;" oninput="updateIon(this.value)">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--acc3);min-width:24px;" id="ionN">1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ion-panel">
+          <!-- Chart -->
+          <div class="ion-chart-wrap">
+            <div style="font-size:10px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Energi Ionisasi ke-N (kJ/mol)</div>
+            <div class="chart-area" style="padding:10px;">
+              <svg id="ionSvg" width="100%" height="160" viewBox="0 0 400 160"></svg>
+            </div>
+            <div style="margin-top:6px;padding:8px 10px;background:#ede9fe;border-radius:7px;border:1px solid #c4b5fd;">
+              <div style="font-size:10.5px;color:#4c1d95;" id="ionExplain">Energi ionisasi pertama Na sangat rendah (496 kJ/mol) karena elektron valensi 3s¹ hanya 1 dan mudah dilepas.</div>
+            </div>
+          </div>
+
+          <!-- Shell model -->
+          <div class="ion-detail">
+            <div style="font-size:10px;font-weight:700;color:var(--acc3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Model Kulit Elektron</div>
+            <div id="ionShellViz" style="display:flex;flex-direction:column;align-items:center;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px;gap:8px;">
+            </div>
+            <div style="margin-top:6px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;">
+              <div style="font-size:9px;font-weight:700;color:var(--acc3);text-transform:uppercase;margin-bottom:3px;">EI Ke-<span id="ionNLabel">1</span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--acc);" id="ionEval">496</div>
+              <div style="font-size:9.5px;color:var(--text3);">kJ/mol</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== LKS ===== -->
+<div id="page-lks" class="page">
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:8px 12px 8px;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0f172a,#7c3aed);border-radius:9px;padding:7px 14px;margin-bottom:7px;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 3px 14px rgba(124,58,237,.25);">
+      <div style="position:absolute;right:10px;top:-8px;font-size:54px;opacity:.09;">📝</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.15em;color:#c4b5fd;text-transform:uppercase;">Dokumen Resmi</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(12px,1.6vw,16px);font-weight:700;color:#fff;">Lembar Kerja <span style="color:#ddd6fe;">Siswa</span></div>
+    </div>
+
+    <!-- Main content flex column -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;min-height:0;">
+
+      <!-- ROW 1: Identitas + Tujuan side by side -->
+      <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:6px;flex-shrink:0;">
+        <!-- Identitas -->
+        <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:7px 10px;box-shadow:0 1px 4px rgba(30,41,59,.06);">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;padding-bottom:3px;border-bottom:2px solid #ede9fe;">A. Identitas Siswa</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;">
+            <div class="lks-row" style="margin-bottom:2px;"><span class="lks-label" style="min-width:72px;font-size:10px;">Nama Lengkap</span><input class="lks-input" id="lksNama" type="text" placeholder="Nama…" style="font-size:10px;"></div>
+            <div class="lks-row" style="margin-bottom:2px;"><span class="lks-label" style="min-width:40px;font-size:10px;">Kelas</span><input class="lks-input" id="lksKelas" type="text" placeholder="X IPA 1" style="font-size:10px;"></div>
+            <div class="lks-row" style="margin-bottom:2px;"><span class="lks-label" style="min-width:72px;font-size:10px;">Mata Pelajaran</span><input class="lks-input" id="lksMapel" type="text" value="Kimia – Sistem Periodik Unsur" style="font-size:10px;"></div>
+            <div class="lks-row" style="margin-bottom:2px;"><span class="lks-label" style="min-width:40px;font-size:10px;">Tanggal</span><input class="lks-input" id="lksTanggal" type="text" placeholder="Tanggal…" style="font-size:10px;"></div>
+            <div class="lks-row" style="margin-bottom:0;grid-column:span 2;"><span class="lks-label" style="min-width:72px;font-size:10px;">Guru Pembimbing</span><input class="lks-input" id="lksGuru" type="text" placeholder="Nama guru…" style="font-size:10px;"></div>
+          </div>
+        </div>
+        <!-- Tujuan -->
+        <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:7px 10px;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;padding-bottom:3px;border-bottom:2px solid #ede9fe;flex-shrink:0;">B. Tujuan Praktikum</div>
+          <textarea class="lks-textarea" id="lksTujuan" placeholder="Tuliskan tujuan praktikum…" style="font-size:10px;min-height:0;flex:1;resize:none;"></textarea>
+        </div>
+      </div>
+
+      <!-- ROW 2: Tabel Pengamatan -->
+      <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:7px 10px;box-shadow:0 1px 4px rgba(30,41,59,.06);flex-shrink:0;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #ede9fe;">C. Data Pengamatan – Sifat Periodik Unsur Periode 2</div>
+        <div style="overflow-x:auto;">
+          <table class="lks-table" style="font-size:10px;">
+            <thead>
+              <tr>
+                <th style="padding:3px 5px;">Unsur</th><th style="padding:3px 5px;">Sim.</th><th style="padding:3px 5px;">Z</th><th style="padding:3px 5px;">Konfigurasi e⁻</th><th style="padding:3px 5px;">Gol.</th><th style="padding:3px 5px;">r (pm)</th><th style="padding:3px 5px;">EI (kJ/mol)</th><th style="padding:3px 5px;">EN</th>
+              </tr>
+            </thead>
+            <tbody id="lksTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ROW 3: Pertanyaan 2x2 -->
+      <div style="flex:1;background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:7px 10px;box-shadow:0 1px 4px rgba(30,41,59,.06);overflow:hidden;display:flex;flex-direction:column;min-height:0;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #ede9fe;flex-shrink:0;">D. Pertanyaan Analisis</div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:0;">
+          <div style="display:flex;flex-direction:column;min-height:0;">
+            <p style="font-size:10px;font-weight:600;color:var(--text);margin:0 0 3px;">1. Bagaimana kecenderungan jari-jari atom dari Li ke Ne? Jelaskan!</p>
+            <textarea class="lks-textarea" id="lksQ1" placeholder="Tulis jawabanmu…" style="font-size:10px;min-height:0;flex:1;resize:none;"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;min-height:0;">
+            <p style="font-size:10px;font-weight:600;color:var(--text);margin:0 0 3px;">2. Mengapa EI Oksigen (O) lebih rendah dari Nitrogen (N)?</p>
+            <textarea class="lks-textarea" id="lksQ2" placeholder="Tulis jawabanmu…" style="font-size:10px;min-height:0;flex:1;resize:none;"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;min-height:0;">
+            <p style="font-size:10px;font-weight:600;color:var(--text);margin:0 0 3px;">3. Mengapa Neon (Ne) memiliki EI tertinggi dalam periode 2?</p>
+            <textarea class="lks-textarea" id="lksQ3" placeholder="Tulis jawabanmu…" style="font-size:10px;min-height:0;flex:1;resize:none;"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;min-height:0;">
+            <p style="font-size:10px;font-weight:600;color:var(--text);margin:0 0 3px;">4. Sebutkan 3 kegunaan unsur periode 2 dalam kehidupan!</p>
+            <textarea class="lks-textarea" id="lksQ4" placeholder="Tulis jawabanmu…" style="font-size:10px;min-height:0;flex:1;resize:none;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 4: Kesimpulan + Tombol -->
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;flex-shrink:0;align-items:stretch;">
+        <div style="background:#fff;border:1px solid #dde3ec;border-radius:9px;padding:7px 10px;box-shadow:0 1px 4px rgba(30,41,59,.06);display:flex;flex-direction:column;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#4c1d95;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #ede9fe;flex-shrink:0;">E. Kesimpulan</div>
+          <textarea class="lks-textarea" id="lksKesimpulan" placeholder="Tuliskan kesimpulan dari praktikum ini…" style="font-size:10px;min-height:40px;flex:1;resize:none;"></textarea>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;justify-content:center;">
+          <button class="btn-print" onclick="printLKS()" style="white-space:nowrap;font-size:11px;padding:7px 12px;">🖨️ Cetak / Download PDF</button>
+          <button class="btn-reset-lks" onclick="resetLKS()" style="white-space:nowrap;font-size:11px;padding:7px 12px;">↺ Reset LKS</button>
+          <button class="btn-reset-lks" onclick="autoFillLKS()" style="color:var(--acc);border-color:var(--acc2);white-space:nowrap;font-size:11px;padding:7px 12px;">✨ Isi Contoh</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== EVALUASI ===== -->
+<div id="page-evaluasi" class="page">
+  <div class="scroll" style="padding:10px 14px 14px;display:flex;flex-direction:column;height:100%;">
+    <div class="quiz-nav-header">
+      <div class="qprog" id="qprog"></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-qnav btn-reset-q" onclick="resetQuiz()">↺ Ulangi</button>
+      </div>
+    </div>
+    <div class="q-card" id="qCard">
+      <div class="qnum" id="qNum"></div>
+      <div class="qtype-badge badge-mc" id="qBadge"></div>
+      <div class="qtext" id="qText"></div>
+      <ul class="opts" id="qOpts"></ul>
+      <div class="qfb" id="qFb"></div>
+    </div>
+    <div class="quiz-foot">
+      <button class="btn-qnav btn-prev" id="btnPrev" onclick="prevQ()">‹ Sebelumnya</button>
+      <button class="btn-qnav btn-next" id="btnNext" onclick="nextQ()">Selanjutnya ›</button>
+      <button class="btn-qnav btn-submit-q" id="btnSubmit" style="display:none;" onclick="submitQuiz()">Kumpulkan 📊</button>
+      <span class="qcounter" id="qCounter"></span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- Score Overlay -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div style="font-size:40px;margin-bottom:8px;" id="scoreEmoji">🎉</div>
+    <div class="score-big" id="scoreBig"></div>
+    <div style="font-size:16px;color:var(--text3);">/ 100</div>
+    <div style="font-size:13px;color:var(--text2);margin:8px 0;" id="scoreSub"></div>
+    <div style="font-size:15px;font-weight:600;margin-top:8px;" id="scoreGrade"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:18px;">
+      <button class="btn-qnav btn-prev" onclick="document.getElementById('scoreOverlay').classList.remove('on')">Tinjau Jawaban</button>
+      <button class="btn-qnav btn-next" onclick="resetQuiz();document.getElementById('scoreOverlay').classList.remove('on')">Ulangi Kuis</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confettiCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99998;display:none;"></canvas>
+
+<script>
+// ─────────────── NAV ───────────────
+function show(pg,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('page-'+pg);
+  if(el)el.classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(pg==='tabel'&&!ptBuilt)buildPT();
+}
+function toggleNav(){
+  const n=document.getElementById('mainNav');n.classList.toggle('open');
+}
+function closeNav(){
+  document.getElementById('mainNav').classList.remove('open');
+}
+
+// ─────────────── PERIODIC TABLE DATA ───────────────
+const ELEMENTS=[
+  {z:1,sym:'H',name:'Hidrogen',mass:'1.008',cat:'hydrogen',g:1,p:1,config:'1s¹',desc:'Gas ringan, paling melimpah di alam semesta. Bahan bakar masa depan dan komponen utama air.'},
+  {z:2,sym:'He',name:'Helium',mass:'4.003',cat:'noble',g:18,p:1,config:'1s²',desc:'Gas mulia, titik didih terendah dari semua unsur. Digunakan untuk balon dan pendingin superkonduktor.'},
+  {z:3,sym:'Li',name:'Litium',mass:'6.941',cat:'alkali',g:1,p:2,config:'[He] 2s¹',desc:'Logam alkali paling ringan. Digunakan dalam baterai lithium-ion dan obat gangguan bipolar.'},
+  {z:4,sym:'Be',name:'Berilium',mass:'9.012',cat:'alkali-earth',g:2,p:2,config:'[He] 2s²',desc:'Logam ringan dan keras. Digunakan dalam industri kedirgantaraan dan jendela sinar-X.'},
+  {z:5,sym:'B',name:'Boron',mass:'10.81',cat:'metalloid',g:13,p:2,config:'[He] 2s² 2p¹',desc:'Metaloid penting. Digunakan dalam pembuatan kaca borosilikat (Pyrex) dan bahan nuklir.'},
+  {z:6,sym:'C',name:'Karbon',mass:'12.01',cat:'nonmetal',g:14,p:2,config:'[He] 2s² 2p²',desc:'Dasar kehidupan organik. Hadir sebagai grafit, berlian, dan fullerene. Karbon-14 digunakan untuk penanggalan radioaktif.'},
+  {z:7,sym:'N',name:'Nitrogen',mass:'14.01',cat:'nonmetal',g:15,p:2,config:'[He] 2s² 2p³',desc:'Penyusun 78% atmosfer bumi. Penting untuk sintesis protein dan pupuk (amonia).'},
+  {z:8,sym:'O',name:'Oksigen',mass:'16.00',cat:'nonmetal',g:16,p:2,config:'[He] 2s² 2p⁴',desc:'Penyusun 21% atmosfer, penting untuk respirasi. Unsur paling melimpah di kerak bumi.'},
+  {z:9,sym:'F',name:'Fluor',mass:'19.00',cat:'halogen',g:17,p:2,config:'[He] 2s² 2p⁵',desc:'Unsur paling elektronegatif dan reaktif. Digunakan dalam pasta gigi (fluoride) dan refrigeran.'},
+  {z:10,sym:'Ne',name:'Neon',mass:'20.18',cat:'noble',g:18,p:2,config:'[He] 2s² 2p⁶',desc:'Gas mulia, digunakan dalam lampu neon yang memancarkan cahaya merah-oranye khas.'},
+  {z:11,sym:'Na',name:'Natrium',mass:'22.99',cat:'alkali',g:1,p:3,config:'[Ne] 3s¹',desc:'Logam alkali reaktif. Komponen utama garam dapur (NaCl). Penting untuk fungsi saraf.'},
+  {z:12,sym:'Mg',name:'Magnesium',mass:'24.31',cat:'alkali-earth',g:2,p:3,config:'[Ne] 3s²',desc:'Logam ringan, penting untuk klorofil tanaman. Digunakan dalam paduan logam ringan.'},
+  {z:13,sym:'Al',name:'Aluminium',mass:'26.98',cat:'post-trans',g:13,p:3,config:'[Ne] 3s² 3p¹',desc:'Logam paling melimpah di kerak bumi. Ringan dan tahan korosi. Digunakan dalam kemasan dan konstruksi.'},
+  {z:14,sym:'Si',name:'Silikon',mass:'28.09',cat:'metalloid',g:14,p:3,config:'[Ne] 3s² 3p²',desc:'Semikonduktor utama elektronik modern. Penyusun pasir dan kaca (SiO₂).'},
+  {z:15,sym:'P',name:'Fosfor',mass:'30.97',cat:'nonmetal',g:15,p:3,config:'[Ne] 3s² 3p³',desc:'Penting untuk DNA, RNA, dan ATP. Digunakan dalam pupuk fosfat dan korek api.'},
+  {z:16,sym:'S',name:'Belerang',mass:'32.06',cat:'nonmetal',g:16,p:3,config:'[Ne] 3s² 3p⁴',desc:'Digunakan dalam produksi asam sulfat (H₂SO₄). Penting untuk asam amino sistein dan metionin.'},
+  {z:17,sym:'Cl',name:'Klor',mass:'35.45',cat:'halogen',g:17,p:3,config:'[Ne] 3s² 3p⁵',desc:'Gas kuning-hijau beracun. Digunakan sebagai disinfektan air minum dan kolam renang.'},
+  {z:18,sym:'Ar',name:'Argon',mass:'39.95',cat:'noble',g:18,p:3,config:'[Ne] 3s² 3p⁶',desc:'Gas mulia terbanyak ketiga di atmosfer (0.93%). Digunakan dalam las busur dan lampu pijar.'},
+  {z:19,sym:'K',name:'Kalium',mass:'39.10',cat:'alkali',g:1,p:4,config:'[Ar] 4s¹',desc:'Logam alkali penting untuk fungsi sel. Kalium-40 adalah isotop radioaktif alami yang umum.'},
+  {z:20,sym:'Ca',name:'Kalsium',mass:'40.08',cat:'alkali-earth',g:2,p:4,config:'[Ar] 4s²',desc:'Mineral penting untuk tulang dan gigi. Penyusun batu kapur (CaCO₃) dan semen.'},
+  {z:26,sym:'Fe',name:'Besi',mass:'55.85',cat:'transition',g:8,p:4,config:'[Ar] 3d⁶ 4s²',desc:'Logam transisi paling penting. Penyusun hemoglobin darah dan bahan dasar baja.'},
+  {z:29,sym:'Cu',name:'Tembaga',mass:'63.55',cat:'transition',g:11,p:4,config:'[Ar] 3d¹⁰ 4s¹',desc:'Konduktor listrik dan panas yang sangat baik. Digunakan dalam kabel listrik dan uang koin.'},
+  {z:30,sym:'Zn',name:'Seng',mass:'65.38',cat:'transition',g:12,p:4,config:'[Ar] 3d¹⁰ 4s²',desc:'Penting untuk imunitas tubuh. Digunakan dalam galvanisasi baja dan baterai karbon-seng.'},
+  {z:35,sym:'Br',name:'Bromin',mass:'79.90',cat:'halogen',g:17,p:4,config:'[Ar] 3d¹⁰ 4s² 4p⁵',desc:'Satu-satunya nonlogam yang berwujud cair pada suhu kamar. Digunakan dalam pestisida dan zat warna.'},
+  {z:36,sym:'Kr',name:'Kripton',mass:'83.80',cat:'noble',g:18,p:4,config:'[Ar] 3d¹⁰ 4s² 4p⁶',desc:'Gas mulia. Kripton-86 pernah dijadikan standar meter internasional. Digunakan dalam lampu sorot.'},
+  {z:47,sym:'Ag',name:'Perak',mass:'107.9',cat:'transition',g:11,p:5,config:'[Kr] 4d¹⁰ 5s¹',desc:'Konduktor listrik terbaik dari semua logam. Digunakan dalam perhiasan, fotografi, dan antibakteri.'},
+  {z:50,sym:'Sn',name:'Timah',mass:'118.7',cat:'post-trans',g:14,p:5,config:'[Kr] 4d¹⁰ 5s² 5p²',desc:'Logam lunak. Digunakan untuk melapisi kaleng makanan (tin can) dan dalam solder.'},
+  {z:53,sym:'I',name:'Iodin',mass:'126.9',cat:'halogen',g:17,p:5,config:'[Kr] 4d¹⁰ 5s² 5p⁵',desc:'Penting untuk hormon tiroid. Iodin-131 digunakan dalam terapi kanker tiroid.'},
+  {z:54,sym:'Xe',name:'Xenon',mass:'131.3',cat:'noble',g:18,p:5,config:'[Kr] 4d¹⁰ 5s² 5p⁶',desc:'Gas mulia berat. Digunakan dalam lampu flash kamera dan anestesi medis eksperimental.'},
+  {z:79,sym:'Au',name:'Emas',mass:'197.0',cat:'transition',g:11,p:6,config:'[Xe] 4f¹⁴ 5d¹⁰ 6s¹',desc:'Logam mulia, tidak berkarat. Digunakan dalam perhiasan, elektronik, dan standar moneter.'},
+  {z:80,sym:'Hg',name:'Merkuri',mass:'200.6',cat:'transition',g:12,p:6,config:'[Xe] 4f¹⁴ 5d¹⁰ 6s²',desc:'Satu-satunya logam yang cair pada suhu kamar. Sangat beracun. Digunakan dalam termometer dan amalgam gigi.'},
+  {z:82,sym:'Pb',name:'Timbal',mass:'207.2',cat:'post-trans',g:14,p:6,config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²',desc:'Logam berat, beracun. Digunakan dalam baterai aki, pelindung radiasi, dan (dahulu) bensin tetraetil timbal.'},
+  {z:86,sym:'Rn',name:'Radon',mass:'(222)',cat:'noble',g:18,p:6,config:'[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶',desc:'Gas radioaktif alami terbentuk dari peluruhan uranium. Dapat terakumulasi di basement dan berbahaya.'},
+  {z:92,sym:'U',name:'Uranium',mass:'238.0',cat:'actinide',g:3,p:7,config:'[Rn] 5f³ 6d¹ 7s²',desc:'Logam radioaktif berat. Digunakan sebagai bahan bakar reaktor nuklir dan senjata nuklir.'},
+];
+
+// Map: period row positions for full 18-column layout
+const PT_LAYOUT={
+  1:{1:[1],18:[2]},
+  2:{1:[3],2:[4],13:[5],14:[6],15:[7],16:[8],17:[9],18:[10]},
+  3:{1:[11],2:[12],13:[13],14:[14],15:[15],16:[16],17:[17],18:[18]},
+  4:{1:[19],2:[20],3:[null],4:[null],5:[null],6:[null],7:[null],8:[26],9:[null],10:[null],11:[29],12:[30],13:[null],14:[null],15:[null],16:[null],17:[35],18:[36]},
+  5:{1:['K+'],2:['Ca+'],3:[null],4:[null],5:[null],6:[null],7:[null],8:[null],9:[null],10:[null],11:[47],12:[null],13:[null],14:[50],15:[null],16:[null],17:[53],18:[54]},
+  6:{1:['Na+'],2:['Mg+'],3:['*'],4:[null],5:[null],6:[null],7:[null],8:[null],9:[null],10:[null],11:[79],12:[80],13:[null],14:[82],15:[null],16:[null],17:[null],18:[86]},
+  7:{1:['K+2'],2:['Ca+2'],3:['**'],4:[null],5:[null],6:[null],7:[null],8:[null],9:[null],10:[null],11:[null],12:[null],13:[null],14:[null],15:[null],16:[null],17:[null],18:[null]},
+};
+
+const ELEM_BY_Z = {};
+ELEMENTS.forEach(e=>ELEM_BY_Z[e.z]=e);
+
+const CAT_COLORS={
+  hydrogen:'hydrogen',alkali:'alkali','alkali-earth':'alkali-earth',
+  transition:'transition','post-trans':'post-trans',metalloid:'metalloid',
+  nonmetal:'nonmetal',halogen:'halogen',noble:'noble',
+  lanthanide:'lanthanide',actinide:'actinide',unknown:'unknown'
+};
+
+const CAT_LABELS={
+  hydrogen:'Hidrogen',alkali:'Logam Alkali','alkali-earth':'Alkali Tanah',
+  transition:'Logam Transisi','post-trans':'Logam Pasca Transisi',
+  metalloid:'Metaloid',nonmetal:'Nonlogam',halogen:'Halogen',
+  noble:'Gas Mulia',lanthanide:'Lantanida',actinide:'Aktinida',unknown:'Belum Diketahui'
+};
+
+const CAT_BG={
+  hydrogen:'#fef2f2',alkali:'#fde8d8','alkali-earth':'#fef9c3',
+  transition:'#dbeafe','post-trans':'#d1fae5',metalloid:'#ede9fe',
+  nonmetal:'#fce7f3',halogen:'#ffedd5',noble:'#e0f2fe',
+  lanthanide:'#f3e8ff',actinide:'#fce7f3',unknown:'#f1f5f9'
+};
+const CAT_TC={
+  hydrogen:'#7f1d1d',alkali:'#7c2d12','alkali-earth':'#713f12',
+  transition:'#1e3a8a','post-trans':'#064e3b',metalloid:'#4c1d95',
+  nonmetal:'#831843',halogen:'#7c2d12',noble:'#0c4a6e',
+  lanthanide:'#581c87',actinide:'#831843',unknown:'#475569'
+};
+
+let ptBuilt=false;
+
+function buildPT(){
+  const grid=document.getElementById('ptGrid');
+  if(!grid)return;
+  grid.innerHTML='';
+  // Build 7 rows x 18 cols
+  for(let row=1;row<=9;row++){
+    for(let col=1;col<=18;col++){
+      const cell=document.createElement('div');
+      cell.style.cssText='';
+      if(row===8){
+        // spacer row
+        const sp=document.createElement('div');
+        sp.style.cssText='grid-column:span 18;height:6px;';
+        if(col===1){grid.appendChild(sp);}
+        continue;
+      }
+      // Map row to period
+      const period=row<=7?row:(row===9?7.5:8);
+      // Find element at this position
+      let elem=null;
+      if(row<=7){
+        const rowLayout=PT_LAYOUT[row];
+        if(rowLayout&&rowLayout[col]!==undefined){
+          const zArr=rowLayout[col];
+          if(zArr&&zArr[0]&&typeof zArr[0]==='number'){
+            elem=ELEM_BY_Z[zArr[0]]||null;
+          } else if(zArr&&zArr[0]==='*'){
+            // lanthanide placeholder
+            cell.className='el lanthanide';
+            cell.style.cssText='font-size:9px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;min-height:42px;background:#f3e8ff;border:1px dashed #a855f7;border-radius:5px;';
+            cell.innerHTML='<span style="font-size:8px;color:#581c87;">57-71</span><span style="font-size:7px;color:#a855f7;">La-Lu</span>';
+            grid.appendChild(cell);continue;
+          } else if(zArr&&zArr[0]==='**'){
+            cell.className='el actinide';
+            cell.style.cssText='font-size:9px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;min-height:42px;background:#fce7f3;border:1px dashed #db2777;border-radius:5px;';
+            cell.innerHTML='<span style="font-size:8px;color:#831843;">89-103</span><span style="font-size:7px;color:#db2777;">Ac-Lr</span>';
+            grid.appendChild(cell);continue;
+          }
+        }
+      }
+      if(row<=7&&PT_LAYOUT[row]&&PT_LAYOUT[row][col]===undefined){
+        // empty cell
+        cell.style.visibility='hidden';
+        grid.appendChild(cell);continue;
+      }
+      if(elem){
+        cell.className='el '+CAT_COLORS[elem.cat];
+        cell.setAttribute('title',elem.name);
+        cell.innerHTML=`<span class="an">${elem.z}</span><span class="sym">${elem.sym}</span><span class="nm">${elem.name.length>8?elem.name.substring(0,7)+'…':elem.name}</span>`;
+        cell.onclick=()=>openElModal(elem);
+      } else {
+        cell.style.visibility='hidden';
+      }
+      grid.appendChild(cell);
+    }
+  }
+  // Lanthanide row (period 8 visual)
+  for(let col=1;col<=18;col++){
+    const cell=document.createElement('div');
+    if(col<4||col>17){cell.style.visibility='hidden';grid.appendChild(cell);continue;}
+    const lans=[57,58,59,60,61,62,63,64,65,66,67,68,69,70,71];
+    const li=col-4;
+    const lz=lans[li];
+    const lNames=['La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu'];
+    const lFull=['Lantanum','Serium','Praseodimium','Neodimium','Prometium','Samarium','Europium','Gadolinium','Terbium','Disprosium','Holmium','Erbium','Tulium','Iterbium','Lutesium'];
+    if(li>=0&&li<15){
+      cell.className='el lanthanide';
+      cell.innerHTML=`<span class="an">${lz}</span><span class="sym">${lNames[li]}</span><span class="nm" style="font-size:5.5px;">${lFull[li].substring(0,7)}</span>`;
+      const ld=lFull[li];
+      cell.onclick=()=>openElModal({z:lz,sym:lNames[li],name:ld,mass:'—',cat:'lanthanide',g:3,p:6,config:'[Xe] 4f…',desc:`${ld} adalah unsur lantanida (unsur tanah jarang) dengan nomor atom ${lz}.`});
+    } else {
+      cell.style.visibility='hidden';
+    }
+    grid.appendChild(cell);
+  }
+  // Actinide row (period 9 visual)
+  for(let col=1;col<=18;col++){
+    const cell=document.createElement('div');
+    if(col<4||col>17){cell.style.visibility='hidden';grid.appendChild(cell);continue;}
+    const acts=[89,90,91,92,93,94,95,96,97,98,99,100,101,102,103];
+    const ai=col-4;
+    const az=acts[ai];
+    const aNames=['Ac','Th','Pa','U','Np','Pu','Am','Cm','Bk','Cf','Es','Fm','Md','No','Lr'];
+    const aFull=['Aktinium','Torium','Protaktinium','Uranium','Neptunium','Plutonium','Amerisium','Kurium','Berkelium','Kalifornium','Einsteinium','Fermium','Mendelevium','Nobelium','Lawrensium'];
+    if(ai>=0&&ai<15){
+      cell.className='el actinide';
+      cell.innerHTML=`<span class="an">${az}</span><span class="sym">${aNames[ai]}</span><span class="nm" style="font-size:5.5px;">${aFull[ai].substring(0,7)}</span>`;
+      const desc=ELEM_BY_Z[az]?ELEM_BY_Z[az].desc:`${aFull[ai]} adalah unsur aktinida radioaktif dengan nomor atom ${az}.`;
+      const cfg=ELEM_BY_Z[az]?ELEM_BY_Z[az].config:'[Rn] 5f…';
+      cell.onclick=()=>openElModal({z:az,sym:aNames[ai],name:aFull[ai],mass:ELEM_BY_Z[az]?ELEM_BY_Z[az].mass:'—',cat:'actinide',g:3,p:7,config:cfg,desc});
+    } else {
+      cell.style.visibility='hidden';
+    }
+    grid.appendChild(cell);
+  }
+  ptBuilt=true;
+}
+
+function openElModal(el){
+  const m=document.getElementById('elModal');
+  document.getElementById('emSym').textContent=el.sym;
+  document.getElementById('emSym').style.color=CAT_TC[el.cat]||'#374151';
+  document.getElementById('emName').textContent=el.name;
+  const catEl=document.getElementById('emCat');
+  catEl.textContent=CAT_LABELS[el.cat]||el.cat;
+  catEl.style.background=CAT_BG[el.cat]||'#f3f4f6';
+  catEl.style.color=CAT_TC[el.cat]||'#374151';
+  catEl.style.border='1px solid '+(CAT_TC[el.cat]||'#9ca3af')+'44';
+  document.getElementById('emAN').textContent=el.z;
+  document.getElementById('emMass').textContent=el.mass+' u';
+  document.getElementById('emGroup').textContent=el.g||'—';
+  document.getElementById('emPeriod').textContent=el.p;
+  document.getElementById('emConfig').textContent=el.config;
+  document.getElementById('emDesc').textContent=el.desc;
+  m.classList.add('on');
+}
+function closeElModal(){
+  document.getElementById('elModal').classList.remove('on');
+}
+document.getElementById('elModal').addEventListener('click',function(e){if(e.target===this)closeElModal();});
+
+// ─────────────── SIMULASI TAB SWITCH ───────────────
+function switchSimTab(id, btn){
+  document.querySelectorAll('.sim-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sim-tab').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('sp-'+id);
+  if(panel)panel.classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='atom')drawAtom();
+  if(id==='sifat')drawSifatChart();
+  if(id==='reaksi')initReactCanvas();
+  if(id==='ionisasi'){loadIonEl();drawIonChart();}
+}
+
+// ═══════════════════════════════════════════
+// PANEL 1: MODEL ATOM BOHR (Canvas Animation)
+// ═══════════════════════════════════════════
+const ATOM_DATA={
+  1:{shells:[1],config:'1s¹',mass:'1.008',cat:'hydrogen',fact:'Hidrogen adalah unsur paling ringan dan paling melimpah di alam semesta — 75% dari seluruh materi biasa.'},
+  2:{shells:[2],config:'1s²',mass:'4.003',cat:'noble',fact:'Helium tidak dapat membeku pada tekanan atmosfer normal, bahkan mendekati nol mutlak.'},
+  3:{shells:[2,1],config:'[He] 2s¹',mass:'6.941',cat:'alkali',fact:'Litium cukup ringan untuk mengapung di atas air — massa jenisnya hanya 0,534 g/cm³.'},
+  4:{shells:[2,2],config:'[He] 2s²',mass:'9.012',cat:'alkali-earth',fact:'Berilium sangat transparan terhadap sinar-X, menjadikannya bahan jendela tabung sinar-X.'},
+  5:{shells:[2,3],config:'[He] 2s² 2p¹',mass:'10.81',cat:'metalloid',fact:'Boron ditemukan dalam jumlah melimpah di Danau Mono, California — 10× konsentrasi normal.'},
+  6:{shells:[2,4],config:'[He] 2s² 2p²',mass:'12.01',cat:'nonmetal',fact:'Intan (berlian) adalah karbon murni dengan ikatan kovalen terkuat — material alami paling keras.'},
+  7:{shells:[2,5],config:'[He] 2s² 2p³',mass:'14.01',cat:'nonmetal',fact:'78% udara yang kita hirup adalah nitrogen. Gas N₂ bersifat sangat stabil karena ikatan rangkap tiga.'},
+  8:{shells:[2,6],config:'[He] 2s² 2p⁴',mass:'16.00',cat:'nonmetal',fact:'Oksigen adalah unsur ketiga paling melimpah di alam semesta, setelah hidrogen dan helium.'},
+  9:{shells:[2,7],config:'[He] 2s² 2p⁵',mass:'19.00',cat:'halogen',fact:'Fluor begitu reaktif sehingga bahkan air, pasir, dan kaca bisa terbakar dalam atmosfer fluor murni.'},
+  10:{shells:[2,8],config:'[He] 2s² 2p⁶',mass:'20.18',cat:'noble',fact:'Neon dalam tabung lampu menghasilkan cahaya oranye-merah. Warna lain (biru, hijau) menggunakan gas berbeda.'},
+  11:{shells:[2,8,1],config:'[Ne] 3s¹',mass:'22.99',cat:'alkali',fact:'Natrium terbakar dengan api kuning cerah — itulah mengapa kembang api berwarna kuning menggunakan garam natrium.'},
+  12:{shells:[2,8,2],config:'[Ne] 3s²',mass:'24.31',cat:'alkali-earth',fact:'Magnesium terbakar dengan cahaya putih sangat terang — digunakan dalam sinyal distress dan kembang api.'},
+  13:{shells:[2,8,3],config:'[Ne] 3s² 3p¹',mass:'26.98',cat:'post-trans',fact:'Aluminium adalah logam paling melimpah di kerak bumi (8%), namun baru berhasil diisolasi tahun 1825.'},
+  14:{shells:[2,8,4],config:'[Ne] 3s² 3p²',mass:'28.09',cat:'metalloid',fact:'Silikon murni berwarna abu-abu metalik mengkilap — sangat berbeda dengan pasir pantai (SiO₂ kotor).'},
+  15:{shells:[2,8,5],config:'[Ne] 3s² 3p³',mass:'30.97',cat:'nonmetal',fact:'Fosfor putih berpendar dalam gelap karena reaksi oksidasi lambat — itulah asal kata "fosforesensi".'},
+  16:{shells:[2,8,6],config:'[Ne] 3s² 3p⁴',mass:'32.06',cat:'nonmetal',fact:'Belerang dikenal sejak zaman kuno sebagai "batu api" — alkitab menyebutnya brimstone (sulfur).'},
+  17:{shells:[2,8,7],config:'[Ne] 3s² 3p⁵',mass:'35.45',cat:'halogen',fact:'Klor digunakan sebagai senjata kimia pertama dalam Perang Dunia I (1915), dilepaskan di Ypres, Belgia.'},
+  18:{shells:[2,8,8],config:'[Ne] 3s² 3p⁶',mass:'39.95',cat:'noble',fact:'Argon membentuk sekitar 1% atmosfer bumi — lebih banyak dari CO₂. Digunakan untuk mengisi bola lampu.'},
+  19:{shells:[2,8,8,1],config:'[Ar] 4s¹',mass:'39.10',cat:'alkali',fact:'Kalium-40 bersifat radioaktif — tubuh manusia secara alami mengandung ~4.000 Bq kalium-40.'},
+  20:{shells:[2,8,8,2],config:'[Ar] 4s²',mass:'40.08',cat:'alkali-earth',fact:'Gigi dan tulang kita mengandung ~1 kg kalsium. Kalsium juga penting untuk kontraksi otot jantung.'},
+};
+
+const CAT_COLORS_ATOM={
+  hydrogen:'#ef4444',alkali:'#f97316','alkali-earth':'#eab308',
+  transition:'#3b82f6','post-trans':'#10b981',metalloid:'#8b5cf6',
+  nonmetal:'#ec4899',halogen:'#f97316',noble:'#0ea5e9',
+  lanthanide:'#a855f7',actinide:'#db2777',unknown:'#94a3b8'
+};
+
+let atomAnimId=null, atomAnimRunning=true, atomAngles=[];
+const SHELL_COLORS=['#8b5cf6','#60a5fa','#34d399','#fbbf24','#f87171'];
+const SHELL_RADII=[28,48,66,82,96];
+
+function drawAtom(){
+  const z=parseInt(document.getElementById('atomSelect').value);
+  const data=ATOM_DATA[z];
+  if(!data)return;
+  const el=ELEMENTS.find(e=>e.z===z)||{sym:'?',name:'?',g:'?',p:1};
+
+  // Update info panel
+  document.getElementById('aiZ').textContent=z;
+  document.getElementById('aiMass').textContent=data.mass;
+  document.getElementById('aiProton').textContent=z;
+  document.getElementById('aiNeutron').textContent=Math.round(parseFloat(data.mass)-z)||'—';
+  document.getElementById('aiElectron').textContent=z;
+  document.getElementById('aiPeriod').textContent=data.shells.length;
+  document.getElementById('aiConfig').textContent=data.config;
+
+  const shellText=data.shells.map((n,i)=>`Kulit ${['K','L','M','N','O'][i]}: ${n} elektron`).join(' | ');
+  document.getElementById('aiShellDist').textContent=shellText;
+
+  const badge=document.getElementById('aiCatBadge');
+  badge.textContent=CAT_LABELS[data.cat]||data.cat;
+  badge.style.background=CAT_BG[data.cat]||'#f3f4f6';
+  badge.style.color=CAT_TC[data.cat]||'#374151';
+
+  document.getElementById('aiFact').textContent=data.fact;
+
+  // Init angles
+  atomAngles=data.shells.map(()=>0);
+  if(atomAnimId)cancelAnimationFrame(atomAnimId);
+  const canvas=document.getElementById('atomCanvas');
+  const ctx=canvas.getContext('2d');
+  const cx=100,cy=100;
+
+  function animFrame(){
+    ctx.clearRect(0,0,200,200);
+    // Background gradient
+    const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,100);
+    bg.addColorStop(0,'#1e1b4b');bg.addColorStop(1,'#0f172a');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,200,200);
+
+    // Nucleus glow
+    const ng=ctx.createRadialGradient(cx,cy,0,cx,cy,16);
+    const nc=CAT_COLORS_ATOM[data.cat]||'#f59e0b';
+    ng.addColorStop(0,nc+'ff');ng.addColorStop(0.5,nc+'88');ng.addColorStop(1,nc+'00');
+    ctx.fillStyle=ng;ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fill();
+    // Nucleus core
+    ctx.fillStyle=nc;ctx.beginPath();ctx.arc(cx,cy,9,0,Math.PI*2);ctx.fill();
+    // Nucleus label
+    ctx.fillStyle='#fff';ctx.font='bold 7px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(el.sym,cx,cy);
+
+    // Shells & electrons
+    data.shells.forEach((nEl,si)=>{
+      const r=SHELL_RADII[si];
+      const sc=SHELL_COLORS[si];
+      // Orbit ring
+      ctx.strokeStyle=sc+'44';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+      // Electrons
+      for(let ei=0;ei<nEl;ei++){
+        const baseAngle=(2*Math.PI*ei/nEl)+(atomAngles[si]||0);
+        const ex=cx+r*Math.cos(baseAngle);
+        const ey=cy+r*Math.sin(baseAngle);
+        // Electron glow
+        const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,5);
+        eg.addColorStop(0,sc+'ff');eg.addColorStop(1,sc+'00');
+        ctx.fillStyle=eg;ctx.beginPath();ctx.arc(ex,ey,5,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=sc;ctx.beginPath();ctx.arc(ex,ey,2.5,0,Math.PI*2);ctx.fill();
+      }
+      // Rotate
+      const speed=[0.025,0.018,0.013,0.009,0.006][si];
+      if(atomAnimRunning)atomAngles[si]=(atomAngles[si]||0)+speed;
+    });
+
+    if(atomAnimRunning)atomAnimId=requestAnimationFrame(animFrame);
+    else{atomAnimId=null;}
+  }
+  if(atomAnimRunning)animFrame();
+  else{
+    atomAngles=data.shells.map(()=>0);
+    // draw static
+    ctx.clearRect(0,0,200,200);
+    const bg=ctx.createRadialGradient(cx,cy,0,cx,cy,100);
+    bg.addColorStop(0,'#1e1b4b');bg.addColorStop(1,'#0f172a');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,200,200);
+    const nc=CAT_COLORS_ATOM[data.cat]||'#f59e0b';
+    ctx.fillStyle=nc;ctx.beginPath();ctx.arc(cx,cy,9,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 7px Inter';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(el.sym,cx,cy);
+    data.shells.forEach((nEl,si)=>{
+      const r=SHELL_RADII[si];const sc=SHELL_COLORS[si];
+      ctx.strokeStyle=sc+'44';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+      for(let ei=0;ei<nEl;ei++){
+        const angle=2*Math.PI*ei/nEl;
+        const ex=cx+r*Math.cos(angle),ey=cy+r*Math.sin(angle);
+        ctx.fillStyle=sc;ctx.beginPath();ctx.arc(ex,ey,2.5,0,Math.PI*2);ctx.fill();
+      }
+    });
+  }
+}
+
+function toggleAtomAnim(){
+  atomAnimRunning=!atomAnimRunning;
+  const btn=document.getElementById('btnAtomAnim');
+  btn.textContent=atomAnimRunning?'⏸ Pause':'▶ Putar';
+  if(atomAnimRunning)drawAtom();
+}
+
+// Init atom
+setTimeout(()=>{if(document.getElementById('atomCanvas'))drawAtom();},200);
+
+// ═══════════════════════════════════════════
+// PANEL 2: GRAFIK SIFAT PERIODIK
+// ═══════════════════════════════════════════
+const SIFAT_DATA={
+  p2:{
+    labels:['Li','Be','B','C','N','O','F','Ne'],
+    jari:[152,112,87,77,75,73,64,38],
+    ionisasi:[520,900,801,1086,1402,1314,1681,2081],
+    en:[0.98,1.57,2.04,2.55,3.04,3.44,3.98,null],
+    afinitas:[60,0,27,122,0,141,328,0],
+  },
+  p3:{
+    labels:['Na','Mg','Al','Si','P','S','Cl','Ar'],
+    jari:[186,160,143,117,110,103,99,71],
+    ionisasi:[496,738,578,786,1012,1000,1251,1521],
+    en:[0.93,1.31,1.61,1.90,2.19,2.58,3.16,null],
+    afinitas:[53,0,43,134,72,200,349,0],
+  },
+  g1:{
+    labels:['Li','Na','K','Rb','Cs'],
+    jari:[152,186,227,248,265],
+    ionisasi:[520,496,419,403,376],
+    en:[0.98,0.93,0.82,0.82,0.79],
+    afinitas:[60,53,48,47,46],
+  }
+};
+
+const TREND_TEXT={
+  p2:{
+    jari:'Dalam Periode 2, jari-jari atom <strong>mengecil</strong> dari Li→Ne. Muatan inti (+Z) bertambah menarik elektron lebih kuat, sedangkan jumlah kulit tetap (kulit ke-2).',
+    ionisasi:'Dalam Periode 2, energi ionisasi cenderung <strong>bertambah</strong>. Anomali: B < Be (orbital 2p lebih mudah dilepas) dan O < N (pasangan e dalam 2p saling tolak).',
+    en:'Keelektronegatifan <strong>bertambah</strong> dari Li ke F dalam Periode 2. F (3,98) adalah unsur paling elektronegatif. Ne tidak memiliki nilai (tidak membentuk ikatan).',
+    afinitas:'Afinitas elektron cenderung <strong>bertambah</strong> dari Li ke F. N dan Ne memiliki afinitas ~0 karena konfigurasi stabil (setengah penuh dan penuh).',
+  },
+  p3:{
+    jari:'Dalam Periode 3, jari-jari atom juga <strong>mengecil</strong> dari Na→Cl, dengan pola serupa periode 2. Ar memiliki jari-jari van der Waals (71 pm).',
+    ionisasi:'Periode 3: energi ionisasi cenderung naik dari Na→Ar. Anomali serupa: Al < Mg dan S < P akibat efek subkulit setengah penuh.',
+    en:'Dalam Periode 3, keelektronegatifan <strong>meningkat</strong> dari Na (0,93) ke Cl (3,16). Ar tidak punya nilai karena gas mulia tidak membentuk ikatan.',
+    afinitas:'Afinitas elektron Periode 3 meningkat dari Na ke Cl, dengan nilai tertinggi pada Cl (349 kJ/mol) karena mudah menerima 1 elektron untuk mencapai konfigurasi oktet.',
+  },
+  g1:{
+    jari:'Dalam Golongan IA, jari-jari atom <strong>membesar</strong> dari Li→Cs karena jumlah kulit elektron bertambah (K, L, M, N, O) meskipun muatan inti juga bertambah.',
+    ionisasi:'Energi ionisasi Golongan IA <strong>berkurang</strong> dari Li→Cs. Makin besar jari-jari atom, makin lemah gaya tarik inti terhadap elektron valensi.',
+    en:'Keelektronegatifan Golongan IA <strong>berkurang</strong> dari Li ke Cs. Logam alkali umumnya memiliki keelektronegatifan rendah — cenderung melepas, bukan menarik elektron.',
+    afinitas:'Afinitas elektron Golongan IA relatif kecil dan berkurang ke bawah, menunjukkan bahwa atom-atom ini kurang "ingin" menangkap elektron tambahan.',
+  }
+};
+
+let curSifat='jari', curSeries='p2';
+
+function setSifat(key,btn){
+  curSifat=key;
+  document.querySelectorAll('.sifat-btn').forEach(b=>{
+    if(['Periode 2','Periode 3','Golongan IA'].some(t=>b.textContent.includes(t)))return;
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  drawSifatChart();
+}
+
+function setSeries(key,btn){
+  curSeries=key;
+  ['btnP2','btnP3','btnG1'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  btn.classList.add('active');
+  drawSifatChart();
+}
+
+function drawSifatChart(){
+  const d=SIFAT_DATA[curSeries];
+  const vals=d[curSifat];
+  const labels=d.labels;
+  const svg=document.getElementById('sifatSvg');
+  if(!svg)return;
+
+  const W=560,H=200,padL=40,padR=10,padT=20,padB=35;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+
+  const filtered=vals.map((v,i)=>({v,l:labels[i]})).filter(x=>x.v!==null&&x.v>0);
+  const maxV=Math.max(...filtered.map(x=>x.v))*1.12;
+  const n=filtered.length;
+  const barW=Math.min(40, (plotW/n)*0.65);
+  const gap=(plotW-barW*n)/(n+1);
+
+  const barColors=['#8b5cf6','#7c3aed','#6d28d9','#a78bfa','#c4b5fd','#7c3aed','#5b21b6','#4c1d95'];
+
+  let html=`<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  // Y-axis
+  html+=`<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#c5cfe0" stroke-width="1"/>`;
+  // X-axis
+  html+=`<line x1="${padL}" y1="${padT+plotH}" x2="${padL+plotW}" y2="${padT+plotH}" stroke="#c5cfe0" stroke-width="1"/>`;
+  // Grid + Y labels
+  for(let i=0;i<=4;i++){
+    const yv=Math.round(maxV*i/4);
+    const yp=padT+plotH-plotH*(i/4);
+    html+=`<line x1="${padL}" y1="${yp}" x2="${padL+plotW}" y2="${yp}" stroke="#e2e8f0" stroke-width="0.5"/>`;
+    html+=`<text x="${padL-4}" y="${yp+3}" text-anchor="end" font-size="8" fill="#94a3b8" font-family="JetBrains Mono,monospace">${yv}</text>`;
+  }
+  // Bars
+  filtered.forEach((item,i)=>{
+    const x=padL+gap+(barW+gap)*i;
+    const bh=(item.v/maxV)*plotH;
+    const y=padT+plotH-bh;
+    const col=barColors[i%barColors.length];
+    html+=`<rect x="${x.toFixed(1)}" y="${plotH+padT}" width="${barW}" height="0" fill="${col}" rx="3" style="transition:height .6s ease,y .6s ease">
+      <animate attributeName="height" from="0" to="${bh.toFixed(1)}" dur="0.6s" begin="${i*0.07}s" fill="freeze"/>
+      <animate attributeName="y" from="${plotH+padT}" to="${y.toFixed(1)}" dur="0.6s" begin="${i*0.07}s" fill="freeze"/>
+    </rect>`;
+    // Value label
+    html+=`<text x="${(x+barW/2).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#6d28d9" font-family="JetBrains Mono,monospace" opacity="0">
+      <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="${i*0.07+0.5}s" fill="freeze"/>
+      ${curSifat==='en'?item.v.toFixed(2):item.v}
+    </text>`;
+    // X label
+    html+=`<text x="${(x+barW/2).toFixed(1)}" y="${padT+plotH+14}" text-anchor="middle" font-size="10" fill="#475569" font-weight="600" font-family="Space Grotesk,sans-serif">${item.l}</text>`;
+  });
+  // Trend line
+  if(filtered.length>1){
+    const pts=filtered.map((item,i)=>{
+      const x=padL+gap+(barW+gap)*i+barW/2;
+      const y=padT+plotH-(item.v/maxV)*plotH;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    html+=`<polyline points="${pts}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>`;
+  }
+  svg.innerHTML=html;
+  // Trend text
+  document.getElementById('trendText').innerHTML=TREND_TEXT[curSeries][curSifat];
+}
+
+setTimeout(()=>{drawSifatChart();},300);
+
+// ═══════════════════════════════════════════
+// PANEL 3: REAKSI UNSUR
+// ═══════════════════════════════════════════
+const REACT_DB={
+  'na-h2o':{eq:'2Na + 2H₂O → 2NaOH + H₂↑',type:'Reaksi redoks • sangat eksoterm • menghasilkan gas H₂ dan nyala',color:'#3b82f6',intensity:0.9,gas:true,flame:true,smoke:false,log:['Na bereaksi hebat dengan air','Terjadi gelembung gas H₂','Nyala kuning terlihat (ion Na⁺)','Larutan menjadi basa (NaOH, pH > 12)','⚠️ Reaksi berbahaya — lakukan di lemari asam']},
+  'na-o2':{eq:'4Na + O₂ → 2Na₂O',type:'Reaksi oksidasi • eksoterm • membentuk oksida padat',color:'#f97316',intensity:0.7,gas:false,flame:true,smoke:true,log:['Na teroksidasi cepat di udara','Permukaan Na berubah abu-abu (Na₂O)','Terjadi nyala terang jika dipanaskan','Produk: Na₂O bersifat basa jika dilarutkan']},
+  'na-hcl':{eq:'2Na + 2HCl → 2NaCl + H₂↑',type:'Reaksi logam-asam • sangat eksoterm',color:'#10b981',intensity:0.85,gas:true,flame:true,smoke:false,log:['Na bereaksi hebat dengan HCl','Gas H₂ dibebaskan (gelembung besar)','Produk: NaCl (garam dapur) larut dalam air','Reaksi berlangsung cepat — perlu hati-hati']},
+  'na-naoh':{eq:'Na + NaOH → tidak bereaksi signifikan',type:'Logam alkali tidak bereaksi dengan basa',color:'#94a3b8',intensity:0.1,gas:false,flame:false,smoke:false,log:['Na tidak bereaksi secara signifikan dengan NaOH','Keduanya bersifat basa — tidak ada dorongan reaksi','Catatan: dalam larutan air, Na masih bereaksi dengan H₂O']},
+  'mg-h2o':{eq:'Mg + 2H₂O → Mg(OH)₂ + H₂↑',type:'Reaksi lambat dengan air dingin, cepat dengan uap air',color:'#60a5fa',intensity:0.4,gas:true,flame:false,smoke:false,log:['Mg bereaksi lambat dengan air dingin','Gelembung H₂ muncul perlahan','Mg(OH)₂ terbentuk (larut sebagian)','Dengan air mendidih/uap: reaksi jauh lebih cepat']},
+  'mg-o2':{eq:'2Mg + O₂ → 2MgO',type:'Reaksi pembakaran • sangat eksoterm • cahaya putih terang',color:'#fbbf24',intensity:1.0,gas:false,flame:true,smoke:true,log:['Mg terbakar dengan cahaya putih SANGAT terang','Suhu pembakaran mencapai 3100°C','MgO terbentuk sebagai serbuk putih padat','⚠️ Jangan menatap langsung — dapat membutakan mata']},
+  'mg-hcl':{eq:'Mg + 2HCl → MgCl₂ + H₂↑',type:'Reaksi logam-asam • eksoterm • menghasilkan H₂',color:'#34d399',intensity:0.6,gas:true,flame:false,smoke:false,log:['Mg bereaksi dengan HCl menghasilkan gelembung H₂','Reaksi lebih lambat dari Na + HCl','MgCl₂ (larutan) + H₂ gas dibebaskan','Larutan menghangat (reaksi eksoterm)']},
+  'fe-h2o':{eq:'3Fe + 4H₂O → Fe₃O₄ + 4H₂↑',type:'Reaksi pada suhu tinggi (karat terjadi lebih lambat)',color:'#94a3b8',intensity:0.2,gas:true,flame:false,smoke:false,log:['Fe bereaksi sangat lambat dengan air dingin','Membentuk karat (oksidasi Fe) secara perlahan','Pada suhu tinggi: Fe₃O₄ + H₂ dibebaskan','Di laboratorium: uap air + Fe panas = magnetit (Fe₃O₄)']},
+  'fe-o2':{eq:'4Fe + 3O₂ → 2Fe₂O₃',type:'Oksidasi lambat (karat) atau pembakaran pada suhu tinggi',color:'#f97316',intensity:0.5,gas:false,flame:true,smoke:true,log:['Fe berkarat perlahan di udara lembab (Fe₂O₃)','Serbuk besi halus terbakar dalam O₂ murni','Produk: Fe₂O₃ berwarna merah-coklat (karat)','Besi dalam O₂ murni berpijar dengan percikan api']},
+  'fe-hcl':{eq:'Fe + 2HCl → FeCl₂ + H₂↑',type:'Reaksi logam-asam • menghasilkan H₂',color:'#34d399',intensity:0.45,gas:true,flame:false,smoke:false,log:['Fe bereaksi dengan HCl menghasilkan FeCl₂','Larutan menjadi hijau pucat (ion Fe²⁺)','Gas H₂ dibebaskan perlahan','Reaksi lebih lambat dibanding Na atau Mg']},
+  'cl2-h2o':{eq:'Cl₂ + H₂O ⇌ HCl + HClO',type:'Reaksi hidrolisis • kesetimbangan • bersifat asam & oksidator',color:'#a3e635',intensity:0.5,gas:false,flame:false,smoke:false,log:['Cl₂ bereaksi dengan air membentuk larutan klor','Terbentuk HCl (asam kuat) dan HClO (asam hipoklorit)','HClO adalah pemutih dan disinfektan','pH larutan menurun (bersifat asam)']},
+  'cl2-o2':{eq:'Cl₂ + O₂ → tidak bereaksi langsung',type:'Klor dan oksigen tidak bereaksi langsung',color:'#94a3b8',intensity:0.05,gas:false,flame:false,smoke:false,log:['Cl₂ dan O₂ tidak bereaksi secara langsung','Keduanya bersifat nonlogam dan oksidator','Tidak ada reaksi spontan tanpa katalis khusus']},
+  'cl2-hcl':{eq:'Cl₂ + 2HCl → tidak bereaksi signifikan',type:'Klor tidak bereaksi dengan HCl',color:'#94a3b8',intensity:0.05,gas:false,flame:false,smoke:false,log:['Cl₂ dan HCl tidak bereaksi satu sama lain','HCl mengandung Cl sudah dalam biloks -1','Cl₂ adalah oksidator, bukan untuk Cl⁻']},
+  'cu-h2o':{eq:'Cu + H₂O → tidak bereaksi',type:'Tembaga tidak bereaksi dengan air',color:'#94a3b8',intensity:0.05,gas:false,flame:false,smoke:false,log:['Cu tidak bereaksi dengan air pada suhu kamar','Cu adalah logam mulia (E° lebih positif dari H)','Itulah mengapa pipa tembaga tahan air']},
+  'cu-o2':{eq:'2Cu + O₂ → 2CuO',type:'Oksidasi lambat — tembaga berubah warna hijau (patina)',color:'#10b981',intensity:0.3,gas:false,flame:false,smoke:true,log:['Cu teroksidasi perlahan di udara','Permukaan berubah menjadi CuO (hitam)','Lama kelamaan terbentuk Cu₂(OH)₂CO₃ (patina hijau)','Patina inilah yang melapisi Patung Liberty']},
+  'cu-hcl':{eq:'Cu + HCl → tidak bereaksi (tanpa O₂)',type:'Cu tidak larut dalam HCl murni tanpa oksidator',color:'#94a3b8',intensity:0.1,gas:false,flame:false,smoke:false,log:['Cu tidak bereaksi dengan HCl murni','Cu memiliki potensial reduksi > H (tidak bisa mereduksi H⁺)','Namun Cu larut dalam HNO₃ (asam pengoksidasi)']},
+};
+
+function getReactKey(){
+  return document.getElementById('reactEl').value+'-'+document.getElementById('reactWith').value;
+}
+
+document.getElementById('reactEl').addEventListener('change',updateReactEq);
+document.getElementById('reactWith').addEventListener('change',updateReactEq);
+
+function updateReactEq(){
+  const k=getReactKey();
+  const r=REACT_DB[k]||{eq:'Reaksi tidak tersedia dalam database',type:'—'};
+  document.getElementById('reactEq').textContent=r.eq;
+  document.getElementById('reactType').textContent=r.type;
+}
+
+let reactAnimId=null, reactParticles=[], reactRunning=false;
+
+function initReactCanvas(){
+  const canvas=document.getElementById('reactCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  drawIdleBeaker(ctx);
+}
+
+function drawIdleBeaker(ctx){
+  ctx.clearRect(0,0,320,190);
+  // Dark background
+  ctx.fillStyle='#0f172a';ctx.fillRect(0,0,320,190);
+  // Beaker outline
+  drawBeakerShape(ctx,100,20,120,150,'#475569','#1e293b',0.5);
+  // Label
+  ctx.fillStyle='#64748b';ctx.font='12px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Pilih unsur dan pereaksi',160,100);
+  ctx.fillText('lalu klik ▶ Mulai Reaksi',160,118);
+}
+
+function drawBeakerShape(ctx,x,y,w,h,strokeCol,fillCol,liquidFrac){
+  // Beaker body
+  ctx.strokeStyle=strokeCol;ctx.lineWidth=2;ctx.fillStyle=fillCol;
+  ctx.beginPath();
+  ctx.moveTo(x,y);ctx.lineTo(x,y+h);
+  ctx.quadraticCurveTo(x+w/2,y+h+10,x+w,y+h);
+  ctx.lineTo(x+w,y);ctx.stroke();
+  // Liquid
+  if(liquidFrac>0){
+    const lh=h*liquidFrac;
+    const ly=y+h-lh;
+    ctx.fillStyle=fillCol;
+    ctx.beginPath();
+    ctx.moveTo(x+2,ly);ctx.lineTo(x+2,y+h-2);
+    ctx.quadraticCurveTo(x+w/2,y+h+7,x+w-2,y+h-2);
+    ctx.lineTo(x+w-2,ly);
+    ctx.closePath();ctx.fill();
+  }
+  // Graduation marks
+  ctx.strokeStyle=strokeCol+'88';ctx.lineWidth=1;
+  for(let i=1;i<=3;i++){
+    const gy=y+h*i/4;
+    ctx.beginPath();ctx.moveTo(x+4,gy);ctx.lineTo(x+14,gy);ctx.stroke();
+  }
+  // Rim
+  ctx.strokeStyle=strokeCol;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+w+5,y);ctx.stroke();
+}
+
+function startReaction(){
+  const k=getReactKey();
+  const r=REACT_DB[k];
+  if(!r){addLog('warn','Reaksi tidak ditemukan dalam database.');return;}
+  if(reactAnimId)cancelAnimationFrame(reactAnimId);
+  reactParticles=[];
+  reactRunning=true;
+  const canvas=document.getElementById('reactCanvas');
+  const ctx=canvas.getContext('2d');
+  const log=document.getElementById('reactLog');
+  log.innerHTML='';
+  let logIdx=0;
+
+  const temp=parseInt(document.getElementById('tempSlider').value);
+  const speedMult=0.5+temp/50;
+
+  // Log messages staggered
+  r.log.forEach((msg,i)=>{
+    setTimeout(()=>{
+      const cls=msg.startsWith('⚠️')?'err':i===0?'info':'ok';
+      addLog(cls,msg);
+    },i*600);
+  });
+
+  // Particles
+  const nParticles=r.gas?60:r.flame?40:20;
+  for(let i=0;i<nParticles;i++){
+    reactParticles.push({
+      x:120+Math.random()*80,y:100+Math.random()*40,
+      vx:(Math.random()-.5)*2*speedMult,vy:(-1-Math.random()*3)*speedMult,
+      life:1,decay:0.008+Math.random()*0.012,
+      size:2+Math.random()*5,
+      type:r.gas?'bubble':r.flame?'flame':'smoke',
+      color:r.color,
+    });
+  }
+
+  let phase=0;
+  function frame(){
+    if(!reactRunning)return;
+    ctx.clearRect(0,0,320,190);
+    ctx.fillStyle='#0f172a';ctx.fillRect(0,0,320,190);
+    phase+=0.05;
+
+    // Beaker with liquid
+    const flicker=r.flame?0.02*Math.sin(phase*8):0;
+    drawBeakerShape(ctx,100,20,120,150,'#6d28d9',r.color+'44',0.55+flicker);
+
+    // Surface waves if gas
+    if(r.gas){
+      ctx.strokeStyle=r.color+'88';ctx.lineWidth=1.5;
+      for(let w=0;w<3;w++){
+        ctx.beginPath();
+        const wy=82+w*4+Math.sin(phase+w)*3;
+        ctx.moveTo(108,wy);
+        for(let wx=0;wx<=104;wx+=4){
+          ctx.lineTo(108+wx,wy+Math.sin((wx/10)+phase+w*1.5)*3);
+        }ctx.stroke();
+      }
+    }
+
+    // Flame glow behind beaker
+    if(r.flame){
+      const fy=175;
+      const glow=ctx.createRadialGradient(160,fy,0,160,fy,40+10*Math.sin(phase*3));
+      glow.addColorStop(0,r.color+'99');glow.addColorStop(1,'transparent');
+      ctx.fillStyle=glow;ctx.fillRect(100,140,120,50);
+    }
+
+    // Update & draw particles
+    reactParticles.forEach((p,i)=>{
+      p.x+=p.vx;p.y+=p.vy*(1+speedMult*0.2);p.life-=p.decay;
+      if(p.life<=0){
+        reactParticles[i]={x:115+Math.random()*90,y:85+Math.random()*20,
+          vx:(Math.random()-.5)*2*speedMult,vy:(-1-Math.random()*3)*speedMult,
+          life:1,decay:0.008+Math.random()*0.012,
+          size:2+Math.random()*5,
+          type:r.gas?'bubble':r.flame?'flame':'smoke',color:r.color};
+        return;
+      }
+      ctx.globalAlpha=p.life*r.intensity;
+      if(p.type==='bubble'){
+        ctx.strokeStyle=p.color;ctx.lineWidth=1.5;ctx.fillStyle='transparent';
+        ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.stroke();
+      } else if(p.type==='flame'){
+        const fg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*2);
+        fg.addColorStop(0,'#fff8dc');fg.addColorStop(0.4,p.color);fg.addColorStop(1,'transparent');
+        ctx.fillStyle=fg;ctx.beginPath();ctx.arc(p.x,p.y,p.size*2,0,Math.PI*2);ctx.fill();
+      } else {
+        ctx.fillStyle='#94a3b8';ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalAlpha=1;
+    });
+
+    // Intensity meter
+    const meterW=r.intensity*100;
+    ctx.fillStyle='#1e293b';ctx.fillRect(10,10,110,12);
+    ctx.fillStyle=r.color;ctx.fillRect(10,10,meterW*(0.8+0.2*Math.sin(phase)),12);
+    ctx.fillStyle='#e2e8f0';ctx.font='9px JetBrains Mono,monospace';
+    ctx.textAlign='left';ctx.fillText('Intensitas: '+Math.round(r.intensity*100)+'%',12,21);
+
+    // Temperature
+    const tc=`${temp}°C`;
+    ctx.fillStyle='#e2e8f0';ctx.font='9px JetBrains Mono,monospace';
+    ctx.textAlign='right';ctx.fillText('⬆ '+tc,310,20);
+
+    reactAnimId=requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function addLog(cls,msg){
+  const log=document.getElementById('reactLog');
+  const span=document.createElement('span');
+  span.className=cls;span.textContent='» '+msg;
+  const br=document.createElement('br');
+  log.appendChild(span);log.appendChild(br);
+  log.scrollTop=log.scrollHeight;
+}
+
+function resetReaction(){
+  reactRunning=false;
+  if(reactAnimId)cancelAnimationFrame(reactAnimId);
+  reactAnimId=null;reactParticles=[];
+  const canvas=document.getElementById('reactCanvas');
+  const ctx=canvas.getContext('2d');
+  drawIdleBeaker(ctx);
+  document.getElementById('reactLog').innerHTML='<span class="info">» Pilih unsur dan pereaksi, lalu klik Mulai Reaksi…</span>';
+}
+
+setTimeout(()=>{if(document.getElementById('reactCanvas'))initReactCanvas();},300);
+
+// ═══════════════════════════════════════════
+// PANEL 4: ENERGI IONISASI
+// ═══════════════════════════════════════════
+const ION_DATA={
+  Na:{shells:[2,8,1],ei:[496,4562,6912,9543,13353,16610,20114,25490,28932,141367,159076],
+    explain:['EI-1 (496): elektron 3s¹ mudah dilepas — ini elektron valensi Na, 1 kulit luar','EI-2 (4562): lompatan besar! Masuk ke kulit ke-2 (oktet Ne) yang sangat stabil','EI-3 (6912): terus meningkat — elektron kulit ke-2 semakin kuat tertarik inti','EI-4 (9543): masih kulit ke-2 (konfigurasi 2s² 2p⁶)','EI-5 (13353): kulit ke-2 lebih dalam, energi makin besar','EI-6 (16610): mendekati akhir kulit ke-2','EI-7 (20114): sisa elektron p di kulit ke-2','EI-8 (25490): elektron 2s² mulai dilepas','EI-9 (28932): pasangan 2s terakhir','EI-10 (141367): masuk kulit ke-1 (kulit K) — lompatan SANGAT besar!','EI-11 (159076): elektron 1s terakhir, paling kuat tertarik inti']},
+  Mg:{shells:[2,8,2],ei:[738,1451,7733,10540,13630,17995,21703,25657,31642,35464,169988],
+    explain:['EI-1 (738): 1 elektron 3s dilepas','EI-2 (1451): elektron 3s ke-2, sedikit lebih tinggi dari EI-1','EI-3 (7733): lompatan besar! Masuk kulit ke-2 (oktet)','EI-4 (10540): dalam kulit ke-2','EI-5 (13630): lanjut kulit ke-2','EI-6 (17995): kulit ke-2 tengah','EI-7 (21703): kulit ke-2 lanjut','EI-8 (25657): kulit ke-2 mendekati selesai','EI-9 (31642): hampir habis kulit ke-2','EI-10 (35464): kulit ke-2 selesai','EI-11 (169988): kulit ke-1 — lompatan ekstrem!']},
+  Al:{shells:[2,8,3],ei:[578,1817,2745,11577,14842,18379,23326,27465,31853,38473,42647],
+    explain:['EI-1 (578): elektron 3p¹ mudah dilepas (orbital p kurang stabil)','EI-2 (1817): elektron 3s ke-1','EI-3 (2745): elektron 3s ke-2','EI-4 (11577): LOMPATAN — masuk kulit ke-2 yang stabil','EI-5 (14842): kulit ke-2','EI-6 (18379): kulit ke-2 lanjut','EI-7 (23326): kulit ke-2 lanjut','EI-8 (27465): kulit ke-2 mendekati selesai','EI-9 (31853): kulit ke-2 akhir','EI-10 (38473): kulit ke-2 selesai, masuk K','EI-11 (42647): kulit ke-1']},
+  Si:{shells:[2,8,4],ei:[786,1577,3232,4356,16091,19784,23786,29252,33878,38726,45961],
+    explain:['EI-1 (786): elektron 3p dilepas','EI-2 (1577): 3p ke-2','EI-3 (3232): 3p ke-3','EI-4 (4356): 3s dilepas','EI-5 (16091): LOMPATAN — masuk kulit ke-2','EI-6 (19784): kulit ke-2','EI-7 (23786): kulit ke-2','EI-8 (29252): kulit ke-2','EI-9 (33878): kulit ke-2','EI-10 (38726): kulit ke-2 akhir','EI-11 (45961): kulit ke-1']},
+  Cl:{shells:[2,8,7],ei:[1251,2298,3822,5158,6542,9362,11018,33604,38600,43961,51068],
+    explain:['EI-1 (1251): elektron 3p ke-7 (valensi)','EI-2 (2298): 3p ke-6','EI-3 (3822): 3p ke-5','EI-4 (5158): 3p ke-4','EI-5 (6542): 3p ke-3','EI-6 (9362): 3p ke-2','EI-7 (11018): 3p ke-1 — terakhir kulit ke-3','EI-8 (33604): LOMPATAN — masuk kulit ke-2','EI-9 (38600): kulit ke-2','EI-10 (43961): kulit ke-2','EI-11 (51068): kulit ke-2']},
+  K:{shells:[2,8,8,1],ei:[419,3051,4411,5877,7976,9590,11343,14944,16964,48610,54490],
+    explain:['EI-1 (419): terendah — 1 elektron 4s jauh dari inti','EI-2 (3051): LOMPATAN — masuk kulit ke-3','EI-3 (4411): kulit ke-3','EI-4 (5877): kulit ke-3','EI-5 (7976): kulit ke-3','EI-6 (9590): kulit ke-3','EI-7 (11343): kulit ke-3','EI-8 (14944): kulit ke-3 akhir','EI-9 (16964): kulit ke-3 selesai','EI-10 (48610): masuk kulit ke-2 — lompatan besar','EI-11 (54490): kulit ke-2']},
+};
+
+let curIonEl='Na', curIonN=1;
+
+function loadIonEl(){
+  curIonEl=document.getElementById('ionEl').value;
+  curIonN=1;
+  document.getElementById('ionSlider').value=1;
+  updateIon(1);
+  drawIonChart();
+}
+
+function updateIon(n){
+  curIonN=parseInt(n);
+  document.getElementById('ionN').textContent=n;
+  document.getElementById('ionNLabel').textContent=n;
+  const d=ION_DATA[curIonEl];
+  const val=d.ei[curIonN-1];
+  document.getElementById('ionEval').textContent=val?val.toLocaleString():'—';
+  document.getElementById('ionExplain').textContent=d.explain[curIonN-1]||'—';
+  drawIonShell();
+  drawIonChart();
+}
+
+function drawIonChart(){
+  const d=ION_DATA[curIonEl];
+  const svg=document.getElementById('ionSvg');
+  if(!svg)return;
+  const W=400,H=160,padL=50,padR=10,padT=15,padB=30;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  const vals=d.ei;
+  const maxV=Math.max(...vals)*1.1;
+  const n=vals.length;
+  const barW=Math.min(28,(plotW/n)*0.7);
+  const gap=(plotW-barW*n)/(n+1);
+
+  let html='';
+  html+=`<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#c5cfe0" stroke-width="1"/>`;
+  html+=`<line x1="${padL}" y1="${padT+plotH}" x2="${padL+plotW}" y2="${padT+plotH}" stroke="#c5cfe0" stroke-width="1"/>`;
+
+  // Y grid
+  for(let i=0;i<=3;i++){
+    const yv=Math.round(maxV*i/3);
+    const yp=padT+plotH-plotH*(i/3);
+    html+=`<line x1="${padL}" y1="${yp}" x2="${padL+plotW}" y2="${yp}" stroke="#e2e8f0" stroke-width="0.5"/>`;
+    html+=`<text x="${padL-3}" y="${yp+3}" text-anchor="end" font-size="7" fill="#94a3b8" font-family="JetBrains Mono">${(yv/1000).toFixed(0)}k</text>`;
+  }
+
+  vals.forEach((v,i)=>{
+    const x=padL+gap+(barW+gap)*i;
+    const bh=(v/maxV)*plotH;
+    const y=padT+plotH-bh;
+    const isActive=(i+1)===curIonN;
+    const col=isActive?'#f59e0b':i<curIonN?'#ef4444':'#8b5cf6';
+    html+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${col}" rx="2" opacity="${isActive?1:0.65}" ${isActive?'stroke="#f59e0b" stroke-width="2"':''}/>`;
+    html+=`<text x="${(x+barW/2).toFixed(1)}" y="${padT+plotH+13}" text-anchor="middle" font-size="8" fill="${isActive?'#f59e0b':'#64748b'}" font-weight="${isActive?'700':'400'}" font-family="JetBrains Mono">EI${i+1}</text>`;
+    if(isActive){
+      html+=`<text x="${(x+barW/2).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" font-size="7" fill="#f59e0b" font-family="JetBrains Mono">${(v/1000).toFixed(1)}k</text>`;
+    }
+  });
+
+  // Jump arrows between shells
+  const d2=ION_DATA[curIonEl];
+  const jumpPoints=[];
+  let cumEl=0;
+  [...d2.shells].reverse().forEach(s=>{
+    cumEl+=s;
+    if(cumEl<vals.length)jumpPoints.push(cumEl);
+  });
+  jumpPoints.forEach(jp=>{
+    const x1=padL+gap+(barW+gap)*(jp-1)+barW;
+    const x2=padL+gap+(barW+gap)*jp;
+    const midX=(x1+x2)/2;
+    html+=`<text x="${midX}" y="${padT+10}" text-anchor="middle" font-size="8" fill="#f97316">↑</text>`;
+  });
+
+  svg.innerHTML=html;
+}
+
+function drawIonShell(){
+  const d=ION_DATA[curIonEl];
+  const container=document.getElementById('ionShellViz');
+  if(!container)return;
+
+  // Count electrons removed
+  const removed=curIonN-1;
+  let shells=[...d.shells];
+  let totalEl=shells.reduce((a,b)=>a+b,0);
+  let removedCount=0;
+
+  let html=`<div class="nucleus">${curIonEl}</div>`;
+  const shellNames=['K','L','M','N'];
+  const shellColors=['#f59e0b','#8b5cf6','#3b82f6','#10b981'];
+
+  shells.forEach((nEl,si)=>{
+    html+=`<div style="display:flex;align-items:center;gap:4px;">
+      <span style="font-size:9px;font-weight:700;color:${shellColors[si]};width:14px;text-align:center;">${shellNames[si]}</span>
+      <div style="display:flex;gap:3px;flex-wrap:wrap;max-width:130px;">`;
+    for(let ei=0;ei<nEl;ei++){
+      // Which electrons get removed? from outermost shell first
+      const globalIdx=totalEl-1-(shells.slice(si+1).reduce((a,b)=>a+b,0))-(nEl-1-ei);
+      const isRemoved=globalIdx>=(totalEl-removed);
+      html+=`<div class="e-dot" style="${isRemoved?'background:#ef4444;border-color:#dc2626;box-shadow:0 0 8px rgba(239,68,68,.6);':''} background-color:${isRemoved?'#ef4444':shellColors[si]}; border-color:${isRemoved?'#dc2626':shellColors[si]+'aa'};"></div>`;
+    }
+    html+=`</div></div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+// Init ionisasi
+setTimeout(()=>{loadIonEl();},400);
+
+// ─────────────── LKS ───────────────
+(function buildLKSTable(){
+  const period2=[
+    {name:'Litium',sym:'Li',z:3,config:'[He] 2s¹',g:'IA (1)',r:'152',ei:'520',en:'0.98'},
+    {name:'Berilium',sym:'Be',z:4,config:'[He] 2s²',g:'IIA (2)',r:'112',ei:'900',en:'1.57'},
+    {name:'Boron',sym:'B',z:5,config:'[He] 2s² 2p¹',g:'IIIA (13)',r:'87',ei:'801',en:'2.04'},
+    {name:'Karbon',sym:'C',z:6,config:'[He] 2s² 2p²',g:'IVA (14)',r:'77',ei:'1086',en:'2.55'},
+    {name:'Nitrogen',sym:'N',z:7,config:'[He] 2s² 2p³',g:'VA (15)',r:'75',ei:'1402',en:'3.04'},
+    {name:'Oksigen',sym:'O',z:8,config:'[He] 2s² 2p⁴',g:'VIA (16)',r:'73',ei:'1314',en:'3.44'},
+    {name:'Fluor',sym:'F',z:9,config:'[He] 2s² 2p⁵',g:'VIIA (17)',r:'64',ei:'1681',en:'3.98'},
+    {name:'Neon',sym:'Ne',z:10,config:'[He] 2s² 2p⁶',g:'VIIIA (18)',r:'38',ei:'2081',en:'—'},
+  ];
+  const tb=document.getElementById('lksTableBody');
+  if(!tb)return;
+  period2.forEach(el=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input value="${el.name}" class="lks-input" style="min-width:70px;border:none;border-bottom:1px solid #e2e8f0;"></td>
+      <td><input value="${el.sym}" class="lks-input" style="width:30px;border:none;border-bottom:1px solid #e2e8f0;font-weight:700;text-align:center;"></td>
+      <td><input value="${el.z}" class="lks-input" style="width:30px;border:none;border-bottom:1px solid #e2e8f0;text-align:center;"></td>
+      <td><input value="${el.config}" class="lks-input" style="min-width:110px;border:none;border-bottom:1px solid #e2e8f0;font-size:10px;"></td>
+      <td><input value="${el.g}" class="lks-input" style="min-width:60px;border:none;border-bottom:1px solid #e2e8f0;text-align:center;"></td>
+      <td><input value="" class="lks-input" style="width:60px;border:none;border-bottom:1px solid #e2e8f0;text-align:center;" placeholder="${el.r}"></td>
+      <td><input value="" class="lks-input" style="width:70px;border:none;border-bottom:1px solid #e2e8f0;text-align:center;" placeholder="${el.ei}"></td>
+      <td><input value="" class="lks-input" style="width:50px;border:none;border-bottom:1px solid #e2e8f0;text-align:center;" placeholder="${el.en}"></td>
+    `;
+    tb.appendChild(tr);
+  });
+})();
+
+function printLKS(){
+  window.print();
+}
+function resetLKS(){
+  if(!confirm('Reset semua isian LKS?'))return;
+  ['lksNama','lksKelas','lksMapel','lksTanggal','lksGuru','lksTujuan','lksQ1','lksQ2','lksQ3','lksQ4','lksKesimpulan'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){if(id==='lksMapel')el.value='Kimia – Sistem Periodik Unsur';else el.value='';}
+  });
+  document.querySelectorAll('#lksTableBody input[placeholder]').forEach(inp=>inp.value='');
+}
+function autoFillLKS(){
+  document.getElementById('lksNama').value='Siti Rahmawati';
+  document.getElementById('lksKelas').value='X IPA 2';
+  document.getElementById('lksTanggal').value=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('lksGuru').value='Drs. Ahmad Fauzi, M.Pd.';
+  document.getElementById('lksTujuan').value='Memahami susunan unsur dalam tabel periodik, menganalisis sifat periodik (jari-jari atom, energi ionisasi, keelektronegatifan), dan mengidentifikasi golongan serta periode berdasarkan konfigurasi elektron.';
+  document.getElementById('lksQ1').value='Jari-jari atom cenderung mengecil dari Li ke Ne dalam satu periode. Hal ini disebabkan oleh bertambahnya muatan inti (jumlah proton) dari kiri ke kanan, sedangkan jumlah kulit elektron tetap sama, sehingga gaya tarik inti terhadap elektron valensi semakin kuat dan elektron tertarik lebih dekat ke inti.';
+  document.getElementById('lksQ2').value='Meskipun O memiliki nomor atom lebih besar, energi ionisasinya lebih rendah dari N karena konfigurasi N (2s² 2p³) bersifat setengah penuh (half-filled) yang merupakan konfigurasi stabil. Pada O (2s² 2p⁴), terdapat pasangan elektron dalam satu orbital p yang mengalami tolakan interelektron sehingga lebih mudah dilepas.';
+  document.getElementById('lksQ3').value='Neon (Ne) memiliki konfigurasi elektron 2s² 2p⁶ yang merupakan konfigurasi gas mulia (kulit valensi penuh/oktet sempurna). Konfigurasi ini sangat stabil sehingga memerlukan energi yang sangat besar untuk melepas elektron, menjadikan energi ionisasinya tertinggi dalam periode 2.';
+  document.getElementById('lksQ4').value='1. Oksigen (O) – digunakan untuk respirasi manusia dan pembakaran bahan bakar. 2. Karbon (C) – dasar senyawa organik, digunakan dalam bahan bakar (batu bara, minyak bumi), polimer plastik, dan berlian untuk perhiasan. 3. Nitrogen (N) – digunakan dalam pupuk amonia (NH₃) untuk pertanian, serta pendingin kriogenik (N₂ cair).';
+  document.getElementById('lksKesimpulan').value='Berdasarkan pengamatan, terbukti bahwa sifat unsur bersifat periodik terhadap nomor atomnya. Dalam satu periode, jari-jari atom mengecil dan energi ionisasi serta keelektronegatifan meningkat. Dalam satu golongan, jari-jari atom membesar dan energi ionisasi serta keelektronegatifan berkurang. Konfigurasi elektron menentukan golongan dan periode suatu unsur serta sifat kimianya.';
+  // Fill table
+  const refData=['152','112','87','77','75','73','64','38'];
+  const eiData=['520','900','801','1086','1402','1314','1681','2081'];
+  const enData=['0,98','1,57','2,04','2,55','3,04','3,44','3,98','—'];
+  document.querySelectorAll('#lksTableBody tr').forEach((tr,i)=>{
+    const inputs=tr.querySelectorAll('input');
+    if(inputs[5])inputs[5].value=refData[i]||'';
+    if(inputs[6])inputs[6].value=eiData[i]||'';
+    if(inputs[7])inputs[7].value=enData[i]||'';
+  });
+}
+
+// ─────────────── QUIZ ───────────────
+const QUESTIONS=[
+  {q:'Dasar pengelompokan unsur dalam tabel periodik modern adalah…',opts:['Massa atom relatif','Sifat kimia unsur','Nomor atom (jumlah proton)','Jumlah neutron'],ans:2,exp:'Tabel periodik modern disusun berdasarkan kenaikan nomor atom (Hukum Periodik Moseley).'},
+  {q:'Dalam satu periode dari kiri ke kanan, kecenderungan jari-jari atom adalah…',opts:['Semakin besar','Semakin kecil','Tidak berubah','Naik lalu turun'],ans:1,exp:'Dalam satu periode, muatan inti bertambah sedangkan kulit tetap sama, sehingga tarikan elektron valensi makin kuat → jari-jari mengecil.'},
+  {q:'Unsur X memiliki konfigurasi elektron [Ne] 3s² 3p³. Unsur X berada pada…',opts:['Golongan IIA, Periode 3','Golongan VA, Periode 3','Golongan IIIA, Periode 2','Golongan VIA, Periode 3'],ans:1,exp:'Elektron valensi 3s² 3p³ = 5 elektron valensi → Golongan VA (15). Kulit terluar ke-3 → Periode 3.'},
+  {q:'Unsur yang paling elektronegatif dalam tabel periodik adalah…',opts:['Oksigen (O)','Klor (Cl)','Fluor (F)','Nitrogen (N)'],ans:2,exp:'Fluor (F) memiliki nilai keelektronegatifan tertinggi (3,98 skala Pauling) karena jari-jari kecil dan muatan inti besar.'},
+  {q:'Pada tabel periodik, unsur-unsur golongan IA (kecuali H) disebut…',opts:['Halogen','Gas mulia','Logam alkali','Logam alkali tanah'],ans:2,exp:'Golongan IA (Li, Na, K, Rb, Cs, Fr) disebut logam alkali karena bersifat logam dan membentuk basa kuat saat bereaksi dengan air.'},
+  {q:'Energi ionisasi Oksigen (O) lebih rendah daripada Nitrogen (N) karena…',opts:['Jari-jari O lebih besar','Konfigurasi N (2p³) setengah penuh lebih stabil','Massa atom O lebih besar','O lebih elektronegatif'],ans:1,exp:'N memiliki konfigurasi 2p³ (setengah penuh) yang ekstra stabil. Pada O (2p⁴) ada pasangan elektron yang saling tolak, memudahkan pelepasan elektron.'},
+  {q:'Unsur yang memiliki nomor atom 17 termasuk dalam golongan…',opts:['Gas mulia','Halogen','Logam alkali','Nonlogam'],ans:1,exp:'Nomor atom 17 adalah Klor (Cl) dengan konfigurasi [Ne] 3s² 3p⁵ → 7 elektron valensi → Golongan VIIA = Halogen.'},
+  {q:'Penemu tabel periodik yang mengelompokkan unsur berdasarkan kenaikan massa atom adalah…',opts:['Henry Moseley','Dmitri Mendeleev','John Newlands','Johann Döbereiner'],ans:1,exp:'Mendeleev (1869) menyusun tabel periodik berdasarkan kenaikan massa atom dan meramalkan keberadaan unsur yang belum ditemukan.'},
+  {q:'Dalam satu golongan dari atas ke bawah, energi ionisasi…',opts:['Bertambah','Berkurang','Tetap sama','Tidak beraturan'],ans:1,exp:'Dalam satu golongan ke bawah, jari-jari atom bertambah dan elektron valensi makin jauh dari inti, sehingga lebih mudah dilepas → energi ionisasi berkurang.'},
+  {q:'Tabel periodik modern terdiri dari berapa golongan dan periode?',opts:['7 golongan, 8 periode','18 golongan, 7 periode','8 golongan, 7 periode','18 golongan, 8 periode'],ans:1,exp:'Tabel periodik modern memiliki 18 golongan (kolom vertikal) dan 7 periode (baris horizontal).'},
+];
+
+let qIdx=0,answers=new Array(QUESTIONS.length).fill(null),submitted=false;
+
+function renderQuiz(){
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qNum').textContent=`SOAL ${qIdx+1} / ${QUESTIONS.length}`;
+  document.getElementById('qBadge').textContent='Pilihan Ganda';
+  document.getElementById('qText').textContent=q.q;
+  const opts=document.getElementById('qOpts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const li=document.createElement('li');
+    li.className='opt'+(answers[qIdx]===i?' sel':'');
+    if(submitted){
+      if(i===q.ans)li.className='opt correct';
+      else if(answers[qIdx]===i)li.className='opt wrong';
+    }
+    li.innerHTML=`<input type="radio" name="q" ${answers[qIdx]===i?'checked':''} ${submitted?'disabled':''}> <span>${String.fromCharCode(65+i)}. ${o}</span>`;
+    if(!submitted){li.onclick=()=>{answers[qIdx]=i;renderQuiz();};}
+    opts.appendChild(li);
+  });
+  const fb=document.getElementById('qFb');
+  if(submitted&&answers[qIdx]!==null){
+    fb.classList.add('on');fb.className='qfb on '+(answers[qIdx]===q.ans?'ok':'bad');
+    fb.textContent=(answers[qIdx]===q.ans?'✅ Benar! ':'❌ Kurang tepat. ')+q.exp;
+  } else {fb.className='qfb';fb.textContent='';}
+
+  const prog=document.getElementById('qprog');
+  prog.innerHTML='';
+  QUESTIONS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='qprog-dot'+(i===qIdx?' current':answers[i]!==null?' answered':'');
+    d.textContent=i+1;d.onclick=()=>{qIdx=i;renderQuiz();};
+    prog.appendChild(d);
+  });
+
+  document.getElementById('btnPrev').style.display=qIdx>0?'':'none';
+  const isLast=qIdx===QUESTIONS.length-1;
+  document.getElementById('btnNext').style.display=(!isLast&&!submitted)?'':'none';
+  document.getElementById('btnSubmit').style.display=(isLast&&!submitted)?'':'none';
+  document.getElementById('qCounter').textContent=`${answers.filter(a=>a!==null).length}/${QUESTIONS.length} dijawab`;
+}
+
+function prevQ(){qIdx--;renderQuiz();}
+function nextQ(){qIdx++;renderQuiz();}
+function resetQuiz(){answers=new Array(QUESTIONS.length).fill(null);submitted=false;qIdx=0;renderQuiz();}
+
+function submitQuiz(){
+  submitted=true;
+  const correct=answers.reduce((acc,a,i)=>acc+(a===QUESTIONS[i].ans?1:0),0);
+  const score=Math.round(correct/QUESTIONS.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scoreSub').textContent=`${correct} dari ${QUESTIONS.length} soal benar`;
+  let grade='',emoji='';
+  if(score>=90){grade='A – Sangat Baik! 🌟';emoji='🏆';}
+  else if(score>=75){grade='B – Baik 👍';emoji='😊';}
+  else if(score>=60){grade='C – Cukup 📚';emoji='🙂';}
+  else{grade='D – Perlu Belajar Lagi 💪';emoji='📖';}
+  document.getElementById('scoreGrade').textContent=grade;
+  document.getElementById('scoreEmoji').textContent=emoji;
+  document.getElementById('scoreOverlay').classList.add('on');
+  if(score>=75)launchConfetti();
+  const sfx=document.getElementById('sndBerhasil');if(sfx){sfx.currentTime=0;sfx.play().catch(()=>{});}
+  renderQuiz();
+}
+
+// ─────────────── CONFETTI ───────────────
+function launchConfetti(){
+  const canvas=document.getElementById('confettiCanvas');
+  canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const cols=['#7c3aed','#8b5cf6','#c4b5fd','#fbbf24','#34d399','#f87171','#60a5fa','#ec4899','#fff'];
+  const pieces=Array.from({length:200},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*-canvas.height*.6,
+    w:5+Math.random()*10,h:3+Math.random()*5,r:Math.random()*Math.PI*2,
+    dr:(Math.random()-.5)*.18,dy:2+Math.random()*4,dx:(Math.random()-.5)*2,
+    col:cols[Math.floor(Math.random()*cols.length)],opacity:1
+  }));
+  let start=null;
+  function draw(ts){
+    if(!start)start=ts;const el=ts-start;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{p.y+=p.dy;p.x+=p.dx;p.r+=p.dr;if(el>2500)p.opacity=Math.max(0,p.opacity-.015);
+      ctx.save();ctx.globalAlpha=p.opacity;ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.col;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+    if(el<5000)requestAnimationFrame(draw);else{ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.display='none';}
+  }
+  requestAnimationFrame(draw);
+}
+
+// init
+renderQuiz();
+</script>
+</body>
+</html>
