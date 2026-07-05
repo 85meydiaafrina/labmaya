@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Virtual – BIO-PALM: Biomassa Limbah Sawit untuk Pembangkit Mikro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f1f8f1;--surf:#ffffff;--surf2:#f6faf5;
+  --border:#dbe8d9;--border2:#c2d9be;
+  --acc:#16a34a;--acc2:#22c55e;--acc3:#15803d;
+  --text:#1e2b1e;--text2:#43513f;--text3:#8a9c86;
+  --yellow:#d97706;--red:#dc2626;--green:#059669;
+  --h:56px;
+  --fbase:14px;
+}
+@media (max-width:768px){:root{--fbase:13px;--h:46px;}}
+@media (min-width:1200px){:root{--fbase:15px;}}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(22,163,74,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 50% at 90% 100%,rgba(217,119,6,0.07) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(138,156,134,0.08) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(138,156,134,0.08) 40px);
+}
+header{
+  position:relative;z-index:10;height:var(--h);flex-shrink:0;
+  background:linear-gradient(135deg,#0c2411,#14532d);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;align-items:center;padding:0 14px;gap:12px;
+  box-shadow:0 2px 10px rgba(15,23,42,0.45);
+}
+.logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.logo-icon{width:35px;height:35px;border-radius:6px;background:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.1;}
+.logo-sub{font-size:9.5px;color:rgba(255,255,255,0.75);}
+nav{display:flex;gap:2px;flex:1;overflow-x:auto;justify-content:flex-end;}
+nav::-webkit-scrollbar{display:none;}
+.nb{position:relative;background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(12px,1.3vw,14px);font-weight:500;padding:0 13px;height:var(--h);white-space:nowrap;transition:color .2s;}
+.nb::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:2px;background:#86efac;transform:scaleX(0);transition:transform .2s;border-radius:2px 2px 0 0;}
+.nb:hover{color:rgba(255,255,255,0.95);}
+.nb.active{color:#fff;}
+.nb.active::after{transform:scaleX(1);}
+#menuToggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:#fff;flex-shrink:0;touch-action:manipulation;}
+@media(max-width:640px){
+  header{flex-wrap:nowrap;padding:0 10px;}
+  .logo-text{font-size:16px;}
+  .logo-sub{display:none;}
+  #menuToggle{display:flex;align-items:center;justify-content:center;margin-left:auto;}
+  nav{display:none;flex-direction:column;position:fixed;top:var(--h);right:0;left:0;z-index:999;
+    background:linear-gradient(180deg,#0c2411,#14532d);border-bottom:1px solid rgba(255,255,255,.15);
+    box-shadow:0 8px 24px rgba(0,0,0,.35);overflow:visible;gap:0;flex:none;}
+  nav.open{display:flex;}
+  .nb{height:52px;width:100%;text-align:left;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;display:flex;align-items:center;gap:10px;}
+  .nb::after{display:none;}
+  .nb.active{background:rgba(255,255,255,.08);}
+}
+#app{position:relative;z-index:1;flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;}
+@keyframes fu{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+.page.active{animation:fu .22s ease;}
+.scroll{flex:1;overflow-y:auto;padding:10px 14px 14px;}
+.scroll::-webkit-scrollbar{width:4px;}
+.scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.hero{background:linear-gradient(135deg,#0c2411,#16a34a);border:none;border-radius:9px;padding:10px 16px;margin-bottom:8px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 4px 18px rgba(22,163,74,.25);}
+.hero::after{content:'🌴';position:absolute;right:12px;top:-8px;font-size:60px;opacity:.14;pointer-events:none;}
+.h-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;color:#bbf7d0;text-transform:uppercase;margin-bottom:2px;}
+.h-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,2vw,18px);font-weight:700;color:#fff;line-height:1.2;}
+.h-title span{color:#dcfce7;}
+.h-desc{font-size:11px;color:#dcfce7;line-height:1.5;max-width:480px;}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:7px;transition:border-color .2s,box-shadow .2s;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.card:hover{border-color:var(--border2);box-shadow:0 3px 10px rgba(30,41,59,0.09);}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.ci{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.ci.b{background:rgba(22,163,74,.1);}
+.ci.y{background:rgba(217,119,6,.1);}
+.ci.g{background:rgba(5,150,105,.1);}
+.ci.r{background:rgba(220,38,38,.1);}
+.ci.p{background:rgba(124,58,237,.1);}
+.ci.o{background:rgba(234,88,12,.1);}
+.ct{font-family:'Space Grotesk',sans-serif;font-size:clamp(13px,1.5vw,15px);font-weight:700;color:var(--acc3);}
+.card p{font-size:clamp(12px,1.3vw,14px);line-height:1.7;color:var(--text2);margin-bottom:6px;}
+.card p:last-child{margin-bottom:0;}
+.card h4{font-size:clamp(10px,1.1vw,12px);font-weight:600;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin:10px 0 5px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+#page-teori .scroll{overflow-y:auto;}
+.formula-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:9px 14px;font-family:'JetBrains Mono',monospace;font-size:clamp(13px,1.5vw,15px);color:var(--acc3);text-align:center;margin:8px 0;font-weight:600;}
+.olist{list-style:none;}
+.olist li{display:flex;align-items:flex-start;gap:7px;font-size:clamp(12px,1.3vw,14px);color:var(--text2);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border);}
+.olist li:last-child{border-bottom:none;}
+.olist li::before{content:'›';color:var(--acc);font-weight:700;font-size:15px;margin-top:-1px;}
+.steps{display:flex;flex-direction:column;gap:5px;}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;transition:border-color .17s;}
+.step:hover{border-color:var(--acc2);background:#f0fdf4;}
+.snum{min-width:20px;height:20px;border-radius:50%;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);flex-shrink:0;}
+.step p{font-size:clamp(12px,1.3vw,14px);color:var(--text2);line-height:1.6;margin:0;}
+.notebox{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;margin-top:7px;}
+.notebox .nt{font-size:9.5px;font-weight:600;color:var(--yellow);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.notebox p{font-size:clamp(12px,1.2vw,13px);color:#92400e;line-height:1.6;margin:0;}
+.chips{display:flex;gap:5px;margin:6px 0;flex-wrap:wrap;}
+.chip{border-radius:5px;padding:3px 8px;font-size:clamp(11px,1.2vw,13px);font-weight:500;}
+.chip-t{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:var(--acc3);}
+.chip-g{background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);color:#047857;}
+.chip-y{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);color:#92400e;}
+/* drag drop */
+.drag-card{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:grab;transition:transform .15s, box-shadow .15s, border-color .15s, opacity .2s;user-select:none;position:relative;min-height:80px;touch-action:none;-webkit-tap-highlight-color:transparent;}
+.drag-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(30,41,59,.12);border-color:var(--border2);}
+.drag-card:active{cursor:grabbing;transform:scale(.96);}
+.drag-card.alat{background:#f0fdf4;border-color:#bbf7d0;}
+.drag-card.alat:hover{border-color:var(--acc);}
+.drag-card.bahan{background:#fefce8;border-color:#fde68a;}
+.drag-card.bahan:hover{border-color:var(--yellow);}
+.drag-card.dragging{opacity:.3;transform:scale(.95);filter:grayscale(.5);}
+.drag-card.placed{opacity:.45;cursor:not-allowed;filter:grayscale(.4);}
+.drag-icon{height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;line-height:1;font-size:32px;}
+.drag-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px;}
+.drag-sub{font-size:9.5px;color:var(--text3);}
+.drag-card.touch-grabbing{transform:scale(1.06);box-shadow:0 8px 24px rgba(22,163,74,.22);border-color:var(--acc2);z-index:10;}
+.drop-zone{border:2px dashed var(--border2);border-radius:9px;padding:8px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;transition:background .2s, border-color .2s;position:relative;}
+.drop-zone.drag-over{background:rgba(22,163,74,.06);border-color:var(--acc2);}
+.drop-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;color:var(--text3);pointer-events:none;font-style:italic;}
+/* simulasi */
+.sim-wrap{display:grid;grid-template-columns:190px 1fr;gap:8px;flex:1;min-height:0;}
+.ctrl-panel{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;box-shadow:0 1px 3px rgba(30,41,59,0.06);}
+.ctrl-panel h3{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:var(--acc3);}
+.cg label{display:block;font-size:9.5px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+.sim-right{display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.canvas-wrap{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:9px;flex:1;min-height:0;box-shadow:0 1px 3px rgba(30,41,59,0.06);display:flex;flex-direction:column;position:relative;}
+.canvas-wrap h3{font-family:'Space Grotesk',sans-serif;font-size:11.5px;font-weight:700;color:var(--acc3);margin-bottom:6px;flex-shrink:0;}
+#simCanvas{width:100%;border-radius:6px;display:block;background:#0f172a;border:1px solid var(--border);flex:1;}
+.statsrow{display:flex;gap:6px;flex-shrink:0;margin-top:6px;flex-wrap:wrap;}
+.sbox{flex:1;min-width:80px;background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:6px;text-align:center;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:500;color:var(--acc);display:block;}
+.sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}
+.select-ctrl{width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 26px 6px 8px;font-family:'Inter',sans-serif;font-size:11.5px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2316a34a' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .17s;}
+.select-ctrl:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(22,163,74,.1);}
+.btn{width:100%;border:none;border-radius:6px;padding:8px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;}
+.btn-start{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3);}
+.btn-start:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,74,.35);}
+.btn-reset{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-reset:hover{border-color:var(--acc);color:var(--acc);background:#f0fdf4;}
+.btn-toggle{background:var(--surf2);border:1px solid var(--border);color:var(--acc);font-weight:700;}
+input[type="range"]{width:100%;height:5px;background:#dcfce7;border-radius:6px;appearance:none;outline:none;cursor:pointer;}
+input[type="range"]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--acc);cursor:pointer;border-radius:50%;border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.disc-area{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);background:var(--surf2);resize:vertical;outline:none;transition:border-color .17s;line-height:1.6;margin-top:6px;}
+.disc-area:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(22,163,74,.1);}
+/* quiz */
+.quiz-nav-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surf);border:1px solid var(--border);border-radius:9px;margin-bottom:7px;flex-shrink:0;box-shadow:0 1px 3px rgba(30,41,59,0.05);}
+.qprog{display:flex;gap:3px;flex-wrap:wrap;}
+.qprog-dot{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--surf2);font-size:9.5px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .17s;}
+.qprog-dot.answered{border-color:var(--acc2);color:var(--acc);background:#f0fdf4;}
+.qprog-dot.current{background:var(--acc);color:#fff;border-color:var(--acc);}
+.q-card{background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:14px;flex:1;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(30,41,59,0.06);overflow-y:auto;}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--acc);letter-spacing:.1em;margin-bottom:5px;}
+.qtype-badge{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;margin-bottom:7px;letter-spacing:.04em;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;}
+.qtext{font-size:13px;color:var(--text);line-height:1.55;font-weight:500;margin-bottom:10px;}
+.opts{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.opt{display:flex;align-items:flex-start;gap:8px;background:var(--surf2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;cursor:pointer;transition:all .16s;font-size:12px;color:var(--text2);}
+.opt:hover{border-color:var(--acc2);background:#f0fdf4;color:var(--text);}
+.opt input{margin-top:1px;accent-color:var(--acc);cursor:pointer;}
+.opt.sel{border-color:var(--acc);background:#f0fdf4;color:var(--acc3);}
+.opt.correct{background:#f0fdf4;border-color:var(--acc2);color:#15803d;}
+.opt.wrong{background:#fff1f2;border-color:#f87171;color:#b91c1c;}
+.qfb{margin-top:8px;padding:7px 10px;border-radius:6px;font-size:11.5px;display:none;}
+.qfb.on{display:block;}
+.qfb.ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+.qfb.bad{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3;}
+.quiz-foot{display:flex;align-items:center;gap:7px;padding-top:7px;flex-shrink:0;}
+.btn-qnav{padding:6px 14px;border-radius:6px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .17s;border:none;}
+.btn-prev{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-prev:hover{border-color:var(--acc);color:var(--acc);background:#f0fdf4;}
+.btn-next{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.25);}
+.btn-next:hover{box-shadow:0 4px 14px rgba(22,163,74,.35);}
+.btn-submit-q{background:linear-gradient(135deg,#0c2411,#059669);color:#fff;}
+.btn-submit-q:hover{box-shadow:0 3px 12px rgba(5,150,105,.3);}
+.btn-reset-q{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.qcounter{font-size:11px;color:var(--text3);margin-left:auto;margin-right:auto;}
+/* excel table */
+.excel-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11px;}
+.excel-table th{background:#15803d;color:#fff;padding:6px 4px;border:1px solid #166534;font-size:10.5px;}
+.excel-table td{border:1px solid var(--border);padding:2px;text-align:center;}
+.excel-table td input{width:100%;border:none;background:transparent;text-align:center;font-size:11px;padding:4px 2px;outline:none;font-family:'JetBrains Mono',monospace;color:var(--text);}
+.excel-table td input:focus{background:#f0fdf4;}
+.btn-download{margin-top:8px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(22,163,74,.3);}
+/* score overlay */
+.score-overlay{display:none;position:fixed;inset:0;z-index:15000;align-items:center;justify-content:center;background:rgba(12,36,17,.55);backdrop-filter:blur(3px);}
+.score-overlay.on{display:flex;}
+.score-box{background:#fff;border-radius:18px;padding:30px 34px;text-align:center;max-width:320px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.score-big{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:800;color:var(--acc);}
+.score-pct{font-size:12px;color:var(--text3);margin-bottom:8px;}
+.score-sub{font-size:14px;color:var(--text2);font-weight:600;margin-bottom:6px;}
+.score-grade{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px;}
+.score-actions{display:flex;gap:8px;justify-content:center;}
+.btn-score{border:none;border-radius:9px;padding:9px 18px;font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;cursor:pointer;}
+.btn-review{background:var(--surf2);border:1px solid var(--border);color:var(--text2);}
+.btn-ulangi{background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌴</div>
+    <div>
+      <div class="logo-text">Lab Maya BIO-PALM</div>
+      <div class="logo-sub">Biomassa Limbah Sawit untuk Pembangkit Mikro</div>
+    </div>
+  </div>
+  <button id="menuToggle" onclick="toggleNav()" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <nav id="mainNav">
+    <button class="nb active" onclick="show('teori',this);closeNav()">📚 Teori</button>
+    <button class="nb" onclick="show('alatbahan',this);closeNav()">🧰 Alat &amp; Bahan</button>
+    <button class="nb" onclick="show('prosedur',this);closeNav()">📋 Prosedur</button>
+    <button class="nb" onclick="show('simulasi',this);closeNav()">🔥 Simulasi</button>
+    <button class="nb" onclick="show('diskusi',this);closeNav()">💬 Diskusi</button>
+    <button class="nb" onclick="show('evaluasi',this);closeNav()">🏁 Evaluasi</button>
+  </nav>
+</header>
+
+<div id="app">
+
+<!-- ===== TEORI ===== -->
+<div id="page-teori" class="page active">
+  <div class="scroll">
+    <div class="two-col" style="margin-bottom:5px;">
+      <div class="card">
+        <div class="ch"><div class="ci b">🎯</div><div class="ct">Tujuan Percobaan</div></div>
+        <ul class="olist">
+          <li>Memahami konversi energi biomassa limbah sawit menjadi energi listrik skala mikro</li>
+          <li>Menganalisis pengaruh jenis bahan bakar, laju umpan, dan efisiensi terhadap daya listrik</li>
+          <li>Memahami pemanfaatan uap sisa (waste heat) sebagai media pengering bahan bakar</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci g">🏆</div><div class="ct">Hasil Belajar</div></div>
+        <ul class="olist">
+          <li>Menjelaskan rangkaian konversi energi: kalor → uap → mekanik → listrik</li>
+          <li>Menghitung energi kalor, efisiensi sistem, dan daya listrik yang dihasilkan</li>
+          <li>Merancang strategi pemanfaatan energi buangan (cascading energy use)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:5px;">
+      <div class="ch"><div class="ci b">📚</div><div class="ct">Dasar Teori: PLTBm (Pembangkit Listrik Tenaga Biomassa) Mikro</div></div>
+      <p>Limbah sawit berupa <strong style="color:var(--acc3)">cangkang</strong> dan <strong style="color:var(--acc3)">serat</strong> mengandung energi kalor yang dapat dibakar untuk menghasilkan panas. Panas ini digunakan untuk mengubah air menjadi uap bertekanan di dalam <strong>boiler</strong>, yang kemudian memutar <strong>turbin mini</strong>. Putaran turbin menggerakkan <strong>generator DC</strong> sehingga dihasilkan energi listrik — sesuai dengan <strong style="color:var(--acc2)">Hukum Kekekalan Energi</strong> (Hukum I Termodinamika): energi tidak diciptakan atau dimusnahkan, hanya berubah bentuk.</p>
+      <div class="formula-box">Energi Kalor → Energi Uap → Energi Mekanik (Turbin) → Energi Listrik (Generator)</div>
+      <h4>Energi Kalor Bahan Bakar</h4>
+      <div class="formula-box">Q = m × LHV</div>
+      <p>Di mana: <strong>Q</strong> = energi kalor (kkal atau kJ), <strong>m</strong> = massa bahan bakar (kg), <strong>LHV</strong> = nilai kalor bahan bakar (kkal/kg). 1 kkal = 4,184 kJ.</p>
+      <h4>Efisiensi Sistem</h4>
+      <div class="formula-box">η = (P_listrik / Q_bahan bakar) × 100%</div>
+      <p>Efisiensi total PLTBm mikro merupakan hasil kali efisiensi boiler (kalor→uap) dan efisiensi turbin-generator (mekanik→listrik). Semakin banyak tahapan konversi, semakin besar pula energi yang hilang sebagai kalor buangan.</p>
+    </div>
+
+    <div class="three-col" style="margin-bottom:5px;">
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div class="ci y">🥥</div><div class="ct">Cangkang Sawit</div></div>
+        <p>Limbah keras hasil pengolahan CPO dengan nilai kalor tinggi, cocok sebagai bahan bakar utama tungku pembakaran.</p>
+        <div class="chips"><span class="chip chip-y">LHV ≈ 3.900–4.000 kkal/kg</span></div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div class="ci g">🌾</div><div class="ct">Serat Sawit</div></div>
+        <p>Limbah berserat dari daging buah sawit, nilai kalornya lebih rendah namun jumlahnya melimpah di sekitar pabrik.</p>
+        <div class="chips"><span class="chip chip-g">LHV ≈ 2.500 kkal/kg</span></div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div class="ci b">♻️</div><div class="ct">Pemanfaatan Uap Sisa</div></div>
+        <p>Uap panas yang keluar dari katup pengaman tidak langsung dibuang, tetapi dialirkan lewat heat exchanger untuk mengeringkan bahan bakar berikutnya (cascading energy use).</p>
+        <div class="chips"><span class="chip chip-t">Efisiensi energi ↑</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci p">🧩</div><div class="ct">Analisis STEM pada Rancangan BIO-PALM</div></div>
+      <div class="four-col">
+        <div><h4 style="margin-top:0;">🔬 Science</h4><p style="font-size:11.5px;">Reaksi pembakaran biomassa &amp; prinsip termodinamika.</p></div>
+        <div><h4 style="margin-top:0;">💻 Technology</h4><p style="font-size:11.5px;">Multimeter, termometer, dan tachometer untuk memantau sistem.</p></div>
+        <div><h4 style="margin-top:0;">⚙️ Engineering</h4><p style="font-size:11.5px;">Perancangan sistem tungku–boiler–turbin–generator secara iteratif.</p></div>
+        <div><h4 style="margin-top:0;">📐 Mathematics</h4><p style="font-size:11.5px;">Menghitung energi kalor, efisiensi konversi, dan grafik RPM/Volt.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALAT & BAHAN ===== -->
+<div id="page-alatbahan" class="page">
+  <div class="scroll" style="padding:10px 14px 14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%;min-height:0;">
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci b">🔍</div><div class="ct">Daftar Alat &amp; Bahan</div></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:8px;flex-shrink:0;">Drag atau <strong style="color:var(--acc3)">tekan &amp; geser</strong> item ke <strong style="color:var(--acc3)">Meja Percobaan</strong> di sebelah kanan.</p>
+        <div id="sourceAlat" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;flex:1;overflow-y:auto;">
+          <div class="drag-card alat" draggable="true" data-id="tungku" data-type="alat" data-name="Tungku Pembakaran" data-sub="Ruang bakar">
+            <div class="drag-icon">🔥</div><div class="drag-name">Tungku Pembakaran</div><div class="drag-sub">Ruang bakar</div></div>
+          <div class="drag-card alat" draggable="true" data-id="boiler" data-type="alat" data-name="Boiler Mini" data-sub="Air → uap">
+            <div class="drag-icon">🫖</div><div class="drag-name">Boiler Mini</div><div class="drag-sub">Air → uap</div></div>
+          <div class="drag-card alat" draggable="true" data-id="katup" data-type="alat" data-name="Katup Pengaman" data-sub="Buang uap sisa">
+            <div class="drag-icon">🔧</div><div class="drag-name">Katup Pengaman</div><div class="drag-sub">Buang uap sisa</div></div>
+          <div class="drag-card alat" draggable="true" data-id="turbin" data-type="alat" data-name="Turbin Mini" data-sub="Uap → mekanik">
+            <div class="drag-icon">🌀</div><div class="drag-name">Turbin Mini</div><div class="drag-sub">Uap → mekanik</div></div>
+          <div class="drag-card alat" draggable="true" data-id="generator" data-type="alat" data-name="Generator DC" data-sub="Mekanik → listrik">
+            <div class="drag-icon">🔌</div><div class="drag-name">Generator DC</div><div class="drag-sub">Mekanik → listrik</div></div>
+          <div class="drag-card alat" draggable="true" data-id="multimeter" data-type="alat" data-name="Multimeter" data-sub="Ukur V &amp; A">
+            <div class="drag-icon">📟</div><div class="drag-name">Multimeter</div><div class="drag-sub">Ukur V &amp; A</div></div>
+          <div class="drag-card alat" draggable="true" data-id="termometer" data-type="alat" data-name="Termometer" data-sub="Ukur suhu">
+            <div class="drag-icon">🌡️</div><div class="drag-name">Termometer</div><div class="drag-sub">Ukur suhu</div></div>
+          <div class="drag-card alat" draggable="true" data-id="tachometer" data-type="alat" data-name="Tachometer" data-sub="Ukur RPM">
+            <div class="drag-icon">⏱️</div><div class="drag-name">Tachometer</div><div class="drag-sub">Ukur RPM</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="cangkang" data-type="bahan" data-name="Cangkang Sawit" data-sub="LHV ≈ 4.000 kkal/kg">
+            <div class="drag-icon">🥥</div><div class="drag-name">Cangkang Sawit</div><div class="drag-sub">LHV≈4.000 kkal/kg</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="serat" data-type="bahan" data-name="Serat Sawit" data-sub="LHV ≈ 2.500 kkal/kg">
+            <div class="drag-icon">🌾</div><div class="drag-name">Serat Sawit</div><div class="drag-sub">LHV≈2.500 kkal/kg</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="air" data-type="bahan" data-name="Air Umpan Boiler" data-sub="Diubah jadi uap">
+            <div class="drag-icon">💧</div><div class="drag-name">Air Umpan Boiler</div><div class="drag-sub">Diubah jadi uap</div></div>
+          <div class="drag-card bahan" draggable="true" data-id="beban" data-type="bahan" data-name="Beban LED/Baterai" data-sub="Output listrik">
+            <div class="drag-icon">🔋</div><div class="drag-name">Beban LED/Baterai</div><div class="drag-sub">Output listrik</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="ch" style="flex-shrink:0;"><div class="ci g">🧪</div><div class="ct">Meja Percobaan</div></div>
+        <div style="font-size:9px;font-weight:700;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">⚙️ Alat Percobaan</div>
+        <div id="dropAlat" class="drop-zone" data-accept="alat" style="flex:1;min-height:0;margin-bottom:10px;"><div class="drop-hint">← Drag alat ke sini</div></div>
+        <div style="font-size:9px;font-weight:700;color:#d97706;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;flex-shrink:0;">🧫 Bahan Percobaan</div>
+        <div id="dropBahan" class="drop-zone" data-accept="bahan" style="flex:1;min-height:0;"><div class="drop-hint">← Drag bahan ke sini</div></div>
+        <button onclick="resetMeja()" style="margin-top:10px;flex-shrink:0;background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;">↺ Reset Meja</button>
+        <div id="catatanMeja" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;color:#d97706;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">💡 Catatan</div>
+          <p id="catatanText" style="font-size:11.5px;color:#92400e;line-height:1.6;margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROSEDUR ===== -->
+<div id="page-prosedur" class="page">
+  <div class="scroll">
+    <div class="two-col" style="margin-bottom:6px;">
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div class="ci y">🥥</div><div class="ct">Percobaan 1: PLTBm Bahan Bakar Cangkang</div></div>
+        <div class="steps">
+          <div class="step"><div class="snum">1</div><p>Masukkan cangkang sawit ke tungku pembakaran dengan laju umpan 3 kg/jam.</p></div>
+          <div class="step"><div class="snum">2</div><p>Amati suhu boiler dan tekanan uap yang terbentuk menggunakan termometer.</p></div>
+          <div class="step"><div class="snum">3</div><p>Catat RPM turbin dengan tachometer, lalu ukur tegangan &amp; arus keluaran generator dengan multimeter.</p></div>
+          <div class="step"><div class="snum">4</div><p>Variasikan laju umpan bahan bakar dari 1–8 kg/jam. Catat daya listrik yang dihasilkan tiap variasi.</p></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <div class="ch"><div class="ci g">🌾</div><div class="ct">Percobaan 2: PLTBm Bahan Bakar Serat</div></div>
+        <div class="steps">
+          <div class="step"><div class="snum">1</div><p>Ganti bahan bakar dengan serat sawit, pertahankan laju umpan yang sama seperti Percobaan 1.</p></div>
+          <div class="step"><div class="snum">2</div><p>Bandingkan RPM turbin dan daya listrik antara cangkang dan serat pada laju umpan yang sama.</p></div>
+          <div class="step"><div class="snum">3</div><p>Ubah efisiensi boiler dan efisiensi turbin-generator, amati pengaruhnya terhadap daya keluaran.</p></div>
+        </div>
+        <div class="notebox"><div class="nt">💡 Petunjuk</div><p>Nilai kalor cangkang lebih tinggi dari serat — perhatikan bagaimana ini mempengaruhi Q input meskipun massa bahan bakar sama.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:6px;">
+      <div class="ch"><div class="ci b">♻️</div><div class="ct">Percobaan 3: Pemanfaatan Uap Sisa sebagai Pengering</div></div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><p>Pindah ke mode simulasi "Pemanfaatan Uap Sisa (Pengering)".</p></div>
+        <div class="step"><div class="snum">2</div><p>Atur suhu gas buang dari katup pengaman (80–200°C) dan laju aliran udara pengering.</p></div>
+        <div class="step"><div class="snum">3</div><p>Amati penurunan kadar air bahan bakar terhadap waktu pada drum pengering berputar.</p></div>
+        <div class="step"><div class="snum">4</div><p>Bandingkan laju pengeringan pada suhu gas buang rendah vs tinggi. Hubungkan dengan konsep cascading energy use.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <div class="ch"><div class="ci g">📋</div><div class="ct">Tabel Pengamatan – PLTBm Mikro</div></div>
+      <table class="excel-table" id="table-pltbm">
+        <thead><tr><th>No</th><th>Bahan Bakar</th><th>Laju Umpan (kg/jam)</th><th>Q Input (kW)</th><th>Efisiensi Boiler (%)</th><th>RPM Turbin</th><th>Tegangan (V)</th><th>Daya Listrik (W)</th></tr></thead>
+        <tbody id="tbody-pltbm"></tbody>
+      </table>
+      <button class="btn-download" onclick="downloadExcel('table-pltbm','Data_PLTBm_BioPalm.xlsx')">📊 Unduh Excel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIMULASI ===== -->
+<div id="page-simulasi" class="page">
+  <div style="display:flex;flex:1;min-height:0;gap:8px;padding:8px 14px 10px;overflow:hidden;">
+    <div class="ctrl-panel" style="width:200px;flex-shrink:0;">
+      <h3>🔧 Kontrol Simulasi</h3>
+      <div class="cg">
+        <label>Jenis Eksperimen</label>
+        <select class="select-ctrl" id="simMode" onchange="switchSimMode(this.value)">
+          <option value="pltbm">Pembangkit Listrik (PLTBm)</option>
+          <option value="pengering">Pemanfaatan Uap Sisa (Pengering)</option>
+        </select>
+      </div>
+      <div id="simControls"></div>
+      <div style="display:flex;gap:6px;flex-direction:column;margin-top:auto;">
+        <button class="btn btn-start" id="btnPlay" onclick="toggleSimPause()">⏸ Pause</button>
+        <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="sim-right" style="flex:1;min-width:0;">
+      <div class="canvas-wrap">
+        <h3 id="simTitle">🔥 Simulasi PLTBm Mikro</h3>
+        <canvas id="simCanvas"></canvas>
+      </div>
+      <div class="statsrow" id="statsrow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DISKUSI ===== -->
+<div id="page-diskusi" class="page">
+  <div class="scroll">
+    <div class="hero" style="margin-bottom:8px;">
+      <div>
+        <div class="h-label">Diskusi &amp; Analisis</div>
+        <div class="h-title">Pertanyaan <span>Pendalaman</span></div>
+        <div class="h-desc">Jawablah pertanyaan berikut berdasarkan hasil simulasi PLTBm mikro yang telah kamu lakukan.</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ci y">🥥</div><div class="ct">Perbandingan Bahan Bakar</div></div>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);">1. Mengapa cangkang sawit menghasilkan daya listrik lebih besar daripada serat pada laju umpan yang sama?</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);margin-top:10px;">2. Jika pabrik memiliki lebih banyak serat daripada cangkang, apa strategi yang bisa dilakukan agar daya listrik tetap optimal?</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci b">⚙️</div><div class="ct">Efisiensi Sistem</div></div>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);">3. Dari tiga tahap konversi (kalor→uap→mekanik→listrik), tahap mana yang paling berpotensi kehilangan energi? Jelaskan!</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);margin-top:10px;">4. Bagaimana pengaruh efisiensi boiler terhadap daya listrik akhir jika efisiensi turbin-generator tetap?</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci g">♻️</div><div class="ct">Pemanfaatan Uap Sisa</div></div>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);">5. Jelaskan bagaimana uap sisa dari katup pengaman dapat dimanfaatkan untuk mengeringkan bahan bakar berikutnya!</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);margin-top:10px;">6. Mengapa suhu gas buang yang lebih tinggi mempercepat proses pengeringan? Kaitkan dengan konsep perpindahan kalor!</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci p">🌐</div><div class="ct">Penerapan &amp; Pengembangan</div></div>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);">7. Kesimpulan poster BIO-PALM menyebutkan perlunya sistem monitoring IoT. Sensor apa saja yang sebaiknya dipasang, dan mengapa?</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+        <p style="font-size:11.5px;font-weight:600;color:var(--text);margin-top:10px;">8. Sebutkan tantangan penerapan PLTBm mikro di perkebunan sawit yang jauh dari jaringan listrik!</p>
+        <textarea class="disc-area" rows="3" placeholder="Tuliskan jawabanmu di sini…"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EVALUASI (KUIS) ===== -->
+<div id="page-evaluasi" class="page">
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;padding:8px 14px 10px;gap:7px;">
+    <div class="quiz-nav-header">
+      <div class="qprog" id="qprog"></div>
+      <button class="btn-qnav btn-reset-q" onclick="resetQuiz()">↺ Ulang</button>
+    </div>
+    <div class="q-card" id="qcard"></div>
+    <div class="quiz-foot" id="qfoot"></div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- SCORE OVERLAY -->
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-box">
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-pct" id="scorePct"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div class="score-grade" id="scoreGrade"></div>
+    <div class="score-actions">
+      <button class="btn-score btn-review" onclick="document.getElementById('scoreOverlay').classList.remove('on')">Tinjau</button>
+      <button class="btn-score btn-ulangi" onclick="resetQuiz();document.getElementById('scoreOverlay').classList.remove('on')">Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAG POPUP -->
+<div id="dragPopup" style="display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;background:rgba(12,36,17,.45);backdrop-filter:blur(3px);">
+  <div id="dragPopupBox" style="background:#fff;border-radius:18px;padding:32px 36px;text-align:center;max-width:300px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.7);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;">
+    <div id="dragPopupIcon" style="font-size:56px;line-height:1;margin-bottom:12px;"></div>
+    <div id="dragPopupTitle" style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;"></div>
+    <div id="dragPopupMsg" style="font-size:13px;color:#64748b;line-height:1.5;margin-bottom:20px;"></div>
+    <button onclick="closeDragPopup()" style="background:linear-gradient(135deg,var(--acc),var(--acc3));color:#fff;border:none;border-radius:9px;padding:9px 28px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">OK</button>
+  </div>
+</div>
+
+<!-- CELEBRATION OVERLAY -->
+<div id="celebOverlay" style="display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;pointer-events:none;">
+  <canvas id="confettiCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <div id="celebBox" style="position:relative;background:linear-gradient(145deg,#0c2411,#14532d,#16a34a);border:1px solid rgba(134,239,172,0.25);border-radius:28px;padding:44px 52px 40px;text-align:center;max-width:420px;width:92%;box-shadow:0 30px 100px rgba(0,0,0,.7);transform:scale(.4) translateY(80px);opacity:0;transition:transform .6s cubic-bezier(.34,1.56,.64,1),opacity .4s;pointer-events:auto;">
+    <div style="font-size:72px;line-height:1;margin-bottom:16px;">🌴</div>
+    <div id="celebTitle" style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:10px;">Meja Percobaan Lengkap! 🎉</div>
+    <div id="celebSub" style="font-size:13px;color:#bbf7d0;line-height:1.7;margin-bottom:26px;">Semua alat dan bahan telah ditempatkan<br>dengan <strong style="color:#4ade80;">tepat</strong> di meja percobaan!</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="closeCelebration()" style="background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;border:none;border-radius:12px;padding:11px 30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Lanjutkan ➜</button>
+      <button onclick="closeCelebration();resetMeja();" style="background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:11px 30px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">↺ Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== NAVIGATION =====================
+function show(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'simulasi') setTimeout(() => { resizeCanvas(); }, 50);
+  if (id === 'evaluasi' && !quizInitialized) initQuiz();
+}
+function toggleNav(){ document.getElementById('mainNav').classList.toggle('open'); }
+function closeNav(){ document.getElementById('mainNav').classList.remove('open'); }
+
+// ===================== DOWNLOAD EXCEL =====================
+function downloadExcel(tableId, filename) {
+  const table = document.getElementById(tableId);
+  const rows = [];
+  const headers = [...table.querySelectorAll('thead th')].map(th => th.textContent);
+  rows.push(headers);
+  table.querySelectorAll('tbody tr').forEach(tr => {
+    const row = [...tr.children].map(td => {
+      const inp = td.querySelector('input');
+      return inp ? inp.value : td.textContent;
+    });
+    rows.push(row);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Data');
+  XLSX.writeFile(wb, filename);
+}
+
+// ===================== DRAG & DROP =====================
+const alatNeeded = ['tungku','boiler','katup','turbin','generator','multimeter','termometer','tachometer'];
+const bahanNeeded = ['cangkang','serat','air','beban'];
+let placedAlat = new Set(), placedBahan = new Set();
+
+function initDrag() {
+  document.querySelectorAll('.drag-card').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      if (card.classList.contains('placed')) { e.preventDefault(); return; }
+      e.dataTransfer.setData('id', card.dataset.id);
+      e.dataTransfer.setData('type', card.dataset.type);
+      e.dataTransfer.setData('name', card.dataset.name);
+      e.dataTransfer.setData('icon', card.querySelector('.drag-icon').innerHTML);
+      setTimeout(() => card.classList.add('dragging'), 0);
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    let touchClone = null, touchCard = null;
+    card.addEventListener('touchstart', e => {
+      if (card.classList.contains('placed')) return;
+      touchCard = card; card.classList.add('touch-grabbing');
+    }, {passive:true});
+    card.addEventListener('touchmove', e => {
+      if (!touchCard) return;
+      if (e.cancelable) e.preventDefault();
+      const t = e.touches[0];
+      if (!touchClone) {
+        touchClone = card.cloneNode(true);
+        touchClone.style.cssText = 'position:fixed;z-index:9999;width:90px;opacity:.9;pointer-events:none;transform:scale(1.05);';
+        document.body.appendChild(touchClone);
+      }
+      touchClone.style.left = (t.clientX - 45) + 'px';
+      touchClone.style.top = (t.clientY - 45) + 'px';
+    }, {passive:false});
+    card.addEventListener('touchend', e => {
+      if (!touchCard) return;
+      card.classList.remove('touch-grabbing');
+      if (touchClone) { touchClone.remove(); touchClone = null; }
+      const t = e.changedTouches[0];
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const zone = el ? el.closest('.drop-zone') : null;
+      if (zone) handleDrop(zone, card.dataset.id, card.dataset.type, card.dataset.name, card.querySelector('.drag-icon').innerHTML);
+      touchCard = null;
+    }, {passive:true});
+  });
+  document.querySelectorAll('.drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      handleDrop(zone, e.dataTransfer.getData('id'), e.dataTransfer.getData('type'), e.dataTransfer.getData('name'), e.dataTransfer.getData('icon'));
+    });
+  });
+}
+function handleDrop(zone, id, type, name, icon) {
+  const accept = zone.dataset.accept;
+  if (type !== accept) {
+    showDragPopup('❌', 'Zona Salah!', `"${name}" adalah ${type === 'alat' ? 'alat' : 'bahan'}. Letakkan di zona yang sesuai.`);
+    return;
+  }
+  const already = (type==='alat' ? placedAlat : placedBahan).has(id);
+  if (already) return;
+  (type === 'alat' ? placedAlat : placedBahan).add(id);
+  const src = document.querySelector(`.drag-card[data-id="${id}"]`);
+  if (src) src.classList.add('placed');
+  const hint = zone.querySelector('.drop-hint');
+  if (hint) hint.remove();
+  const mini = document.createElement('div');
+  mini.className = 'drag-card placed';
+  mini.style.cssText = 'width:80px;min-height:65px;font-size:10px;';
+  mini.innerHTML = `<div class="drag-icon" style="font-size:24px;height:30px;">${icon}</div><div class="drag-name" style="font-size:9px;">${name}</div>`;
+  zone.appendChild(mini);
+  const catatan = document.getElementById('catatanMeja');
+  const catatanText = document.getElementById('catatanText');
+  catatan.style.display = 'block';
+  catatanText.textContent = `✓ "${name}" berhasil ditambahkan ke meja percobaan.`;
+  const alatDone = alatNeeded.every(a => placedAlat.has(a));
+  const bahanDone = bahanNeeded.every(b => placedBahan.has(b));
+  if (alatDone && bahanDone) setTimeout(showCelebration, 400);
+}
+function showDragPopup(icon, title, msg) {
+  document.getElementById('dragPopupIcon').textContent = icon;
+  document.getElementById('dragPopupTitle').textContent = title;
+  document.getElementById('dragPopupMsg').textContent = msg;
+  const popup = document.getElementById('dragPopup');
+  popup.style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('dragPopupBox').style.transform = 'scale(1)';
+    document.getElementById('dragPopupBox').style.opacity = '1';
+  }, 10);
+}
+function closeDragPopup() {
+  document.getElementById('dragPopupBox').style.transform = 'scale(.7)';
+  document.getElementById('dragPopupBox').style.opacity = '0';
+  setTimeout(() => { document.getElementById('dragPopup').style.display = 'none'; }, 300);
+}
+function resetMeja() {
+  placedAlat.clear(); placedBahan.clear();
+  ['dropAlat','dropBahan'].forEach(id => {
+    const z = document.getElementById(id);
+    const accept = z.dataset.accept;
+    z.innerHTML = `<div class="drop-hint">← Drag ${accept === 'alat' ? 'alat' : 'bahan'} ke sini</div>`;
+  });
+  document.querySelectorAll('.drag-card').forEach(c => c.classList.remove('placed'));
+  document.getElementById('catatanMeja').style.display = 'none';
+}
+function showCelebration() {
+  const overlay = document.getElementById('celebOverlay');
+  overlay.style.display = 'flex';
+  const box = document.getElementById('celebBox');
+  setTimeout(() => { box.style.transform = 'scale(1) translateY(0)'; box.style.opacity = '1'; }, 50);
+  launchConfetti();
+}
+function closeCelebration() {
+  const overlay = document.getElementById('celebOverlay');
+  const box = document.getElementById('celebBox');
+  box.style.transform = 'scale(.4) translateY(80px)'; box.style.opacity = '0';
+  setTimeout(() => { overlay.style.display = 'none'; }, 500);
+}
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx2 = canvas.getContext('2d');
+  const particles = Array.from({length:100}, () => ({
+    x: Math.random()*canvas.width, y: -20, vx: (Math.random()-0.5)*4, vy: Math.random()*4+2,
+    color: ['#22c55e','#86efac','#fbbf24','#4ade80','#facc15'][Math.floor(Math.random()*5)], size: Math.random()*8+4
+  }));
+  let frames = 0;
+  function drawConfetti() {
+    ctx2.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      ctx2.fillStyle = p.color; ctx2.beginPath(); ctx2.rect(p.x, p.y, p.size, p.size/2); ctx2.fill();
+      p.x += p.vx; p.y += p.vy; p.vy += 0.05;
+    });
+    frames++;
+    if (frames < 180) requestAnimationFrame(drawConfetti); else ctx2.clearRect(0,0,canvas.width,canvas.height);
+  }
+  drawConfetti();
+}
+
+// ===================== SIMULASI =====================
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+const KKAL_TO_KJ = 4.184;
+
+let simState = {
+  mode:'pltbm', isPaused:false,
+  fuelType:'cangkang', feedRate:3, boilerEff:65, convEff:30, steamPressure:3,
+  exhaustTemp:150, airflow:1.5, moisture:55, initMoisture:55, timeMin:0,
+  turbineAngle:0, drumAngle:0, fireParticles:[], steamParticles:[], bubbleParticles:[],
+  qin:0, qboiler:0, rpm:0, volt:0, amp:0, pelec:0, dryRate:0
+};
+
+function resizeCanvas() {
+  const parent = canvas.parentElement;
+  if (parent) { canvas.width = parent.clientWidth; canvas.height = parent.clientHeight - 40; }
+}
+window.addEventListener('resize', resizeCanvas);
+
+function switchSimMode(mode) {
+  simState.mode = mode;
+  simState.fireParticles = []; simState.steamParticles = []; simState.bubbleParticles = [];
+  for (let i=0;i<30;i++) simState.fireParticles.push({x:Math.random()*40-20,y:Math.random()*30,life:Math.random()});
+  for (let i=0;i<20;i++) simState.steamParticles.push({x:Math.random()*20-10,y:Math.random()*60,life:Math.random()});
+  buildSimControls(mode); buildStats(mode);
+  document.getElementById('simTitle').textContent = mode==='pltbm' ? '🔥 Simulasi PLTBm Mikro (Tungku → Boiler → Turbin → Generator)' : '♻️ Simulasi Pemanfaatan Uap Sisa untuk Pengering';
+  updatePhysics(0); resizeCanvas();
+}
+
+function buildSimControls(mode) {
+  const container = document.getElementById('simControls');
+  container.innerHTML = '';
+  const controls = {
+    pltbm:[
+      {key:'feedRate',min:1,max:8,step:0.5,label:'Laju Umpan',unit:'kg/jam'},
+      {key:'boilerEff',min:40,max:85,step:1,label:'Efisiensi Boiler',unit:'%'},
+      {key:'convEff',min:15,max:45,step:1,label:'Eff. Turbin-Generator',unit:'%'},
+      {key:'steamPressure',min:1,max:6,step:0.5,label:'Tekanan Uap',unit:'bar'}
+    ],
+    pengering:[
+      {key:'exhaustTemp',min:80,max:200,step:5,label:'Suhu Gas Buang',unit:'°C'},
+      {key:'airflow',min:0.5,max:3,step:0.1,label:'Laju Udara',unit:'m³/menit'}
+    ]
+  };
+  (controls[mode]||[]).forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'cg'; div.style.marginBottom = '6px';
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;"><label style="font-size:9.5px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;">${c.label}</label><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);font-weight:700;"><span id="val-${c.key}">${simState[c.key]}</span> ${c.unit}</span></div><input type="range" min="${c.min}" max="${c.max}" step="${c.step||1}" value="${simState[c.key]}" oninput="simState['${c.key}']=parseFloat(this.value);document.getElementById('val-${c.key}').textContent=this.value;updatePhysics(0);">`;
+    container.appendChild(div);
+  });
+  if (mode === 'pltbm') {
+    const div = document.createElement('div');
+    div.className = 'cg';
+    div.innerHTML = `<button class="btn btn-toggle" onclick="simState.fuelType=simState.fuelType==='cangkang'?'serat':'cangkang';buildSimControls('pltbm');updatePhysics(0);">Bahan Bakar: ${simState.fuelType==='cangkang'?'🥥 Cangkang':'🌾 Serat'}</button>`;
+    container.appendChild(div);
+  }
+  if (mode === 'pengering') {
+    const div = document.createElement('div');
+    div.className = 'cg';
+    div.innerHTML = `<div style="font-size:10px;color:var(--text3);line-height:1.5;">Kadar air awal bahan bakar diatur 55%. Amati penurunannya seiring waktu simulasi berjalan.</div>`;
+    container.appendChild(div);
+  }
+}
+
+function buildStats(mode) {
+  const statsrow = document.getElementById('statsrow');
+  statsrow.innerHTML = '';
+  const defs = {
+    pltbm:[{id:'sqin',label:'Q Input (kW)'},{id:'sqboiler',label:'Q Boiler (kW)'},{id:'srpm',label:'RPM Turbin'},{id:'svolt',label:'Tegangan (V)'},{id:'samp',label:'Arus (A)'},{id:'spelec',label:'Daya Listrik (W)'}],
+    pengering:[{id:'smoist',label:'Kadar Air (%)'},{id:'srate',label:'Laju Kering (%/menit)'},{id:'stime',label:'Waktu (menit)'},{id:'stemp',label:'Suhu Gas (°C)'}]
+  };
+  (defs[mode]||[]).forEach(d => {
+    const box = document.createElement('div'); box.className = 'sbox';
+    box.innerHTML = `<span class="sv" id="${d.id}">–</span><span class="sl">${d.label}</span>`;
+    statsrow.appendChild(box);
+  });
+}
+
+function updatePhysics(dt) {
+  if (simState.isPaused && dt>0) return;
+  if (simState.mode === 'pltbm') {
+    const LHV = simState.fuelType === 'cangkang' ? 3950 : 2500;
+    simState.qin = (simState.feedRate * LHV * KKAL_TO_KJ) / 3600;
+    simState.qboiler = simState.qin * simState.boilerEff/100;
+    simState.rpm = 250 + simState.steamPressure*420;
+    simState.pelec = simState.qboiler*1000*simState.convEff/100;
+    simState.volt = simState.rpm*0.006;
+    simState.amp = simState.volt>0 ? simState.pelec/simState.volt : 0;
+    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('sqin', simState.qin.toFixed(2));
+    set('sqboiler', simState.qboiler.toFixed(2));
+    set('srpm', Math.round(simState.rpm));
+    set('svolt', simState.volt.toFixed(1));
+    set('samp', simState.amp.toFixed(2));
+    set('spelec', simState.pelec.toFixed(1));
+    if (!simState.isPaused && dt>0) simState.turbineAngle += (simState.rpm/60)*dt*2*Math.PI*0.15;
+  } else if (simState.mode === 'pengering') {
+    simState.dryRate = Math.max(0,(simState.exhaustTemp-30))*simState.airflow*0.01;
+    if (!simState.isPaused && dt>0) {
+      simState.moisture -= simState.dryRate*(dt/60);
+      simState.moisture = Math.max(8, simState.moisture);
+      simState.timeMin += dt/60;
+      simState.drumAngle += dt*0.8;
+    }
+    const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('smoist', simState.moisture.toFixed(1));
+    set('srate', simState.dryRate.toFixed(2));
+    set('stime', simState.timeMin.toFixed(1));
+    set('stemp', simState.exhaustTemp);
+  }
+}
+
+function drawPLTBM() {
+  const w = canvas.width, h = canvas.height;
+  const grd = ctx.createLinearGradient(0,0,0,h);
+  grd.addColorStop(0,'#0c2411'); grd.addColorStop(1,'#052e16');
+  ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+
+  const baseY = h*0.78;
+  const furnX = w*0.10, furnW = w*0.14, furnH = h*0.28;
+  const boilerX = furnX+furnW+w*0.03, boilerW = w*0.16, boilerH = h*0.34;
+  const pipeY = baseY - boilerH*0.65;
+  const turbX = boilerX+boilerW+w*0.16, turbR = Math.min(w,h)*0.075;
+  const genX = turbX+turbR*2+w*0.05, genW = w*0.09, genH = h*0.16;
+  const ledX = genX+genW+w*0.10;
+
+  // Furnace (tungku)
+  ctx.fillStyle = '#3f2a1a'; ctx.fillRect(furnX, baseY-furnH, furnW, furnH);
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2; ctx.strokeRect(furnX, baseY-furnH, furnW, furnH);
+  // Fire particles
+  const intensity = Math.min(1, simState.feedRate/8);
+  simState.fireParticles.forEach(p => {
+    if (!simState.isPaused) { p.y -= (1+intensity*2); p.life -= 0.02; }
+    if (p.life <= 0 || p.y < -20) { p.y = 20; p.x = Math.random()*furnW-furnW/2; p.life = 1; }
+    const alpha = Math.max(0,p.life);
+    const fx = furnX+furnW/2+p.x*0.5, fy = baseY-8-p.y;
+    const fg = ctx.createRadialGradient(fx,fy,0,fx,fy,10+intensity*8);
+    fg.addColorStop(0, `rgba(255,220,120,${alpha})`); fg.addColorStop(0.5, `rgba(249,115,22,${alpha*0.7})`); fg.addColorStop(1,'rgba(220,38,38,0)');
+    ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(fx,fy,8+intensity*6,0,Math.PI*2); ctx.fill();
+  });
+  ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('🔥 Tungku', furnX+furnW/2, baseY+16);
+  ctx.fillStyle = '#fde68a'; ctx.font = '9px Inter';
+  ctx.fillText(simState.fuelType==='cangkang'?'Cangkang Sawit':'Serat Sawit', furnX+furnW/2, baseY+28);
+
+  // Boiler
+  const boilerGrd = ctx.createLinearGradient(boilerX,0,boilerX+boilerW,0);
+  boilerGrd.addColorStop(0,'#334155'); boilerGrd.addColorStop(1,'#475569');
+  ctx.fillStyle = boilerGrd; ctx.fillRect(boilerX, baseY-boilerH, boilerW, boilerH);
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.strokeRect(boilerX, baseY-boilerH, boilerW, boilerH);
+  // Water level with bubbles
+  const waterH = boilerH*0.55;
+  ctx.fillStyle = 'rgba(56,189,248,0.55)'; ctx.fillRect(boilerX+3, baseY-waterH, boilerW-6, waterH-3);
+  const bubbleIntensity = simState.boilerEff/85;
+  simState.bubbleParticles.forEach(p => {
+    if (!simState.isPaused) { p.y -= (0.6+bubbleIntensity*1.2); p.life -= 0.015; }
+    if (p.life<=0 || p.y<0) { p.y=waterH-5; p.x=Math.random()*(boilerW-14)+7; p.life=1; }
+    ctx.fillStyle = `rgba(224,242,254,${Math.max(0,p.life)})`;
+    ctx.beginPath(); ctx.arc(boilerX+p.x, baseY-p.y, 2.5, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('🫖 Boiler', boilerX+boilerW/2, baseY-boilerH-10);
+
+  // Pipe + steam to turbine
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.moveTo(boilerX+boilerW, pipeY); ctx.lineTo(turbX-turbR-6, pipeY); ctx.stroke();
+  const steamAlphaBase = Math.min(1, simState.steamPressure/6);
+  simState.steamParticles.forEach(p => {
+    if (!simState.isPaused) { p.x += (1.5+steamAlphaBase*2.5); p.life -= 0.012; }
+    if (p.life<=0 || p.x > (turbX-turbR-6-(boilerX+boilerW))) { p.x=0; p.y=(Math.random()-0.5)*10; p.life=1; }
+    ctx.fillStyle = `rgba(226,232,240,${Math.max(0,p.life)*steamAlphaBase})`;
+    ctx.beginPath(); ctx.arc(boilerX+boilerW+p.x, pipeY+p.y, 4, 0, Math.PI*2); ctx.fill();
+  });
+  // Katup pengaman
+  ctx.fillStyle = '#dc2626'; ctx.fillRect(boilerX+boilerW*0.35, baseY-boilerH-22, 10, 12);
+  ctx.fillStyle = '#fecaca'; ctx.font='8px Inter'; ctx.fillText('Katup', boilerX+boilerW*0.35+5, baseY-boilerH-26);
+
+  // Turbine
+  ctx.save(); ctx.translate(turbX, pipeY); ctx.rotate(simState.turbineAngle);
+  ctx.fillStyle = '#0891b2';
+  for (let i=0;i<6;i++) {
+    ctx.save(); ctx.rotate(i*Math.PI/3);
+    ctx.fillRect(-3, 0, 6, turbR);
+    ctx.restore();
+  }
+  ctx.restore();
+  ctx.fillStyle = '#155e75'; ctx.beginPath(); ctx.arc(turbX, pipeY, turbR*0.28, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#a5f3fc'; ctx.font='bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('🌀 Turbin', turbX, pipeY+turbR+18);
+
+  // Shaft to generator
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(turbX+turbR, pipeY); ctx.lineTo(genX, pipeY); ctx.stroke();
+  // Generator
+  ctx.fillStyle = '#334155'; ctx.fillRect(genX, pipeY-genH/2, genW, genH);
+  ctx.strokeStyle = '#94a3b8'; ctx.strokeRect(genX, pipeY-genH/2, genW, genH);
+  ctx.fillStyle = '#e2e8f0'; ctx.font='bold 9px Inter'; ctx.textAlign='center';
+  ctx.fillText('🔌 Generator', genX+genW/2, pipeY-genH/2-8);
+
+  // Wire to LED / battery
+  ctx.strokeStyle = simState.pelec>1 ? '#facc15' : '#475569'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(genX+genW, pipeY); ctx.lineTo(ledX, pipeY); ctx.stroke();
+  const brightness = Math.max(0, Math.min(1, simState.pelec/40));
+  const ledGrd = ctx.createRadialGradient(ledX+16, pipeY, 0, ledX+16, pipeY, 20+brightness*22);
+  ledGrd.addColorStop(0, `rgba(255,247,180,${0.9*brightness+0.08})`);
+  ledGrd.addColorStop(1, 'rgba(255,247,180,0)');
+  ctx.fillStyle = ledGrd; ctx.beginPath(); ctx.arc(ledX+16, pipeY, 20+brightness*22, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = brightness>0.05 ? `rgba(250,204,21,${0.5+brightness*0.5})` : '#475569';
+  ctx.beginPath(); ctx.arc(ledX+16, pipeY, 10, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fde68a'; ctx.font='bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('💡 Beban LED', ledX+16, pipeY+36);
+  // Battery bar
+  const battY = pipeY+50, battW = 60, battH = 14;
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(ledX-14, battY, battW, battH);
+  ctx.fillStyle = '#22c55e';
+  ctx.fillRect(ledX-14+2, battY+2, Math.max(0,(battW-4)*brightness), battH-4);
+  ctx.fillStyle = '#bbf7d0'; ctx.font='8px Inter'; ctx.fillText('🔋 Baterai', ledX-14+battW/2, battY+battH+12);
+}
+
+function drawPengering() {
+  const w = canvas.width, h = canvas.height;
+  const grd = ctx.createLinearGradient(0,0,0,h);
+  grd.addColorStop(0,'#1c1917'); grd.addColorStop(1,'#0c2411');
+  ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+
+  const cx = w*0.42, cy = h*0.5, r = Math.min(w,h)*0.24;
+  // Duct hot air
+  const tempFactor = (simState.exhaustTemp-80)/120;
+  ctx.strokeStyle = `rgba(251,146,60,${0.4+tempFactor*0.5})`; ctx.lineWidth = 14;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(cx-r, cy); ctx.stroke();
+  ctx.fillStyle = '#fdba74'; ctx.font='bold 10px Inter'; ctx.textAlign='left';
+  ctx.fillText(`♨️ Gas buang ${simState.exhaustTemp}°C`, 10, cy-16);
+
+  // Drum
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(simState.drumAngle%(2*Math.PI));
+  ctx.strokeStyle = '#a8a29e'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle = 'rgba(120,113,108,0.15)'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+  // tumbling particles (cangkang/serat)
+  const nParticles = 16;
+  for (let i=0;i<nParticles;i++) {
+    const ang = (i/nParticles)*Math.PI*2;
+    const rad = r*0.55*((i%3)/2+0.4);
+    const px = Math.cos(ang)*rad, py = Math.sin(ang)*rad;
+    ctx.fillStyle = i%2===0 ? '#78350f' : '#a16207';
+    ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+  ctx.fillStyle = '#d6d3d1'; ctx.font='bold 11px Inter'; ctx.textAlign='center';
+  ctx.fillText('🥁 Drum Pengering Berputar', cx, cy-r-16);
+
+  // Airflow arrows through drum
+  ctx.strokeStyle = `rgba(254,215,170,${0.3+tempFactor*0.4})`; ctx.lineWidth = 2;
+  for (let i=0;i<3;i++) {
+    const yy = cy - r*0.4 + i*r*0.4;
+    ctx.beginPath(); ctx.moveTo(cx-r*0.7, yy); ctx.lineTo(cx+r*0.7, yy); ctx.stroke();
+  }
+
+  // Moisture gauge (right side)
+  const gx = w*0.78, gTop = h*0.18, gH = h*0.6, gW = 34;
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.strokeRect(gx, gTop, gW, gH);
+  const moistH = gH * (simState.moisture/simState.initMoisture);
+  const moistGrd = ctx.createLinearGradient(gx,gTop+gH-moistH,gx,gTop+gH);
+  moistGrd.addColorStop(0,'#38bdf8'); moistGrd.addColorStop(1,'#0284c7');
+  ctx.fillStyle = moistGrd; ctx.fillRect(gx+2, gTop+gH-moistH+2, gW-4, moistH-4);
+  ctx.fillStyle = '#e0f2fe'; ctx.font='bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('💧 Kadar Air', gx+gW/2, gTop-10);
+  ctx.fillText(simState.moisture.toFixed(1)+'%', gx+gW/2, gTop+gH+18);
+
+  // Info box
+  ctx.fillStyle = 'rgba(15,23,42,0.7)'; ctx.fillRect(10, h-58, 200, 48);
+  ctx.fillStyle = '#bbf7d0'; ctx.font='bold 9px Inter'; ctx.textAlign='left';
+  ctx.fillText('Waktu simulasi: '+simState.timeMin.toFixed(1)+' menit', 16, h-40);
+  ctx.fillText('Laju pengeringan: '+simState.dryRate.toFixed(2)+' %/menit', 16, h-24);
+  ctx.fillText('Prinsip: gas buang panas mempercepat penguapan air pada bahan bakar', 16, h-10);
+}
+
+let lastTime = 0;
+function animateSim(ts) {
+  if (!lastTime) lastTime = ts;
+  const dt = Math.min(0.1,(ts-lastTime)/1000);
+  lastTime = ts;
+  updatePhysics(dt);
+  if (simState.mode === 'pltbm') drawPLTBM(); else drawPengering();
+  requestAnimationFrame(animateSim);
+}
+
+function toggleSimPause() {
+  simState.isPaused = !simState.isPaused;
+  document.getElementById('btnPlay').textContent = simState.isPaused ? '▶ Lanjutkan' : '⏸ Pause';
+}
+function resetSim() {
+  simState.moisture = simState.initMoisture; simState.timeMin = 0;
+  simState.feedRate = 3; simState.boilerEff = 65; simState.convEff = 30; simState.steamPressure = 3;
+  simState.exhaustTemp = 150; simState.airflow = 1.5; simState.fuelType = 'cangkang';
+  buildSimControls(simState.mode); buildStats(simState.mode); updatePhysics(0);
+}
+
+// ===================== QUIZ =====================
+const quizData = [
+  {q:'Rangkaian konversi energi pada PLTBm mikro yang benar adalah…',type:'mc',opts:['Listrik → Uap → Mekanik → Kalor','Kalor → Uap → Mekanik → Listrik','Mekanik → Kalor → Uap → Listrik','Uap → Listrik → Kalor → Mekanik'],ans:1,fb:'Urutan konversi energi PLTBm mikro adalah kalor pembakaran biomassa → energi uap di boiler → energi mekanik di turbin → energi listrik di generator.'},
+  {q:'Nilai kalor cangkang sawit menurut kajian pustaka berkisar antara…',type:'mc',opts:['1.000–1.500 kkal/kg','2.500 kkal/kg','3.900–4.000 kkal/kg','6.000–7.000 kkal/kg'],ans:2,fb:'Nilai kalor cangkang sawit berkisar 3.900–4.000 kkal/kg, lebih tinggi dibanding serat sawit yang sekitar 2.500 kkal/kg.'},
+  {q:'Rumus energi kalor bahan bakar adalah Q = m × LHV.',type:'tf',opts:['Benar','Salah'],ans:0,fb:'BENAR. Q (energi kalor) diperoleh dari perkalian massa bahan bakar (m) dengan nilai kalornya (LHV).'},
+  {q:'Jika laju umpan bahan bakar dinaikkan sementara efisiensi boiler dan turbin-generator tetap, maka daya listrik yang dihasilkan akan…',type:'mc',opts:['Menurun','Tetap sama','Meningkat','Menjadi nol'],ans:2,fb:'Menaikkan laju umpan bahan bakar meningkatkan Q input, sehingga Q boiler dan daya listrik keluaran ikut meningkat (efisiensi tetap sama).'},
+  {q:'Uap sisa yang keluar dari katup pengaman sebaiknya…',type:'mc',opts:['Dibuang langsung tanpa pemanfaatan','Dimanfaatkan untuk mengeringkan bahan bakar berikutnya','Didinginkan lalu dibuang ke sungai','Disimpan sebagai limbah B3'],ans:1,fb:'Uap/gas buang panas dapat dimanfaatkan lewat heat exchanger untuk mengeringkan bahan bakar berikutnya (cascading energy use), meningkatkan efisiensi total sistem.'},
+  {q:'Prinsip hukum termodinamika yang mendasari konversi energi pada PLTBm adalah Hukum Kekekalan Energi.',type:'tf',opts:['Benar','Salah'],ans:0,fb:'BENAR. Energi kalor pembakaran biomassa tidak hilang, melainkan berubah bentuk menjadi energi uap, mekanik, dan akhirnya listrik.'},
+  {q:'Semakin tinggi suhu gas buang pada proses pengeringan, maka laju pengeringan bahan bakar akan…',type:'mc',opts:['Semakin lambat','Tidak berpengaruh','Semakin cepat','Berhenti total'],ans:2,fb:'Suhu gas buang yang lebih tinggi mempercepat penguapan kandungan air pada bahan bakar, sehingga laju pengeringan meningkat.'},
+  {q:'Efisiensi total sistem PLTBm mikro dipengaruhi oleh…',type:'mc',opts:['Hanya efisiensi boiler','Hanya efisiensi generator','Efisiensi boiler dan efisiensi turbin-generator','Warna tungku pembakaran'],ans:2,fb:'Efisiensi total merupakan hasil kali efisiensi boiler (kalor→uap) dan efisiensi turbin-generator (mekanik→listrik).'},
+  {q:'Alat yang digunakan untuk mengukur kecepatan putaran (RPM) turbin adalah…',type:'mc',opts:['Multimeter','Termometer','Tachometer','Anemometer'],ans:2,fb:'Tachometer digunakan untuk mengukur kecepatan putaran (RPM) sebuah poros atau turbin.'},
+  {q:'Sesuai kesimpulan poster BIO-PALM, sistem PLTBm mikro sebaiknya dilengkapi dengan…',type:'mc',opts:['Sistem pendingin AC ruangan','Sistem monitoring dan peringatan dini berbasis IoT','Sistem pemutar musik otomatis','Sistem GPS pelacak lokasi'],ans:1,fb:'Poster BIO-PALM menyimpulkan perlunya sistem monitoring dan peringatan dini berbasis IoT untuk menjaga keamanan dan keandalan operasi PLTBm mikro.'}
+];
+let qCurrent = 0, qAnswers = [], quizInitialized = false;
+
+function initQuiz() {
+  quizInitialized = true;
+  qAnswers = new Array(quizData.length).fill(null);
+  const prog = document.getElementById('qprog');
+  prog.innerHTML = '';
+  quizData.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'qprog-dot' + (i===0?' current':'');
+    dot.textContent = i+1;
+    dot.onclick = () => goToQ(i);
+    prog.appendChild(dot);
+  });
+  const tbody = document.getElementById('tbody-pltbm');
+  if (tbody && tbody.children.length === 0) {
+    for(let i=0;i<5;i++){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="text-align:center;padding:5px;border:1px solid #bbf7d0;">${i+1}</td>${Array(7).fill('<td><input type="text"></td>').join('')}`;
+      tbody.appendChild(tr);
+    }
+  }
+  renderQ(0);
+}
+function renderQ(idx) {
+  qCurrent = idx;
+  const q = quizData[idx];
+  const card = document.getElementById('qcard');
+  const isAnswered = qAnswers[idx] !== null;
+  const isReview = isAnswered;
+  card.innerHTML = `
+    <div class="qnum">SOAL ${idx+1} / ${quizData.length}</div>
+    <span class="qtype-badge">${q.type==='mc'?'Pilihan Ganda':'Benar / Salah'}</span>
+    <div class="qtext">${q.q}</div>
+    <ul class="opts">
+      ${q.opts.map((o,i)=>`
+        <li class="opt${qAnswers[idx]===i?' sel':''}${isReview&&i===q.ans?' correct':''}${isReview&&qAnswers[idx]===i&&i!==q.ans?' wrong':''}"
+            onclick="${isReview?'':'selectOpt('+idx+','+i+')'}"
+            style="${isReview?'cursor:default;':''}">
+          <input type="radio" name="q${idx}" ${qAnswers[idx]===i?'checked':''} ${isReview?'disabled':''}>
+          ${o}
+        </li>`).join('')}
+    </ul>
+    <div class="qfb${isReview?' on':''}${isReview?(qAnswers[idx]===q.ans?' ok':' bad'):''}">${q.fb}</div>`;
+  document.querySelectorAll('.qprog-dot').forEach((dot,i)=>{
+    dot.className='qprog-dot'+(i===idx?' current':(qAnswers[i]!==null?' answered':''));
+  });
+  const foot = document.getElementById('qfoot');
+  foot.innerHTML = '';
+  if(idx>0){const b=document.createElement('button');b.className='btn-qnav btn-prev';b.textContent='← Sebelum';b.onclick=()=>goToQ(idx-1);foot.appendChild(b);}
+  const ctr=document.createElement('span');ctr.className='qcounter';ctr.textContent=`${qAnswers.filter(a=>a!==null).length}/${quizData.length} dijawab`;foot.appendChild(ctr);
+  const allDone=qAnswers.every(a=>a!==null);
+  if(idx<quizData.length-1){
+    const b=document.createElement('button');b.className='btn-qnav btn-next';b.textContent='Lanjut →';b.onclick=()=>goToQ(idx+1);foot.appendChild(b);
+  }
+  if(allDone){
+    const b=document.createElement('button');b.className='btn-qnav btn-submit-q';b.textContent='🏁 Lihat Skor';b.onclick=showScore;foot.appendChild(b);
+  }
+}
+function selectOpt(qIdx, optIdx) {
+  if(qAnswers[qIdx]!==null) return;
+  qAnswers[qIdx]=optIdx;
+  renderQ(qIdx);
+}
+function goToQ(idx){renderQ(idx);}
+function resetQuiz(){qAnswers=new Array(quizData.length).fill(null);renderQ(0);}
+function showScore(){
+  const score=qAnswers.filter((a,i)=>a===quizData[i].ans).length;
+  const pct=Math.round(score/quizData.length*100);
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('scorePct').textContent=`/ ${quizData.length} soal benar`;
+  document.getElementById('scoreSub').textContent=`Nilai kamu: ${pct}%`;
+  const grade=pct>=90?'A – Sangat Baik 🌟':pct>=75?'B – Baik 👍':pct>=60?'C – Cukup 🙂':pct>=45?'D – Kurang 😐':'E – Perlu Belajar Lagi 📖';
+  document.getElementById('scoreGrade').textContent=grade;
+  document.getElementById('scoreGrade').style.color=pct>=75?'#15803d':pct>=60?'#d97706':'#dc2626';
+  document.getElementById('scoreOverlay').classList.add('on');
+}
+
+// ===================== INIT =====================
+window.addEventListener('load', () => {
+  initDrag();
+  switchSimMode('pltbm');
+  resizeCanvas();
+  requestAnimationFrame(animateSim);
+});
+</script>
+
+</body>
+</html>
